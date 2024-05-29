@@ -1,57 +1,74 @@
 include Glimmer
 
-class Node < Struct.new(:type, :label, :inner)
-  def self.block(*inner)
-    Node.new(:block, nil, inner)
-  end
-  def self.line(*inner)
-    Node.new(:line, nil, inner)
-  end
-  def self.hint(label)
-    Node.new(:hint, label)
-  end
-  def self.text(label)
-    Node.new(:text, label)
-  end
-  def self.rect(*inner)
-    Node.new(:rect, nil, inner)
-  end
+class Node < Struct.new(:type, :opts, :inner)
+  def self.elem(*inner, **opts) = Node.new(:elem, opts, inner)
+  def self.layout(style, *inner, **opts) = Node.new(:layout, {style:, **opts}, inner)
+  def self.atom(style, **opts) = Node.new(:atom, {style:, **opts}, nil)
+
+  # Layouts
+  def self.vbox(*inner, **opts) = self.layout(:box, *inner, dir: :vertical, **opts)
+  def self.hbox(*inner, **opts) = self.layout(:box, *inner, dir: :horizontal, **opts)
+  def self.bracket(*inner, **opts) = self.layout(:bracket, *inner, **opts)
+  
+  # Atoms
+  def self.label(text, **opts) = self.atom(:label, text:, **opts)
+  def self.head(text, **opts) = self.label(text, primary: true, **opts)
+  def self.hint(text, **opts) = self.label(text, opacity: 0.36, **opts)
 end
 
-@src = Node.new(:func, 'for', [
-  Node.block(
-    Node.line(
-      Node.rect(
-        Node.new(:var, 'index'),
-        Node.hint('in'),
-        Node.new(:class, 'Ary', [
-          Node.rect(
-            Node.new(:num, '1'),
-            Node.new(:num, '2'),
-            Node.new(:num, '3'),
-          ),
-        ]),
-      ),
-    ),
-    Node.line(
-      Node.rect(
-        Node.block(
-          Node.line(
-            Node.new(:var, 'x'),
-            Node.new(:func, '='),
-            Node.new(:var, 'index'),
-            Node.new(:func, '+'),
-            Node.new(:num, '1'),
-          ),
-          Node.line(
-            Node.new(:func, 'puts'),
-            Node.new(:var, 'x'),
-          ),
+@src =
+Node.vbox(
+  Node.elem(
+    Node.head('for', color: 'func'),
+    Node.vbox(
+      Node.bracket(
+        Node.elem(
+          Node.head('index', color: 'var')
         ),
+        Node.hint('in'),
+        Node.elem(
+          Node.head('Ary', color: 'func'),
+          Node.bracket(
+            Node.elem(
+              Node.head('1', color: 'val'),
+            ),
+            Node.elem(
+              Node.head('2', color: 'val'),
+            ),
+            Node.elem(
+              Node.head('3', color: 'val'),
+            )
+          )
+        )
       ),
-    ),
-  ),
-])
+      Node.bracket(
+        Node.vbox(
+          Node.elem(
+            Node.hint('this is a comment')
+          ),
+          Node.elem(
+            Node.elem(
+              Node.head('x', color: 'var')
+            ),
+            Node.head('=', color: 'opt'),
+            Node.elem(
+              Node.elem(
+                Node.head('index', color: 'var')
+              ),
+              Node.head('+', color: 'opt'),
+              Node.elem(
+                Node.head('1', color: 'val')
+              )
+            )
+          ),
+          Node.elem(
+            Node.hint('...')
+          )
+        )
+      )
+    )
+  )
+)
 
 class NodeElem
   include Glimmer::Web::Component
@@ -59,18 +76,35 @@ class NodeElem
   option :node
 
   markup {
-    div(class: "node t-#{node.type.to_s}") {
-      if node.label
-        span(node.label, class: 'i-label')
-      end
-      if node.inner.respond_to?('each')
-        div(class: 'i-flow') {
-          node.inner.each do |item|
-            node_elem(node: item)
-          end
+    case node.type
+    when :elem
+      div(class: 'n t-elem') {
+        node.inner.each { |n| node_elem(node: n) }
+      }
+    when :layout
+      case node.opts[:style]
+      when :box
+        div(class: "n t-layout s-box f-dir-#{node.opts[:dir]}") {
+          node.inner.each { |n| node_elem(node: n) }
+        }
+      when :bracket
+        div(class: 'n t-layout s-bracket') {
+          node.inner.each { |n| node_elem(node: n) }
         }
       end
-    }
+    when :atom
+      case node.opts[:style]
+      when :label
+        klass = 'n t-atom s-label'
+        klass += ' f-primary' if node.opts[:primary]
+        style = ''
+        case
+        when o = node.opts[:opacity] then style += "opacity: #{o};"
+        when c = node.opts[:color] then style += "--color: var(--c-#{c});"
+        end
+        span(class: klass, style: style == '' ? nil : style) {node.opts[:text]}
+      end
+    end
   }
 end
 
@@ -89,71 +123,5 @@ end
 
 Document.ready? do
   editor(node: @src)
-  style {
-    <<~CSS
-      body {
-        background: #181818;
-        color: #fff;
-        font-family: "Source Code Pro", monospace;
-        font-size: 16px;
-      }
-      .editor {
-        --rt-color: #666;
-        --rt-border: 1px;
-        --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
-        display: flex;
-        flex-direction: column;
-        align-items: start;
-      }
-      .node {
-        transition: background 200ms;
-        display: flex;
-        color: #fff;
-        cursor: default;
-        padding: 0 0.25em;
-        pointer-events: all;
-      }
-      .node:not(:has(.node:hover)):hover {
-        outline: solid 1px #4af8;
-        background: #08f4;
-      }
-      .node > .i-flow {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-      .node > .i-label + .i-flow {
-        margin-left: 0.625em;
-      }
-      .node.t-hint, .node.t-split {
-        color: #777;
-        pointer-events: none;
-      }
-      .node.t-split, .node.t-rect > .i-flow {
-        margin: 0 -0.125em;
-        padding: 0;
-      }
-      .node.t-split:last-child {
-        align-items: end;
-      }
-      .node.t-block, .node.t-line, .node.t-rect {
-        pointer-events: none;
-        padding: 0;
-      }
-      .node.t-split + .node.t-split { padding-left: 0.25em }
-      .node.t-func { color: #4af }
-      .node.t-class { color: #4bb }
-      .node.t-num { color: #ccc }
-      .node.t-var { color: #f80 }
-      .node.t-block > .i-flow { flex-direction: column }
-      .node.t-rect::before, .node.t-rect::after {
-        content: " ";
-        margin: 4px 2px;
-        width: var(--rt-width);
-        border: var(--rt-border) solid var(--rt-color);
-      }
-      .node.t-rect::before { border-right: 0 none }
-      .node.t-rect::after { border-left: 0 none }
-    CSS
-  }
+  link(rel: 'stylesheet', href: './style.css')
 end

@@ -1,0 +1,77 @@
+body {
+    background: #181818;
+    color: #fff;
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+}
+
+.editor {
+    --c-fg: #cccccc;
+    --c-var: #9CDCFE;
+    --c-func: #C586C0;
+    --c-opt: #569CD6;
+    --c-val: #B5CEA8;
+    --rt-color: #666666;
+    --rt-border: 1px;
+    --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+}
+
+.n {
+    display: flex;
+}
+
+/* .t-elem {
+    transition: background 200ms;
+} */
+
+.t-elem:not(:has(.t-elem:hover)):hover {
+    outline: solid 1px #2f6593;
+    /* background: #123656; */
+    position: relative;
+    z-index: 1;
+}
+
+.t-elem:not(:has(.t-elem:hover)):hover > .f-primary {
+    outline: solid 2px #5392c9;
+    position: relative;
+    z-index: 1;
+}
+
+.t-elem:not(:has(.t-elem:hover)):hover .t-elem:not(.t-elem:not(:has(.t-elem:hover)):hover .t-elem .t-elem) {
+    /* background: #1b4264; */
+    background: #123656;
+}
+
+.t-atom {
+    padding: 0 0.25em;
+}
+
+.t-layout.s-box, .t-layout.s-bracket {
+    flex-grow: 1;
+}
+
+.t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after {
+    content: none;
+}
+
+.t-layout.s-box.f-dir-vertical {
+    flex-direction: column;
+}
+
+.t-layout.s-bracket::before, .t-layout.s-bracket::after {
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    border: var(--rt-border) solid var(--rt-color);
+}
+
+.t-layout.s-bracket::before { border-right: 0 none }
+.t-layout.s-bracket::after { border-left: 0 none }
+
+.t-atom.s-label {
+    align-self: start;
+    color: var(--color, --c-fg);
+}
