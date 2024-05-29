@@ -6,6 +6,7 @@ source "https://rubygems.org"
 gem "opal", "~> 1.8"
 
 gem "glimmer-dsl-web", "~> 0.2.3"
+gem 'glimmer-dsl-css', '~> 1.4.0'
 
 gem "opal-jquery", "~> 0.5.1"
 gem "listen", "~> 3.8"
