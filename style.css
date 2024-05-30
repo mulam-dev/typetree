@@ -28,17 +28,24 @@ body {
 } */
 
 .t-elem:not(:has(.t-elem:hover)):hover {
-    outline: solid 1px #2f6593;
+    /* outline: solid 1px #2f6593; */
+    outline: solid 1px #123656;
     /* background: #123656; */
     position: relative;
     z-index: 1;
 }
 
-.t-elem:not(:has(.t-elem:hover)):hover > .f-primary {
+.t-elem.f-active {
+    outline: solid 1px #2f6593 !important;
+    position: relative;
+    z-index: 2;
+}
+
+/* .t-elem:not(:has(.t-elem:hover)):hover > .f-primary {
     outline: solid 2px #5392c9;
     position: relative;
     z-index: 1;
-}
+} */
 
 .t-elem:not(:has(.t-elem:hover)):hover .t-elem:not(.t-elem:not(:has(.t-elem:hover)):hover .t-elem .t-elem) {
     /* background: #1b4264; */
