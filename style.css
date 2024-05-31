@@ -16,7 +16,47 @@ body {
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
     display: flex;
     flex-direction: column;
+    align-items: start;
+    padding: 3px;
     user-select: none;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.editor:focus {
+    outline: 3px solid #0088ff66;
+    border-color: #0088ffbb;
+}
+
+.ed-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}
+
+.ed-overlay > .i-cursor {
+    display: none;
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    outline: solid 2px #0088ff;
+    animation: .6s cubic-bezier(.65,.05,.36,1) 0s infinite alternate blink;
+}
+
+.ed-overlay > .i-cursor.f-show {
+    display: block;
 }
 
 .n {
@@ -35,8 +75,10 @@ body {
     z-index: 1;
 }
 
-.t-elem.f-active {
-    outline: solid 1px #2f6593 !important;
+.t-elem.f-active > .f-primary {
+    background: #0057a3;
+    color: #ffffff;
+    /* outline: solid 2px #2f6593 !important; */
     position: relative;
     z-index: 2;
 }
@@ -56,16 +98,9 @@ body {
     padding: 0 0.25em;
 }
 
-.t-layout.s-box, .t-layout.s-bracket {
-    flex-grow: 1;
-}
-
-.t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after {
-    content: none;
-}
-
 .t-layout.s-box.f-dir-vertical {
     flex-direction: column;
+    align-items: start;
 }
 
 .t-layout.s-bracket::before, .t-layout.s-bracket::after {
@@ -81,4 +116,22 @@ body {
 .t-atom.s-label {
     align-self: start;
     color: var(--color, --c-fg);
+}
+
+/* expand horizontal */
+
+.editor {
+    align-items: stretch;
+}
+
+.t-layout.s-box, .t-layout.s-bracket {
+    flex-grow: 1;
+}
+
+.t-layout.s-box.f-dir-vertical {
+    align-items: stretch;
+}
+
+.t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after {
+    content: none;
 }
