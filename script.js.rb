@@ -18,67 +18,62 @@ class Node < Struct.new(:type, :opts, :inner)
   end
 end
 
-@src =
-  Node.vbox(
-    Node.elem(
-      Node.head('for', color: 'func'),
-      Node.vbox(
-        Node.bracket(
+@inner = (0...4).map do
+  Node.elem(
+    Node.head('for', color: 'func'),
+    Node.vbox(
+      Node.bracket(
+        Node.elem(
+          Node.head('index', color: 'var')),
+        Node.hint('in'),
+        Node.elem(
+          Node.head('Ary', color: 'func'),
+          Node.bracket(
+            Node.elem(
+              Node.head('1', color: 'val')),
+            Node.elem(
+              Node.head('2', color: 'val')),
+            Node.elem(
+              Node.head('3', color: 'val'))))),
+      Node.bracket(
+        Node.vbox(
           Node.elem(
-            Node.head('index', color: 'var')),
-          Node.hint('in'),
+            Node.hint('this is a comment')),
           Node.elem(
-            Node.head('Ary', color: 'func'),
-            Node.bracket(
-              Node.elem(
-                Node.head('1', color: 'val')),
-              Node.elem(
-                Node.head('2', color: 'val')),
-              Node.elem(
-                Node.head('3', color: 'val'))))),
-        Node.bracket(
-          Node.vbox(
             Node.elem(
-              Node.hint('this is a comment')),
+              Node.head('x', color: 'var')),
+            Node.head('=', color: 'opt'),
             Node.elem(
               Node.elem(
-                Node.head('x', color: 'var')),
-              Node.head('=', color: 'opt'),
+                Node.head('index', color: 'var')),
+              Node.head('+', color: 'opt'),
               Node.elem(
-                Node.elem(
-                  Node.head('index', color: 'var')),
-                Node.head('+', color: 'opt'),
-                Node.elem(
-                  Node.head('1', color: 'val')))),
-            Node.elem(
-              Node.hint('...')))))))
+                Node.head('1', color: 'val')))),
+          Node.elem(
+            Node.hint('...'))))))
+end
+
+@src = Node.vbox(*@inner)
 
 class NodeView
   include Glimmer::Web::Component
 
   option :node
 
+  def inner_nodes
+    node.inner.each { |inner_node| node_view(node: inner_node) }
+  end
+
   markup {
     case node.type
     when :elem
-      div(class: 'n t-elem') { |node_elem|
-        onclick do |e|
-          e.stop_propagation
-          node_elem.trigger 'elemactive'
-        end
-        node.inner.each { |n| node_view(node: n) }
-      }
+      div(class: 'n t-elem') { inner_nodes }
     when :layout
       case node.opts[:style]
-        # Q: Can I shrink the repetitions below in some way?
       when :box
-        div(class: "n t-layout s-box f-dir-#{node.opts[:dir]}") {
-          node.inner.each { |n| node_view(node: n) }
-        }
+        div(class: "n t-layout s-box f-dir-#{node.opts[:dir]}") { inner_nodes }
       when :bracket
-        div(class: 'n t-layout s-bracket') {
-          node.inner.each { |n| node_view(node: n) }
-        }
+        div(class: 'n t-layout s-bracket') { inner_nodes }
       end
     when :atom
       case node.opts[:style]
@@ -101,30 +96,105 @@ class Editor
 
   options :node, :cursor
 
-  attr_reader :active_elem
+  attr_reader :active_elem, :anchor_elem, :focus_elem
+
   def active_elem=(elem)
+    # @v_cursor.get_animations[0]&.currentTime = 0
     if elem != @active_elem
-      pos = elem.position
-      if @e_cursor
-          # do not work somehow
-        @e_cursor.css '--x', "#{pos.left}px"
-        @e_cursor.css '--y', "#{pos.top}px"
-        @e_cursor.css '--w', "#{elem.width}px"
-        @e_cursor.css '--h', "#{elem.height}px"
+      if v_cursor = @v_cursor.dom_element
+        if elem
+          root_offset = @v_overlay.offset
+          offset = elem.offset
+          v_cursor.css '--x', "#{offset.left - root_offset.left}px"
+          v_cursor.css '--y', "#{offset.top - root_offset.top}px"
+          v_cursor.css '--w', "#{elem.width}px"
+          v_cursor.css '--h', "#{elem.height}px"
+          v_cursor.add_class 'f-show'
+        else
+          v_cursor.remove_class 'f-show'
+        end
       end
+      elem.add_class 'f-active' if elem
+      @active_elem.remove_class 'f-active' if @active_elem
       @active_elem = elem
     end
   end
 
+  def anchor_elem=(elem)
+    if elem != @anchor_elem
+      @anchor_elem = elem
+      update_selection
+    end
+  end
+
+  def focus_elem=(elem)
+    if elem != @focus_elem
+      @focus_elem = elem
+      update_selection
+    end
+  end
+
+  def update_selection
+    if @focus_elem && @anchor_elem
+      anchor_root = @anchor_elem.parentsUntil(Element['.t-elem, .editor'].has(@focus_elem), '.t-elem').addBack.first
+      focus_root = @focus_elem.parentsUntil(Element['.t-elem, .editor'].has(@anchor_elem), '.t-elem').addBack.first
+      all_elems = anchor_root.parent.closest('.t-elem, .editor').find('.t-elem:not(:scope .t-elem .t-elem)')
+      start_idx, end_idx = [all_elems.index(anchor_root), all_elems.index(focus_root)].sort
+      self.select_elems = all_elems.slice(start_idx, end_idx + 1)
+      self.active_elem = focus_root
+    else
+      self.select_elems = Element[]
+    end
+  end
+
+  def select_elems=(elems)
+    @select_elems ||= Element[]
+    elems = Element[] if elems.length == 1
+    elems.not(@select_elems).add_class 'f-select'
+    @select_elems.not(elems).remove_class 'f-select'
+    @select_elems = elems
+  end
+
+  def closest_elem(v_node)
+    elem = v_node.closest '.t-elem'
+    elem.length > 0 and elem.closest(@v_root.dom_element).length > 0 and elem
+  end
+
   markup {
-    div(class: 'editor') {
+    @v_root = div(class: 'editor', tabindex: 0) {
       node_view(node: node)
-      div(class: 'ed-overlay') {
-        @e_cursor = div(class: 'i-cursor')
+      @v_overlay = div(class: 'ed-overlay') {
+        @v_cursor = div(class: 'i-cursor')
       }
-      onelemactive do |e|
+      onblur do
+        @anchor_elem = nil
+        @focus_elem = nil
+        self.active_elem = nil
+        update_selection
+      end
+      onpointerdown do |e|
         e.stop_propagation
-        self.active_elem = e.target
+        elem = closest_elem(e.target)
+        @anchor_elem = elem
+        @focus_elem = nil
+        update_selection
+        self.active_elem = elem
+        if elem
+          @v_root.dom_element.focus
+          Document.on 'pointermove', &handle_pointermove = -> (e) do
+            if @anchor_elem && elem = closest_elem(e.target)
+              e.stop_propagation
+              self.focus_elem = elem
+            end
+          end
+          Document.one 'pointerup' do |e|
+            if @anchor_elem && elem = closest_elem(e.target)
+              e.stop_propagation
+              self.focus_elem = elem
+            end
+            Document.off 'pointermove', &handle_pointermove
+          end
+        end
       end
     }
   }
@@ -132,6 +202,5 @@ end
 
 Document.ready? do
   editor(node: @src)
-  # link(rel: 'stylesheet', href: './style.css')
-  style {'body{background:#181818;color:#fff;font-family:"Source Code Pro",monospace;font-size:16px}.editor{--c-fg:#cccccc;--c-var:#9CDCFE;--c-func:#C586C0;--c-opt:#569CD6;--c-val:#B5CEA8;--rt-color:#666666;--rt-border:1px;--rt-width:max(calc(0.5em - var(--rt-border) - 4px), 2px);display:flex;flex-direction:column;user-select:none}.n{display:flex}.t-elem:not(:has(.t-elem:hover)):hover{outline:solid 1px #2f6593;position:relative;z-index:1}.t-elem:not(:has(.t-elem:hover)):hover>.f-primary{outline:solid 2px #5392c9;position:relative;z-index:1}.t-elem:not(:has(.t-elem:hover)):hover .t-elem:not(.t-elem:not(:has(.t-elem:hover)):hover .t-elem .t-elem){background:#123656}.t-atom{padding:0 .25em}.t-layout.s-box,.t-layout.s-bracket{flex-grow:1}.t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after{content:none}.t-layout.s-box.f-dir-vertical{flex-direction:column}.t-layout.s-bracket::before,.t-layout.s-bracket::after{content:" ";margin:4px 2px;width:var(--rt-width);border:var(--rt-border) solid var(--rt-color)}.t-layout.s-bracket::before{border-right:0 none}.t-layout.s-bracket::after{border-left:0 none}.t-atom.s-label{align-self:start;color:var(--color,--c-fg)}'}
+  link(rel: 'stylesheet', href: './style.css')
 end

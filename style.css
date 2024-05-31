@@ -1,5 +1,5 @@
 body {
-    background: #181818;
+    background: #1F1F1F;
     color: #fff;
     font-family: "Source Code Pro", monospace;
     font-size: 16px;
@@ -19,6 +19,8 @@ body {
     align-items: start;
     padding: 3px;
     user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
     position: relative;
     border: 1px solid transparent;
 }
@@ -45,6 +47,12 @@ body {
 }
 
 .ed-overlay > .i-cursor {
+    --duration: 120ms;
+    transition:
+        left var(--duration),
+        top var(--duration),
+        width var(--duration),
+        height var(--duration);
     display: none;
     position: absolute;
     left: var(--x);
@@ -52,7 +60,6 @@ body {
     width: var(--w);
     height: var(--h);
     outline: solid 2px #0088ff;
-    animation: .6s cubic-bezier(.65,.05,.36,1) 0s infinite alternate blink;
 }
 
 .ed-overlay > .i-cursor.f-show {
@@ -63,35 +70,21 @@ body {
     display: flex;
 }
 
-/* .t-elem {
-    transition: background 200ms;
-} */
-
-.t-elem:not(:has(.t-elem:hover)):hover {
-    /* outline: solid 1px #2f6593; */
-    outline: solid 1px #123656;
-    /* background: #123656; */
+/* .t-elem:not(:has(.t-elem:hover)):hover {
+    background: #0088ff44;
     position: relative;
     z-index: 1;
-}
+} */
 
 .t-elem.f-active > .f-primary {
     background: #0057a3;
     color: #ffffff;
-    /* outline: solid 2px #2f6593 !important; */
     position: relative;
     z-index: 2;
 }
 
-/* .t-elem:not(:has(.t-elem:hover)):hover > .f-primary {
-    outline: solid 2px #5392c9;
-    position: relative;
-    z-index: 1;
-} */
-
-.t-elem:not(:has(.t-elem:hover)):hover .t-elem:not(.t-elem:not(:has(.t-elem:hover)):hover .t-elem .t-elem) {
-    /* background: #1b4264; */
-    background: #123656;
+.t-elem.f-select {
+    background: #1d4063 !important;
 }
 
 .t-atom {
