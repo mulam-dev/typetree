@@ -2,9 +2,9 @@ include Glimmer
 
 class Node < Struct.new(:type, :opts, :inner)
   class << self
-    def elem(*inner, **opts) = Node.new(:elem, opts, inner)
-    def layout(style, *inner, **) = Node.new(:layout, {style:, **}, inner)
-    def atom(style, **) = Node.new(:atom, {style:, **}, nil)
+    def elem(*inner, **opts) = self.new(:elem, opts, inner)
+    def layout(style, *inner, **) = self.new(:layout, {style:, **}, inner)
+    def atom(style, **) = self.new(:atom, {style:, **}, nil)
 
     # Layouts
     def vbox(*, **) = self.layout(:box, *, dir: :vertical, **)
@@ -146,7 +146,7 @@ class Editor
         all_elems = anchor_root.parent.closest('.t-elem, .editor').find('.t-elem:not(:scope .t-elem .t-elem)')
         start_idx, end_idx = [all_elems.index(anchor_root), all_elems.index(focus_root)].sort
         self.select_elems = all_elems.slice(start_idx, end_idx + 1)
-        self.active_elem = nil
+        self.active_elem = anchor_root == focus_root ? focus_root : nil
       end
     else
       self.select_elems = Element[]
