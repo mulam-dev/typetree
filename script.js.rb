@@ -95,11 +95,12 @@ class Editor
   include Glimmer::Web::Component
 
   options :node, :cursor
+  option :shrink, default: false
 
   attr_reader :active_elem, :anchor_elem, :focus_elem
 
   def active_elem=(elem)
-    # @v_cursor.get_animations[0]&.currentTime = 0
+    @v_cursor.get_animations[0]&.currentTime = 0
     if elem != @active_elem
       if v_cursor = @v_cursor.dom_element
         if elem
@@ -136,12 +137,17 @@ class Editor
 
   def update_selection
     if @focus_elem && @anchor_elem
-      anchor_root = @anchor_elem.parentsUntil(Element['.t-elem, .editor'].has(@focus_elem), '.t-elem').addBack.first
-      focus_root = @focus_elem.parentsUntil(Element['.t-elem, .editor'].has(@anchor_elem), '.t-elem').addBack.first
-      all_elems = anchor_root.parent.closest('.t-elem, .editor').find('.t-elem:not(:scope .t-elem .t-elem)')
-      start_idx, end_idx = [all_elems.index(anchor_root), all_elems.index(focus_root)].sort
-      self.select_elems = all_elems.slice(start_idx, end_idx + 1)
-      self.active_elem = focus_root
+      if @focus_elem == @anchor_elem
+        self.select_elems = Element[]
+        self.active_elem = @focus_elem
+      else
+        anchor_root = @anchor_elem.parentsUntil(Element['.t-elem, .editor'].has(@focus_elem), '.t-elem').addBack.first
+        focus_root = @focus_elem.parentsUntil(Element['.t-elem, .editor'].has(@anchor_elem), '.t-elem').addBack.first
+        all_elems = anchor_root.parent.closest('.t-elem, .editor').find('.t-elem:not(:scope .t-elem .t-elem)')
+        start_idx, end_idx = [all_elems.index(anchor_root), all_elems.index(focus_root)].sort
+        self.select_elems = all_elems.slice(start_idx, end_idx + 1)
+        self.active_elem = nil
+      end
     else
       self.select_elems = Element[]
     end
@@ -149,7 +155,7 @@ class Editor
 
   def select_elems=(elems)
     @select_elems ||= Element[]
-    elems = Element[] if elems.length == 1
+    # elems = Element[] if elems.length == 1
     elems.not(@select_elems).add_class 'f-select'
     @select_elems.not(elems).remove_class 'f-select'
     @select_elems = elems
@@ -161,38 +167,36 @@ class Editor
   end
 
   markup {
-    @v_root = div(class: 'editor', tabindex: 0) {
+    @v_root = div(class: "editor#{shrink ? ' f-shrink' : ''}", tabindex: 0) {
       node_view(node: node)
       @v_overlay = div(class: 'ed-overlay') {
         @v_cursor = div(class: 'i-cursor')
       }
-      onblur do
-        @anchor_elem = nil
-        @focus_elem = nil
-        self.active_elem = nil
-        update_selection
-      end
       onpointerdown do |e|
-        e.stop_propagation
-        elem = closest_elem(e.target)
-        @anchor_elem = elem
-        @focus_elem = nil
-        update_selection
-        self.active_elem = elem
-        if elem
-          @v_root.dom_element.focus
-          Document.on 'pointermove', &handle_pointermove = -> (e) do
-            if @anchor_elem && elem = closest_elem(e.target)
-              e.stop_propagation
-              self.focus_elem = elem
+        if e['button'] == 0
+          e.stop_propagation
+          elem = closest_elem(e.target)
+          @anchor_elem = elem
+          @focus_elem = nil
+          update_selection
+          self.active_elem = elem
+          if elem
+            @v_root.dom_element.focus
+            Document.on 'pointermove', &handle_pointermove = -> (e) do
+              if @anchor_elem && elem = closest_elem(e.target)
+                e.stop_propagation
+                self.focus_elem = elem
+              end
             end
-          end
-          Document.one 'pointerup' do |e|
-            if @anchor_elem && elem = closest_elem(e.target)
-              e.stop_propagation
-              self.focus_elem = elem
+            Document.one 'pointerup' do |e|
+              if e['button'] == 0
+                if @anchor_elem && elem = closest_elem(e.target)
+                  e.stop_propagation
+                  self.focus_elem = elem
+                end
+                Document.off 'pointermove', &handle_pointermove
+              end
             end
-            Document.off 'pointermove', &handle_pointermove
           end
         end
       end

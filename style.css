@@ -16,13 +16,24 @@ body {
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
     display: flex;
     flex-direction: column;
-    align-items: start;
     padding: 3px;
     user-select: none;
     -webkit-user-select: none;
     cursor: default;
     position: relative;
     border: 1px solid transparent;
+}
+
+.editor.f-shrink {
+    align-items: start;
+}
+
+.editor.f-shrink .t-layout.s-box, .editor.f-shrink .t-layout.s-bracket {
+    flex-grow: 0;
+}
+
+.editor.f-shrink .t-layout.s-box.f-dir-vertical {
+    align-items: start;
 }
 
 .editor:focus {
@@ -47,19 +58,19 @@ body {
 }
 
 .ed-overlay > .i-cursor {
-    --duration: 120ms;
-    transition:
-        left var(--duration),
-        top var(--duration),
-        width var(--duration),
-        height var(--duration);
     display: none;
     position: absolute;
     left: var(--x);
     top: var(--y);
     width: var(--w);
     height: var(--h);
-    outline: solid 2px #0088ff;
+    outline: solid 2px #888888;
+    opacity: 0.4;
+}
+
+.editor:focus .ed-overlay > .i-cursor {
+    outline-color: #0088ff;
+    animation: .6s cubic-bezier(.65,.05,.36,1) 0s infinite alternate blink;
 }
 
 .ed-overlay > .i-cursor.f-show {
@@ -70,20 +81,22 @@ body {
     display: flex;
 }
 
-/* .t-elem:not(:has(.t-elem:hover)):hover {
-    background: #0088ff44;
-    position: relative;
-    z-index: 1;
-} */
-
 .t-elem.f-active > .f-primary {
-    background: #0057a3;
+    background: #3A3D41;
     color: #ffffff;
     position: relative;
     z-index: 2;
 }
 
+.editor:focus .t-elem.f-active > .f-primary {
+    background: #0057a3;
+}
+
 .t-elem.f-select {
+    background: #3A3D41 !important;
+}
+
+.editor:focus .t-elem.f-select {
     background: #1d4063 !important;
 }
 
@@ -91,9 +104,12 @@ body {
     padding: 0 0.25em;
 }
 
+.t-layout.s-box, .t-layout.s-bracket {
+    flex-grow: 1;
+}
+
 .t-layout.s-box.f-dir-vertical {
     flex-direction: column;
-    align-items: start;
 }
 
 .t-layout.s-bracket::before, .t-layout.s-bracket::after {
@@ -109,20 +125,6 @@ body {
 .t-atom.s-label {
     align-self: start;
     color: var(--color, --c-fg);
-}
-
-/* expand horizontal */
-
-.editor {
-    align-items: stretch;
-}
-
-.t-layout.s-box, .t-layout.s-bracket {
-    flex-grow: 1;
-}
-
-.t-layout.s-box.f-dir-vertical {
-    align-items: stretch;
 }
 
 .t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after {
