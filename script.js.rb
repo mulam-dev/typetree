@@ -1,3 +1,5 @@
+require 'browser'
+
 include Glimmer
 
 class Node < Struct.new(:type, :opts, :inner)
@@ -203,6 +205,18 @@ class Editor
     }
   }
 end
+
+# Browser::Socket.new 'wss://echo.websocket.org' do
+#   on :open do
+#     every 1 do
+#       puts "ping"
+#     end
+#   end
+
+#   on :message do |e|
+#     $$.console.log "Received #{e.data}"
+#   end
+# end
 
 Document.ready? do
   editor(node: @src)
