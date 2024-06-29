@@ -2,94 +2,107 @@ require 'browser'
 
 include Glimmer
 
-class Node < Struct.new(:type, :opts, :inner)
-  class << self
-    def elem(*inner, **opts) = self.new(:elem, opts, inner)
-    def layout(style, *inner, **) = self.new(:layout, {style:, **}, inner)
-    def atom(style, **) = self.new(:atom, {style:, **}, nil)
+class NodeBase
+  def initialize(data)
+    @data = format_data(data)
+  end
 
-    # Layouts
-    def vbox(*, **) = self.layout(:box, *, dir: :vertical, **)
-    def hbox(*, **) = self.layout(:box, *, dir: :horizontal, **)
-    def bracket(...) = self.layout(:bracket, ...)
+  def is_valid_data?(data)
+    true
+  end
 
-    # Atoms
-    def label(text, **) = self.atom(:label, text:, **)
-    def head(text, **) = self.label(text, primary: true, **)
-    def hint(text, **) = self.label(text, opacity: 0.36, **)
+  def format_data(data)
+    data
+  end
+
+  def view
+    div
   end
 end
 
-@inner = (0...4).map do
-  Node.elem(
-    Node.head('for', color: 'func'),
-    Node.vbox(
-      Node.bracket(
-        Node.elem(
-          Node.head('index', color: 'var')),
-        Node.hint('of'),
-        Node.elem(
-          Node.head('Ary', color: 'func'),
-          Node.bracket(
-            Node.elem(
-              Node.head('1', color: 'val')),
-            Node.elem(
-              Node.head('2', color: 'val')),
-            Node.elem(
-              Node.head('3', color: 'val'))))),
-      Node.bracket(
-        Node.vbox(
-          Node.elem(
-            Node.hint('this is a comment')),
-          Node.elem(
-            Node.elem(
-              Node.head('x', color: 'var')),
-            Node.head('=', color: 'opt'),
-            Node.elem(
-              Node.elem(
-                Node.head('index', color: 'var')),
-              Node.head('+', color: 'opt'),
-              Node.elem(
-                Node.head('1', color: 'val')))),
-          Node.elem(
-            Node.hint('...'))))))
+class Action
+  class << self
+    attr_reader :id
+    def make_map(*types)
+      types.to_h { |value| [value.id, value] }
+    end
+  end
 end
 
-@src = Node.vbox(*@inner)
+class NodeArray < NodeBase
+  @action_types = Action.make_map(
+    Class.new(Action) do
+      @id = :insert
+      def initialize(index)
+        @index = index
+      end
+      def invert
+        @action_types[:delete].new(@index)
+      end
+      def exec
+      end
+    end
+  )
+
+  def is_valid_data?(data)
+    data.is_a?(Array)
+  end
+end
+
+class NodeList < NodeArray
+  def format_data(data)
+    if data.any? and ((head = data[0]).is_a?(String) or (head.is_a?(Hash) and head[:text].is_a?(String)))
+      data
+    else
+      ['', *data]
+    end
+  end
+
+  def view(store)
+    root = nil
+    div(class: 'n t-elem') { |elem|
+      ondblclick do |e|
+        e.stop_propagation
+        elem.trigger('request_input', [elem])
+      end
+      store[:head] = div(head_text, class: 'n t-atom s-label f-primary')
+      root = div(class: 'n t-layout s-box f-dir-vertical') { yield }
+    }
+    root
+  end
+
+  def inner
+    @data.drop(1).each do |n|
+      node_view(node: n)
+    end
+  end
+
+  def head_text
+    if (head = @data[0]).is_a?(String)
+      head
+    else
+      head[:text]
+    end
+  end
+end
+
+@src =
+  NodeList.new([
+    'Root',
+    NodeList.new([
+      'Item',
+    ]),
+  ])
 
 class NodeView
   include Glimmer::Web::Component
 
   option :node
-
-  def inner_nodes
-    node.inner.each { |inner_node| node_view(node: inner_node) }
-  end
+  option :inner
+  option :store, default: {}
 
   markup {
-    case node.type
-    when :elem
-      div(class: 'n t-elem') { inner_nodes }
-    when :layout
-      case node.opts[:style]
-      when :box
-        div(class: "n t-layout s-box f-dir-#{node.opts[:dir]}") { inner_nodes }
-      when :bracket
-        div(class: 'n t-layout s-bracket') { inner_nodes }
-      end
-    when :atom
-      case node.opts[:style]
-      when :label
-        klass = 'n t-atom s-label'
-        klass += ' f-primary' if node.opts[:primary]
-        style = ''
-        case
-        when v = node.opts[:opacity] then style += "opacity: #{v};"
-        when v = node.opts[:color] then style += "--color: var(--c-#{v});"
-        end
-        span(class: klass, style:) {node.opts[:text]}
-      end
-    end
+    @root = node.view(store) { node.inner }
   }
 end
 
@@ -169,9 +182,10 @@ class Editor
   end
 
   markup {
-    @v_root = div(class: "editor#{shrink ? ' f-shrink' : ''}", tabindex: 0) {
+    @v_root = div(class: "editor#{shrink ? ' f-shrink' : ''}", tabindex: 0) { |v_root|
       node_view(node: node)
       @v_overlay = div(class: 'ed-overlay') {
+        @v_input = textarea(class: 'i-input', spellcheck: false)
         @v_cursor = div(class: 'i-cursor')
       }
       onpointerdown do |e|
@@ -202,6 +216,22 @@ class Editor
           end
         end
       end
+      v_root.on 'request_input' do |e, elem|
+        if v_input = @v_input.dom_element
+          if elem
+            root_offset = @v_overlay.offset
+            offset = elem.offset
+            v_input.css '--x', "#{offset.left - root_offset.left}px"
+            v_input.css '--y', "#{offset.top - root_offset.top}px"
+            v_input.css '--w', "#{elem.width}px"
+            v_input.css '--h', "#{elem.height}px"
+            v_input.add_class 'f-show'
+            v_input.focus
+          else
+            v_input.remove_class 'f-show'
+          end
+        end
+      end
     }
   }
 end
@@ -229,14 +259,11 @@ def update_win_size
 end
 
 Document.on 'dblclick' do |e|
-  $$.console.log(e.target == Document.body)
   update_win_size if e.target == Document.body
 end
 
 Document.ready? do
   @editor = editor(node: @src)
-  after 0 do
-    update_win_size
-    $$.native.show_window
-  end
+  update_win_size
+  $$.native.show_window true
 end

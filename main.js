@@ -24,7 +24,7 @@ function create_window() {
   // main_window.loadFile('index.html');
   main_window.loadURL('http://localhost:5500');
 
-  main_window.webContents.on('did-finish-load', () => {
+  main_window.webContents.once('did-finish-load', () => {
     if (process.argv.length > 1) {
       const file_path = process.argv.pop();
       if (file_path) {
@@ -43,10 +43,11 @@ function create_window() {
   main_window.setMenuBarVisibility(false);
 }
 
-app.on('ready', create_window);
+app.once('ready', create_window);
 
-ipcMain.handle('show_window', async (event) => {
-  main_window.center();
+ipcMain.handle('show_window', async (event, center = false) => {
+  if (center)
+    main_window.center();
   main_window.show();
 });
 
