@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="12.5" height="12.5"/>
+  </defs>
+  <rect style="fill: rgb(222, 221, 218); stroke-width: 8px; paint-order: stroke;" x="50" y="112.5" width="400" height="287.5" rx="32" ry="32"/>
+  <rect style="fill: rgb(246, 245, 244);" x="50" y="112.5" width="400" height="262.5" rx="32" ry="32"/>
+  <rect style="fill: rgb(0, 108, 203);" x="75" y="137.811" width="150" height="87.189" rx="16" ry="16"/>
+  <rect style="fill: rgb(0, 136, 255);" x="75" y="137.811" width="150" height="74.689" rx="16" ry="16"/>
+  <rect style="fill: rgb(190, 117, 117);" x="175" y="237.811" width="250" height="49.689" rx="16" ry="16"/>
+  <rect style="fill: rgb(223, 138, 138);" x="175" y="237.5" width="250" height="37.5" rx="16" ry="16"/>
+  <rect style="fill: rgb(198, 198, 198);" x="175" y="300.311" width="250" height="49.689" rx="16" ry="16"/>
+  <rect style="fill: rgb(223, 223, 223);" x="175" y="300" width="250" height="37.5" rx="16" ry="16"/>
+  <path style="fill: none; stroke-width: 16px; stroke: rgb(219, 219, 219);" d="M 112.5 225 L 112.5 237.5 C 112.5 250 125 262.5 137.5 262.5 L 175 262.5"/>
+  <path style="fill: none; stroke-width: 16px; stroke: rgb(219, 219, 219);" d="M 112.5 225 L 112.5 300 C 112.5 312.5 125 325 137.5 325 L 175 325"/>
+  <path style="fill: none; stroke: rgb(219, 219, 219); stroke-linecap: round; stroke-width: 16px;" d="M 262.5 162.5 L 412.5 162.5"/>
+  <path style="fill: none; stroke: rgb(219, 219, 219); stroke-linecap: round; stroke-width: 16px;" d="M 262.5 200 L 412.5 200"/>
+  <path style="fill: none; stroke-width: 16px; stroke: rgb(219, 219, 219);" d="M 112.5 225 L 112.5 375"/>
+  <path style="fill: none; stroke-width: 16px; stroke: rgb(195, 195, 195);" d="M 112.5 375 L 112.5 400"/>
+</svg>

@@ -27,7 +27,7 @@ end
       Node.bracket(
         Node.elem(
           Node.head('index', color: 'var')),
-        Node.hint('in'),
+        Node.hint('of'),
         Node.elem(
           Node.head('Ary', color: 'func'),
           Node.bracket(
@@ -218,7 +218,25 @@ end
 #   end
 # end
 
+def update_win_size
+  win_width = $$.innerWidth
+  win_height = $$.innerHeight
+  editor_width = @editor.outerWidth
+  editor_height = @editor.outerHeight
+  delta_width = editor_width - win_width
+  delta_height = editor_height - win_height
+  $$.resizeBy(delta_width, delta_height)
+end
+
+Document.on 'dblclick' do |e|
+  $$.console.log(e.target == Document.body)
+  update_win_size if e.target == Document.body
+end
+
 Document.ready? do
-  editor(node: @src)
-  link(rel: 'stylesheet', href: './style.css')
+  @editor = editor(node: @src)
+  after 0 do
+    update_win_size
+    $$.native.show_window
+  end
 end
