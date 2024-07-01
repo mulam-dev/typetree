@@ -1,0 +1,201 @@
+html, body {
+    width: 100%; height: 100%;
+    margin: 0; padding: 0;
+}
+
+body {
+    color: #ccc;
+    /* font-family: "Source Code Pro", monospace; */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 18px;
+    display: flex;
+    overflow: hidden;
+    background: #222;
+}
+
+.editor {
+    --c-fg: #cccccc;
+    --c-var: #9CDCFE;
+    --c-func: #C586C0;
+    --c-opt: #569CD6;
+    --c-val: #B5CEA8;
+    --rt-color: #666666;
+    --rt-border: 1px;
+    --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
+    --border-radius: 0;
+    /* --border-radius: 2px; */
+    align-self: start;
+    flex-shrink: 0;
+    display: flex;
+    padding: 8px;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
+    position: relative;
+    width: max-content; height: max-content;
+    min-width: 200px; min-height: 100px;
+    background: #222;
+    border: none;
+    outline: none;
+}
+
+.ed-inner {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.ed-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes cursor-blink {
+    0% {
+        outline-color: #0088ff;
+    }
+    100% {
+        outline-color: #003869;
+    }
+}
+
+.ed-overlay > .i-cursor {
+    display: none;
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    outline: solid 2px #888888;
+    border-radius: var(--border-radius);
+    opacity: 0.4;
+}
+
+.editor:focus .ed-overlay > .i-cursor {
+    opacity: 1;
+    animation: .6s cubic-bezier(.65,.05,.36,1) 0s infinite alternate cursor-blink;
+}
+
+.ed-overlay > .i-cursor.f-show {
+    display: block;
+}
+
+.n {
+    display: flex;
+}
+
+.t-elem.f-active > .f-primary {
+    background: #3A3D41;
+    color: #ffffff;
+    position: relative;
+    z-index: 2;
+}
+
+.editor:focus .t-elem.f-active > .f-primary {
+    background: #0057a3;
+}
+
+.t-elem.f-select {
+    background: #3A3D41 !important;
+}
+
+.editor:focus .t-elem.f-select {
+    background: #1d4063 !important;
+}
+
+.t-atom {
+    padding: 0 0.25em;
+}
+
+.t-layout.s-box, .t-layout.s-bracket {
+    flex-grow: 1;
+}
+
+.t-layout.s-box.f-dir-vertical {
+    flex-direction: column;
+}
+
+.t-layout.s-bracket::before, .t-layout.s-bracket::after {
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    border: var(--rt-border) solid var(--rt-color);
+}
+
+.t-layout.s-bracket::before { border-right: 0 none }
+.t-layout.s-bracket::after { border-left: 0 none }
+
+.t-atom.s-label {
+    align-self: start;
+    color: var(--color, --c-fg);
+}
+
+/* Hide Right Bracket */
+
+/* .t-layout.s-bracket:has(.t-layout.s-box.f-dir-vertical:last-child)::after {
+    content: none;
+} */
+
+/* Center View */
+
+/* body {
+    justify-content: center;
+}
+
+.editor {
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+}*/
+
+/* Shrink Elem */
+
+/* .editor.f-shrink .ed-inner{
+    align-items: start;
+}
+
+.editor.f-shrink .t-layout.s-box, .editor.f-shrink .t-layout.s-bracket {
+    flex-grow: 0;
+}
+
+.editor.f-shrink .t-layout.s-box.f-dir-vertical {
+    align-items: start;
+} */
+
+/* Inline Editor */
+
+.ext-inline-editor {
+    --gap: 2px;
+    position: absolute;
+    left: calc(var(--x) - var(--gap));
+    top: calc(var(--y) - var(--gap));
+    pointer-events: all;
+    display: none;
+    flex-direction: column;
+    padding: var(--gap);
+    gap: var(--gap);
+    background: #00502b;
+    outline: #00744d solid 3px;
+    border-radius: var(--border-radius);
+}
+
+.ext-inline-editor.f-show {
+    display: flex;
+}
+
+.ext-inline-editor > .i-input {
+    padding: 0 0.25em;
+    width: max-content;
+    border: none;
+    outline: none;
+    color: #fff;
+    cursor: text;
+    caret-color: #00aa71;
+}
+
+.ext-inline-editor > .i-input::selection,
+.ext-inline-editor > .i-input *::selection {
+    background: #00744d;
+}
