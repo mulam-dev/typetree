@@ -4,29 +4,19 @@ Editor.sign_node_type({
     name: "Boolean",
     visible: true,
     not_embedded: true,
-    data: {
-        value: false,
-    },
-    to_raw() {
-        return this.data.value;
-    },
-    from_raw(value) {
-        this.data.value = value;
-    },
+    data: false,
     struct($) {
-        return $.div({class: "core-boolean-root"}, [
-            $.div({class: "i-indicator"}),
-        ]);
+        return $.div({class: "core-boolean-root"});
     },
     setter() {
-        if (this.data.value)
-            this.root.classList.add("f-active");
+        if (this.data)
+            this.root.do.add_class("f-active");
         else
-            this.root.classList.remove("f-active");
+            this.root.do.remove_class("f-active");
     },
     cmds: {
         "confirm"() {
-            this.data.value = !this.data.value
+            this.data = !this.data
             this.update();
         },
     },
