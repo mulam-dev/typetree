@@ -17,6 +17,12 @@
         "name": "TypeTree File",
         "role": "Editor",
         "mimeType": "application/x-typetree"
+      },
+      {
+        "ext": "json",
+        "name": "JSON File",
+        "role": "Editor",
+        "mimeType": "application/json"
       }
     ]
   },

@@ -183,7 +183,11 @@ class NodeList < NodeArray
       @v_head = store[:head] = div(class: 'n t-atom s-label f-primary') {
         inner_text <= [self, :data_head_text]
       }
-      root = div(class: 'n t-layout s-box f-dir-vertical') { yield }
+      root = div(class: 'n t-layout s-bracket') {
+        div(class: 'n t-layout s-box f-dir-vertical') {
+          yield
+        }
+      }
     })
     root
   end
@@ -202,10 +206,10 @@ class NodeList < NodeArray
         puts 'hello'
       else
         rect = Editor.calc_rect(@v_head)
-        inline_editor.call(rect[:x], rect[:y], content: data_head_text)
         inline_editor.connect do |content|
           self.data_head_text = content
         end
+        inline_editor.call(rect[:x], rect[:y], content: data_head_text)
       end
     end
   end
@@ -241,6 +245,7 @@ class InlineEditor
   def content=(value)
     @content = value
     @callback.call(@content) if @callback
+    after(0) { update_win_size }
   end
 
   def call(x, y, max_width: nil, content: '')
@@ -476,6 +481,18 @@ Editor = nil
       ]),
       NodeList.new([
         'Item',
+        NodeList.new([
+          'Item',
+        ]),
+        NodeList.new([
+          'Item',
+          NodeList.new([
+            'Item',
+          ]),
+        ]),
+        NodeList.new([
+          'Item',
+        ]),
       ]),
     ]),
     NodeList.new([
@@ -484,7 +501,7 @@ Editor = nil
   ])
 
 Document.ready? do
-  Editor = typetree_editor(node: @src)
+  Editor = typetree_editor(node: @src, shrink: true)
   update_win_size
   $$.native.show_window true
 end
