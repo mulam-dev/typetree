@@ -1,0 +1,6 @@
+.core-number-root {
+    background: #B0C58E22;
+    color: #B0C58E;
+    padding: 0 0.25em;
+    border-radius: var(--border-radius);
+}

@@ -18,7 +18,19 @@ Editor.sign_node_type({
         }
         this.elem = elem;
     },
+    active_setter(active) {
+        if (active) {
+            this.do.add_class("t-active");
+            this.elem.node = this;
+        } else {
+            this.do.remove_class("t-active");
+            delete this.elem.node;
+        }
+    },
     methods: {
+        add(node) {
+            this.elem.append(node.elem);
+        },
         add_class(...classes) {
             this.elem.classList.add(...classes);
         },

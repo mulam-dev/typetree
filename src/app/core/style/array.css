@@ -1,0 +1,22 @@
+.core-array-root {
+    display: flex;
+    flex-grow: 1;
+    min-height: 1.2em;
+}
+
+.core-array-root > .i-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: start;
+}
+
+.core-array-root::before, .core-array-root::after {
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    border: var(--rt-border) solid var(--rt-color);
+}
+
+.core-array-root::before { border-right: 0 none }
+.core-array-root::after { border-left: 0 none }

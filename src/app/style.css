@@ -1,3 +1,5 @@
+@import "core/style.css";
+
 html, body {
     width: 100%; height: 100%;
     margin: 0; padding: 0;
@@ -22,8 +24,8 @@ body {
     --rt-color: #666666;
     --rt-border: 1px;
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
-    --border-radius: 0;
-    /* --border-radius: 2px; */
+    /* --border-radius: 0; */
+    --border-radius: 2px;
     align-self: start;
     flex-shrink: 0;
     display: flex;
@@ -37,6 +39,7 @@ body {
     background: #222;
     border: none;
     outline: none;
+    align-items: start;
 }
 
 .ed-inner {
