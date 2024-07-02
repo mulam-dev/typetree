@@ -16,8 +16,8 @@ Editor.sign_node_type({
             this.root.do.add_class("f-blank");
     },
     cmds: {
-        async "confirm"($) {
-            const res = await $.InlineTextEditor.request_text({
+        async "confirm"() {
+            const res = await Editor.plugins.InlineTextEditor.request_text({
                 anchor: this.root,
             });
             if (res !== null) {

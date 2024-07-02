@@ -26,10 +26,15 @@ class TypetreeNode {
                 this.data = this.opts.data;
             }
             const setter = this.opts.setter;
-            if (setter) {
-                setter.call(this);
-            }
+            if (setter) setter.call(this);
         }
+    }
+
+    update() {
+        const resetter = this.opts.resetter;
+        if (resetter) resetter.call(this);
+        const setter = this.opts.setter;
+        if (setter) setter.call(this);
     }
 
     bind(target, key) {
@@ -40,6 +45,15 @@ class TypetreeNode {
 
     mark_active(target) {
         if (!target.active_nodes) target.active_nodes = new Set();
+        this.parent = target;
+        this.set_active(target.active);
+        target.active_nodes.add(this);
+        return this;
+    }
+
+    unmark_active() {
+        if (!target.active_nodes) target.active_nodes = new Set();
+        delete this.parent;
         this.set_active(target.active);
         target.active_nodes.add(this);
         return this;
@@ -47,7 +61,7 @@ class TypetreeNode {
 
     clear_active_nodes() {
         for (const node of this.active_nodes) {
-            node.set_active(false);
+            node.unmark_active();
         }
         delete this.active_nodes;
     }
@@ -70,6 +84,22 @@ class TypetreeNode {
         this.set_active(active);
         return this;
     }
+
+    resolve_event(cmds, source = null) {
+        const cmd_handlers = this.opts.cmds;
+        if (cmd_handlers) {
+            for (const cmd of cmds) {
+                const handle = cmd_handlers[cmd];
+                if (handle) {
+                    handle.call(this, source);
+                    return;
+                }
+            }
+        }
+        if (this.parent) {
+            this.parent.resolve_event(cmds, this);
+        }
+    }
 }
 
 Object.defineProperty(TypetreeNode.prototype, "do", {
@@ -88,7 +118,7 @@ globalThis.Editor = new (class {
     constructor() {
         // Data Fields
         this.node_types = new Map();
-        this.plugins = new Map();
+        this.plugins = {};
         this.scope = new Map();
 
         // Elements
@@ -98,51 +128,74 @@ globalThis.Editor = new (class {
         this.e_cursor = Elem(".ed-overlay > .i-cursor");
 
         // Listeners
-        this.anchor_node = null;
-        this.focus_node = null;
-        this.active_node = null;
-        this.e_root.on("pointerdown", e => {
+        this.anchor_elem = null;
+        this.focus_elem = null;
+        this.active_elem = null;
+        this.prevent_click = false;
+        Elem(document).on("pointerdown", e => {
             if (e.button === 0) {
                 e.stopPropagation();
-                const node = this.closest_node(Elem(e.target));
-                this.anchor_node = node;
-                this.focus_node = null;
+                const elem = this.closest_elem(Elem(e.target));
+                this.anchor_elem = elem;
+                this.focus_elem = null;
                 // this.update_selection();
-                this.set_active_node(node);
-                if (node) {
+                if (elem && !elem.is(this.active_elem)) {
+                    this.prevent_click = true;
+                    e.preventDefault();
+                }
+                this.set_active_elem(elem);
+                if (elem) {
                     this.e_root.focus();
+                    Elem(document).one("pointerup", e => {
+                        if (e.button === 0) {
+                            setTimeout(() => {
+                                this.prevent_click = false;
+                            }, 0);
+                        }
+                    })
+                }
+            }
+        });
+        this.e_root.on("click", e => {
+            if (!this.prevent_click && e.button === 0) {
+                e.stopPropagation();
+                const elem = this.closest_elem(Elem(e.target));
+                if (elem) {
+                    if (elem.is(this.active_elem)) e.preventDefault();
+                    const node = elem[0].node;
+                    node.resolve_event(["confirm"]);
                 }
             }
         });
     }
 
-    closest_node(elem) {
-        const node = elem.closest(".t-active");
-        if (node.length > 0 && node.closest(this.e_inner).length > 0) {
-            return node;
+    closest_elem(elem) {
+        const active_elem = elem.closest(".t-active");
+        if (active_elem.length > 0 && active_elem.closest(this.e_inner).length > 0) {
+            return active_elem;
         } else {
             return null;
         }
     }
 
-    set_active_node(node) {
+    set_active_elem(elem) {
         const cur_animation = this.e_cursor[0].getAnimations()[0];
         if (cur_animation) cur_animation.currentTime = 0;
-        if (node) {
+        if (elem) {
             const root_offset = this.e_overlay.offset();
-            const offset = node.offset();
+            const offset = elem.offset();
             this.e_cursor.css("--x", `${offset.left - root_offset.left}px`);
             this.e_cursor.css("--y", `${offset.top - root_offset.top}px`);
-            this.e_cursor.css("--w", `${node.outerWidth()}px`);
-            this.e_cursor.css("--h", `${node.outerHeight()}px`);
+            this.e_cursor.css("--w", `${elem.outerWidth()}px`);
+            this.e_cursor.css("--h", `${elem.outerHeight()}px`);
             this.e_cursor.addClass("f-show");
         } else {
             this.e_cursor.removeClass("f-show");
         }
-        if (node !== this.active_node) {
-            if (node) node.addClass("f-active");
-            if (this.active_node) this.active_node.removeClass("f-active");
-            this.active_node = node;
+        if (elem !== this.active_elem) {
+            if (elem) elem.addClass("f-active");
+            if (this.active_elem) this.active_elem.removeClass("f-active");
+            this.active_elem = elem;
         }
     }
 
