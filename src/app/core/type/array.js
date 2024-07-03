@@ -5,7 +5,7 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: [],
-    struct($) {
+    struct() {
         return $.div({class: "core-array-root"}, [
             $.div({class: "i-inner"}).bind(this, "inner"),
         ]).mark_active(this);

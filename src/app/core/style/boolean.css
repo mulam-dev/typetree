@@ -13,6 +13,7 @@
 }
 
 .core-boolean-root::after {
+    transition: all 150ms;
     --gap: 2px;
     --width: 1em;
     content: "F";

@@ -22,7 +22,7 @@ body {
     --c-opt: #569CD6;
     --c-val: #B5CEA8;
     --rt-color: #666666;
-    --rt-border: 1px;
+    --rt-border: 2px;
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
     /* --border-radius: 0; */
     --border-radius: 2px;

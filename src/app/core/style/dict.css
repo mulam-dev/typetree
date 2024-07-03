@@ -1,0 +1,41 @@
+.core-dict-root {
+    display: flex;
+    align-self: stretch;
+    justify-self: stretch;
+    min-height: 1.2em;
+}
+
+.core-dict-inner {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px;
+    justify-items: start;
+    align-items: start;
+}
+
+.core-dict-inner > .i-key {
+    padding: 0 0.25em;
+    justify-self: stretch;
+    display: flex;
+    color: #aaaaaa;
+}
+
+.core-dict-inner > .i-key::after {
+    content: "→";
+    font-weight: bold;
+    margin-left: auto;
+    width: 1.2em;
+    text-align: center;
+    color: var(--rt-color);
+}
+
+.core-dict-root::before {
+    --border-radius: calc(var(--rt-width) * 2);
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    border: var(--rt-border) solid var(--rt-color);
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    border-right: 0 none
+}

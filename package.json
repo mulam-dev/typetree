@@ -7,7 +7,7 @@
   "build": {
     "productName": "TypeTree",
     "appId": "com.anlbrain.typetree",
-    "icon": "icon.svg",
+    "icon": "icon.png",
     "linux": {
       "target": "rpm"
     },

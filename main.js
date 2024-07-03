@@ -23,28 +23,31 @@ function create_window() {
   });
 
   // main_window.loadFile('index.html');
-  main_window.loadURL('http://localhost:5500');
-
-  main_window.webContents.once('did-finish-load', () => {
-    if (process.argv.length > 1) {
-      const file_path = process.argv.pop();
-      if (file_path) {
-        const absolute_file_path = path.resolve(file_path);
-        fs.readFile(absolute_file_path, 'utf-8', (err, data) => {
-          if (err) {
-            console.error('File read error:', err);
-          } else {
-            main_window.webContents.send('file_opened', { file_path: absolute_file_path, data });
-          }
-        });
-      }
-    }
-  });
+  // main_window.loadURL('http://localhost:5500');
+  main_window.loadFile('src/app/index.html');
 
   main_window.setMenuBarVisibility(false);
 }
 
 app.once('ready', create_window);
+
+ipcMain.handle('app_ready', async () => {
+  if (process.argv.length > 1) {
+    const file_path = process.argv.pop();
+    if (file_path) {
+      const absolute_file_path = path.resolve(file_path);
+      fs.readFile(absolute_file_path, 'utf-8', (err, data) => {
+        if (err) {
+          console.error('File read error:', err);
+        } else {
+          main_window.webContents.send('file_opened', { file_path: absolute_file_path, data });
+        }
+      });
+    } else {
+      main_window.webContents.send('blank_opened');
+    }
+  }
+});
 
 ipcMain.handle('show_window', async (event, center = false) => {
   if (center)

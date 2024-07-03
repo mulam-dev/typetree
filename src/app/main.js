@@ -11,13 +11,15 @@ class TypetreeNode {
         this.opts = opts;
     }
 
-    construct(scope, data, ...rst) {
+    construct(raw_data, ...rst) {
+        const from_raw = this.opts.from_raw;
+        const data = from_raw ? from_raw(raw_data) : raw_data;
         const constructor = this.opts.constructor;
         if (constructor) {
-            constructor.call(this, scope, data, ...rst);
+            constructor.call(this, data, ...rst);
         } else {
             const struct = this.opts.struct;
-            const view = struct.call(this, scope);
+            const view = struct.call(this);
             this.root = view;
             this.elem = view.elem;
             if (data !== undefined) {
@@ -169,6 +171,20 @@ globalThis.Editor = new (class {
         });
     }
 
+    calc_size() {
+        const root_offset = this.e_overlay.offset();
+        return [].map(e => {
+            const offset = e.offset();
+            return [
+                offset.left - root_offset.left + e.outerWidth() + 64,
+                offset.top - root_offset.top + e.outerHeight() + 64,
+            ];
+        }).reduce(
+            (prev, cur) => [Math.max(prev[0], cur[0]), Math.max(prev[1], cur[1])],
+            [this.e_root.outerWidth(), this.e_root.outerHeight()],
+        );
+    }
+
     closest_elem(elem) {
         const active_elem = elem.closest(".t-active");
         if (active_elem.length > 0 && active_elem.closest(this.e_inner).length > 0) {
@@ -219,7 +235,7 @@ globalThis.Editor = new (class {
         if (opts.scope)
             this.scope.set(opts.scope, (...args) => {
                 const node = new TypetreeNode(opts);
-                node.construct(this.get_scope(), ...args);
+                node.construct(...args);
                 return node;
             });
     }
@@ -228,13 +244,70 @@ globalThis.Editor = new (class {
         return new Proxy(this.scope, Editor.scope_handler);
     }
 
-    set_view(handle) {
-        const view = handle(this.get_scope());
+    set_view(view) {
         this.e_inner.empty().append(view.elem);
+        update_win_size();
+    }
+
+    set_json(json_obj) {
+        this.set_view(json_to_view(json_obj));
     }
 })();
 
+globalThis.$ = Editor.get_scope();
+
+const json_to_view = json_obj => {
+    switch (typeof json_obj) {
+        case "boolean": return $.boolean(json_obj);
+        case "string": return $.string(json_obj);
+        case "number": return $.number(json_obj);
+        case "object":
+            if (json_obj instanceof Array) {
+                return $.array(json_obj.map(json_to_view));
+            } else {
+                return $.dict(Object.keys(json_obj).map(k => [k, json_to_view(json_obj[k])]));
+            }
+    }
+    throw -1;
+};
+
+const update_window_title = (title = null) => {
+    document.title = title ? `${title}` : "TypeTree";
+};
+
+const update_win_size = () => {
+    const win_width = window.innerWidth
+    const win_height = window.innerHeight
+    const [editor_width, editor_height] = Editor.calc_size()
+    const delta_width = Math.round(editor_width - win_width)
+    const delta_height = Math.round(editor_height - win_height)
+    if (delta_width !== 0 || delta_height !== 0) window.resizeBy(delta_width, delta_height);
+}
+
 await import("./core/core.js");
+
+if (globalThis.native) {
+    native.on_file_opened(file => {
+        if (file.file_path.endsWith(".json")) {
+            try {
+                const json_obj = JSON.parse(file.data);
+                Editor.set_json(json_obj);
+            } catch(e) {
+                alert(e);
+            }
+        } else {
+            alert(`Unsupport File: ${file.file_path}`);
+        }
+        update_window_title(file.file_path.split('/').pop());
+        native.show_window(true);
+    });
+    native.on_blank_opened(() => {
+        update_window_title();
+        native.show_window(true);
+    });
+
+    native.app_ready();
+}
 
 // Tests
 
@@ -255,12 +328,58 @@ await import("./core/core.js");
 //     ]),
 // );
 
-Editor.set_view($ =>
-    $.array([
-        $.boolean(),
-        $.boolean(true),
-        $.string("Hello"),
-        $.number(3.14),
-        $.array([]),
-    ]).active(),
-);
+// Editor.set_view(
+//     $.array([
+//         $.boolean(),
+//         $.boolean(true),
+//         $.string("Hello"),
+//         $.number(3.14),
+//         $.array([]),
+//     ]).active(),
+// );
+
+// Editor.set_view(
+//     $.dict({
+//         "False": $.boolean(),
+//         "True": $.boolean(true),
+//         "String": $.string("Hello"),
+//         "Number": $.number(3.14),
+//         "Array": $.array([]),
+//     }),
+// );
+
+// Editor.set_json({
+//     "name": "typetree",
+//     "homepage": "https://anlbrain.com/",
+//     "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
+//     "version": "1.0.0",
+//     "main": "main.js",
+//     "build": {
+//         "productName": "TypeTree",
+//         "appId": "com.anlbrain.typetree",
+//         "icon": "icon.svg",
+//         "linux": {
+//             "target": "rpm"
+//         },
+//         "fileAssociations": [{
+//             "ext": "typetree",
+//             "name": "TypeTree File",
+//             "role": "Editor",
+//             "mimeType": "application/x-typetree"
+//         },{
+//             "ext": "json",
+//             "name": "JSON File",
+//             "role": "Editor",
+//             "mimeType": "application/json"
+//         }]
+//     },
+//     "scripts": {
+//         "start": "electron .",
+//         "package": "electron-builder"
+//     },
+//     "type": "module",
+//     "devDependencies": {
+//         "electron": "^31.1.0",
+//         "electron-builder": "^24.13.3"
+//     }
+// });

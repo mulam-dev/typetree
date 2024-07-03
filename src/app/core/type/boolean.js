@@ -5,7 +5,7 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: false,
-    struct($) {
+    struct() {
         return $.div({class: "core-boolean-root"}).mark_active(this);
     },
     setter() {

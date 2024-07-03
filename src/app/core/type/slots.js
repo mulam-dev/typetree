@@ -7,7 +7,7 @@ Editor.sign_node_type({
     data: {
         items: [],
     },
-    struct($) {
+    struct() {
         return $.div({class: "core-slots-root"});
     },
     setter() {

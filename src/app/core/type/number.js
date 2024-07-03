@@ -5,15 +5,15 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: 0,
-    struct($) {
+    struct() {
         return $.div({class: "core-number-root core-s-code"}).mark_active(this);
     },
     setter() {
         this.root.do.set_text(this.data.toString());
     },
     cmds: {
-        async "confirm"($) {
-            const res = await $.InlineTextEditor.request_text({
+        async "confirm"() {
+            const res = await Editor.plugins.InlineTextEditor.request_text({
                 anchor: this.root,
             });
             if (res !== null) {

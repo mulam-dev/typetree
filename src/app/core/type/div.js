@@ -4,7 +4,7 @@ Editor.sign_node_type({
     name: "Div",
     visible: false,
     not_embedded: false,
-    constructor($, data = {}, items = null) {
+    constructor(data = {}, items = null) {
         if (items) data.items = items;
         const elem = document.createElement("div");
         if (data.text) {
@@ -28,8 +28,8 @@ Editor.sign_node_type({
         }
     },
     methods: {
-        add(node) {
-            this.elem.append(node.elem);
+        add(...nodes) {
+            this.elem.append(...nodes.map(n => n.elem));
         },
         add_class(...classes) {
             this.elem.classList.add(...classes);
