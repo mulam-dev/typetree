@@ -1,4 +1,51 @@
+Scrollbar.init(document.body, {
+    damping: 0.2,
+});
+
 const Elem = jQuery;
+
+const CmdMap = {
+  confirm:        ["Enter"],
+  insert_after:   ["Enter"],
+  insert_before:  ["Shift+Enter"],
+  insert_to:      ["Ctrl+Enter"],
+  insert_into:    ["Insert"],
+  insert_outof:   ["Shift+Insert"],
+  delete:         ["Delete", "Backspace"],
+  leave:          ["Esc"],
+  switch_next:    ["Tab"],
+  switch_prev:    ["Shift+Tab"],
+  up:             ["ArrowUp"],
+  right:          ["ArrowRight"],
+  down:           ["ArrowDown"],
+  left:           ["ArrowLeft"],
+  next:           ["ArrowDown", "ArrowRight"],
+  prev:           ["ArrowTop", "ArrowLeft"],
+  select_up:      ["Shift+ArrowUp"],
+  select_right:   ["Shift+ArrowRight"],
+  select_down:    ["Shift+ArrowDown"],
+  select_left:    ["Shift+ArrowLeft"],
+  select_next:    ["Shift+ArrowDown", "Shift+ArrowRight"],
+  select_prev:    ["Shift+ArrowTop", "Shift+ArrowLeft"],
+  move_up:        ["Ctrl+ArrowUp"],
+  move_right:     ["Ctrl+ArrowRight"],
+  move_down:      ["Ctrl+ArrowDown"],
+  move_left:      ["Ctrl+ArrowLeft"],
+  move_next:      ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
+  move_prev:      ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
+};
+
+const ShortcutMap = Object
+    .keys(CmdMap).flatMap(c => CmdMap[c].map(s => [s, c]))
+    .reduce((map, [s, c]) => {
+        if (!map.has(s))
+            map.set(s, [c]);
+        else
+            map.get(s).push(c);
+        return map;
+    }, new Map());
+
+console.log(ShortcutMap);
 
 class TypetreeNode {
     static do_handle = {
@@ -9,6 +56,10 @@ class TypetreeNode {
     
     constructor(opts) {
         this.opts = opts;
+    }
+
+    get_type_id() {
+        return this.opts.id;
     }
 
     construct(raw_data, ...rst) {
@@ -256,7 +307,14 @@ globalThis.Editor = new (class {
 
 globalThis.$ = Editor.get_scope();
 
+const cvt_event = e => {
+    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+    const cmds = shortcut.flatMap(s => ShortcutMap.get(s));
+    return cmds;
+};
+
 const json_to_view = json_obj => {
+    if (json_obj === null) return $.null();
     switch (typeof json_obj) {
         case "boolean": return $.boolean(json_obj);
         case "string": return $.string(json_obj);
@@ -294,6 +352,7 @@ if (globalThis.native) {
                 Editor.set_json(json_obj);
             } catch(e) {
                 alert(e);
+                console.error(e);
             }
         } else {
             alert(`Unsupport File: ${file.file_path}`);
@@ -338,15 +397,15 @@ if (globalThis.native) {
 //     ]).active(),
 // );
 
-// Editor.set_view(
-//     $.dict({
-//         "False": $.boolean(),
-//         "True": $.boolean(true),
-//         "String": $.string("Hello"),
-//         "Number": $.number(3.14),
-//         "Array": $.array([]),
-//     }),
-// );
+Editor.set_view(
+    $.dict({
+        "False": $.boolean(),
+        "True": $.boolean(true),
+        "String": $.string("Hello"),
+        "Number": $.number(3.14),
+        "Array": $.array([]),
+    }),
+);
 
 // Editor.set_json({
 //     "name": "typetree",

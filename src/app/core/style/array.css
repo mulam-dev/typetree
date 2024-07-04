@@ -2,7 +2,12 @@
     display: flex;
     align-self: stretch;
     justify-self: stretch;
-    min-height: 1.2em;
+    min-height: 1.1em;
+}
+
+.core-array-root.f-inline {
+    align-self: start;
+    justify-self: start;
 }
 
 .core-array-root > .i-inner {
@@ -13,10 +18,21 @@
     align-items: start;
 }
 
-.core-array-root::before {
+.core-array-root.f-inline > .i-inner {
+    flex-direction: row;
+}
+
+.core-array-root::before, .core-array-root.f-inline::after {
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
     border: var(--rt-border) solid var(--rt-color);
+}
+
+.core-array-root::before {
     border-right: 0 none;
+}
+
+.core-array-root.f-inline::after {
+    border-left: 0 none;
 }

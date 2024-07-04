@@ -24,7 +24,7 @@ Editor.sign_node_type({
     setter() {
         for (const [key, value] of this.data) {
             this.ref.inner.do.add(
-                $.div({class: "i-key core-s-code", text: key}).mark_active(this),
+                $.div({class: "i-key-box"}, [$.div({class: "i-key core-s-code", text: key})]).mark_active(this),
                 value.mark_active(this),
             );
         }

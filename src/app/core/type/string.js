@@ -15,6 +15,11 @@ Editor.sign_node_type({
         else
             this.root.do.add_class("f-blank");
     },
+    methods: {
+        get_length() {
+            return this.data.length;
+        },
+    },
     cmds: {
         async "confirm"() {
             const res = await Editor.plugins.InlineTextEditor.request_text({

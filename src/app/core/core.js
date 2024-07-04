@@ -1,4 +1,5 @@
 import "./type/div.js";
+import "./type/null.js";
 import "./type/number.js";
 import "./type/string.js";
 import "./type/boolean.js";

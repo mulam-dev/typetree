@@ -9,6 +9,7 @@
     "appId": "com.anlbrain.typetree",
     "icon": "icon.png",
     "linux": {
+      "icon": "build/icons",
       "target": "rpm"
     },
     "fileAssociations": [
@@ -34,5 +35,8 @@
   "devDependencies": {
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "smooth-scrollbar": "^8.8.4"
   }
 }

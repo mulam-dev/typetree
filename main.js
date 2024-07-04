@@ -17,7 +17,6 @@ function create_window() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    resizable: false,
     autoHideMenuBar: true,
     show: false,
   });
