@@ -5,34 +5,35 @@ Scrollbar.init(document.body, {
 const Elem = jQuery;
 
 const CmdMap = {
-  confirm:        ["Enter"],
-  insert_after:   ["Enter"],
-  insert_before:  ["Shift+Enter"],
-  insert_to:      ["Ctrl+Enter"],
-  insert_into:    ["Insert"],
-  insert_outof:   ["Shift+Insert"],
-  delete:         ["Delete", "Backspace"],
-  leave:          ["Esc"],
-  switch_next:    ["Tab"],
-  switch_prev:    ["Shift+Tab"],
-  up:             ["ArrowUp"],
-  right:          ["ArrowRight"],
-  down:           ["ArrowDown"],
-  left:           ["ArrowLeft"],
-  next:           ["ArrowDown", "ArrowRight"],
-  prev:           ["ArrowTop", "ArrowLeft"],
-  select_up:      ["Shift+ArrowUp"],
-  select_right:   ["Shift+ArrowRight"],
-  select_down:    ["Shift+ArrowDown"],
-  select_left:    ["Shift+ArrowLeft"],
-  select_next:    ["Shift+ArrowDown", "Shift+ArrowRight"],
-  select_prev:    ["Shift+ArrowTop", "Shift+ArrowLeft"],
-  move_up:        ["Ctrl+ArrowUp"],
-  move_right:     ["Ctrl+ArrowRight"],
-  move_down:      ["Ctrl+ArrowDown"],
-  move_left:      ["Ctrl+ArrowLeft"],
-  move_next:      ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
-  move_prev:      ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
+  confirm:          ["Space"],
+  insert_after:     ["Enter"],
+  insert_before:    ["Shift+Enter"],
+  insert_to:        ["Ctrl+Enter"],
+  insert_into:      ["Insert"],
+  insert_outof:     ["Shift+Insert"],
+  delete:           ["Delete", "Backspace"],
+  switch_next:      ["Tab"],
+  switch_prev:      ["Shift+Tab"],
+  into:             ["Alt+Enter"],
+  outof:            ["Esc"],
+  up:               ["ArrowUp"],
+  right:            ["ArrowRight"],
+  down:             ["ArrowDown"],
+  left:             ["ArrowLeft"],
+  next:             ["ArrowDown", "ArrowRight"],
+  prev:             ["ArrowTop", "ArrowLeft"],
+  select_up:        ["Shift+ArrowUp"],
+  select_right:     ["Shift+ArrowRight"],
+  select_down:      ["Shift+ArrowDown"],
+  select_left:      ["Shift+ArrowLeft"],
+  select_next:      ["Shift+ArrowDown", "Shift+ArrowRight"],
+  select_prev:      ["Shift+ArrowTop", "Shift+ArrowLeft"],
+  move_up:          ["Ctrl+ArrowUp"],
+  move_right:       ["Ctrl+ArrowRight"],
+  move_down:        ["Ctrl+ArrowDown"],
+  move_left:        ["Ctrl+ArrowLeft"],
+  move_next:        ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
+  move_prev:        ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
 };
 
 const ShortcutMap = Object
@@ -44,8 +45,6 @@ const ShortcutMap = Object
             map.get(s).push(c);
         return map;
     }, new Map());
-
-console.log(ShortcutMap);
 
 class TypetreeNode {
     static do_handle = {
@@ -209,6 +208,14 @@ globalThis.Editor = new (class {
                 }
             }
         });
+        this.e_root.on("keydown", e => {
+            if (this.e_root.is(":focus") && this.active_elem) {
+                e.stopPropagation();
+                e.preventDefault();
+                const node = this.active_elem[0].node;
+                node.resolve_event(cvt_event(e));
+            }
+        });
         this.e_root.on("click", e => {
             if (!this.prevent_click && e.button === 0) {
                 e.stopPropagation();
@@ -297,7 +304,7 @@ globalThis.Editor = new (class {
 
     set_view(view) {
         this.e_inner.empty().append(view.elem);
-        update_win_size();
+        // update_win_size();
     }
 
     set_json(json_obj) {
@@ -308,8 +315,9 @@ globalThis.Editor = new (class {
 globalThis.$ = Editor.get_scope();
 
 const cvt_event = e => {
-    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-    const cmds = shortcut.flatMap(s => ShortcutMap.get(s));
+    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+    console.log(shortcut);
+    const cmds = ShortcutMap.get(shortcut) ?? [];
     return cmds;
 };
 
@@ -348,8 +356,11 @@ if (globalThis.native) {
     native.on_file_opened(file => {
         if (file.file_path.endsWith(".json")) {
             try {
+                update_window_title(file.file_path.split('/').pop());
                 const json_obj = JSON.parse(file.data);
                 Editor.set_json(json_obj);
+                native.show_window(true);
+                return;
             } catch(e) {
                 alert(e);
                 console.error(e);
@@ -357,8 +368,8 @@ if (globalThis.native) {
         } else {
             alert(`Unsupport File: ${file.file_path}`);
         }
-        update_window_title(file.file_path.split('/').pop());
-        native.show_window(true);
+        native.exit();
+        window.close();
     });
     native.on_blank_opened(() => {
         update_window_title();
@@ -397,15 +408,15 @@ if (globalThis.native) {
 //     ]).active(),
 // );
 
-Editor.set_view(
-    $.dict({
-        "False": $.boolean(),
-        "True": $.boolean(true),
-        "String": $.string("Hello"),
-        "Number": $.number(3.14),
-        "Array": $.array([]),
-    }),
-);
+// Editor.set_view(
+//     $.dict({
+//         "False": $.boolean(),
+//         "True": $.boolean(true),
+//         "String": $.string("Hello"),
+//         "Number": $.number(3.14),
+//         "Array": $.array([]),
+//     }),
+// );
 
 // Editor.set_json({
 //     "name": "typetree",

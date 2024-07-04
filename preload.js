@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('native', {
   app_ready: () => ipcRenderer.invoke('app_ready'),
+  exit: () => ipcRenderer.invoke('exit'),
   show_window: (center = false) => ipcRenderer.invoke('show_window', center),
   save_file: (file_path, data) => ipcRenderer.invoke('save_file', { file_path, data }),
   save_file_as: (file_path, data) => ipcRenderer.invoke('save_file_as', { file_path, data }),

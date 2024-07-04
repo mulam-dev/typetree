@@ -9,7 +9,7 @@
     "appId": "com.anlbrain.typetree",
     "icon": "icon.png",
     "linux": {
-      "icon": "build/icons",
+      "icon": "res/icons",
       "target": "rpm"
     },
     "fileAssociations": [

@@ -10,8 +10,8 @@ let main_window;
 
 function create_window() {
   main_window = new BrowserWindow({
-    width: 100,
-    height: 100,
+    width: 600,
+    height: 400,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -38,19 +38,20 @@ ipcMain.handle('app_ready', async () => {
       fs.readFile(absolute_file_path, 'utf-8', (err, data) => {
         if (err) {
           console.error('File read error:', err);
+          main_window.webContents.send('blank_opened');
         } else {
           main_window.webContents.send('file_opened', { file_path: absolute_file_path, data });
         }
       });
-    } else {
-      main_window.webContents.send('blank_opened');
     }
+  } else {
+    main_window.webContents.send('blank_opened');
   }
 });
 
 ipcMain.handle('show_window', async (event, center = false) => {
-  if (center)
-    main_window.center();
+  // if (center)
+  //   main_window.center();
   main_window.show();
 });
 
@@ -80,4 +81,8 @@ ipcMain.handle('open_file_dialog', async (event, current_file_path) => {
     return { file_path, data };
   }
   return null;
+});
+
+ipcMain.handle('exit', (event) => {
+  app.exit();
 });
