@@ -18,7 +18,7 @@ Editor.sign_node_type({
         }
         this.elem = elem;
     },
-    active_setter(active) {
+    enable_setter(active) {
         if (active) {
             this.do.add_class("t-active");
             this.elem.node = this;
@@ -30,6 +30,12 @@ Editor.sign_node_type({
     methods: {
         add(...nodes) {
             this.elem.append(...nodes.map(n => n.elem));
+        },
+        insert_after(src, ...nodes) {
+            Elem(nodes.map(n => n.elem)).insertAfter(src.elem);
+        },
+        delete(...nodes) {
+            Elem(nodes.map(n => n.elem)).remove();
         },
         add_class(...classes) {
             this.elem.classList.add(...classes);

@@ -378,7 +378,7 @@ class TypetreeEditor
     @v_input
   end
 
-  def calc_size
+  def get_size
     root_offset = @v_overlay.offset
     [@v_input].map { |v|
       offset = v.offset
@@ -459,7 +459,7 @@ end
 def update_win_size
   win_width = $$.innerWidth
   win_height = $$.innerHeight
-  editor_width, editor_height = Editor.calc_size
+  editor_width, editor_height = Editor.get_size
   delta_width = (editor_width - win_width).round
   delta_height = (editor_height - win_height).round
   $$.resizeBy(delta_width, delta_height) if delta_width != 0 or delta_height != 0

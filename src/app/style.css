@@ -66,10 +66,10 @@ body {
 .ed-overlay > .i-cursor {
     display: none;
     position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: var(--w);
-    height: var(--h);
+    left: var(--cursor-x);
+    top: var(--cursor-y);
+    width: var(--cursor-w);
+    height: var(--cursor-h);
     outline: solid 2px #888888;
     border-radius: var(--border-radius);
     opacity: 0.4;

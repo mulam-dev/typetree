@@ -6,7 +6,7 @@ Editor.sign_node_type({
     not_embedded: true,
     data: null,
     struct() {
-        return $.div({class: "core-null core-s-code"}).mark_active(this);
+        return $.div({class: "core-null core-s-code"}).mark_enabled(this);
     },
     cmds: {
         "confirm"() {

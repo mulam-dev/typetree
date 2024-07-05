@@ -6,7 +6,7 @@ Editor.sign_node_type({
     not_embedded: true,
     data: false,
     struct() {
-        return $.div({class: "core-boolean-root"}).mark_active(this);
+        return $.div({class: "core-boolean-root"}).mark_enabled(this);
     },
     setter() {
         if (this.data)

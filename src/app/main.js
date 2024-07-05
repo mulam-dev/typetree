@@ -2,7 +2,7 @@ Scrollbar.init(document.body, {
     damping: 0.2,
 });
 
-const Elem = jQuery;
+globalThis.Elem = jQuery;
 
 const CmdMap = {
   confirm:          ["Space"],
@@ -57,6 +57,10 @@ class TypetreeNode {
         this.opts = opts;
     }
 
+    is(type_id) {
+        return type_id === this.opts.id;
+    }
+
     get_type_id() {
         return this.opts.id;
     }
@@ -95,45 +99,45 @@ class TypetreeNode {
         return this;
     }
 
-    mark_active(target) {
-        if (!target.active_nodes) target.active_nodes = new Set();
+    mark_enabled(target) {
+        if (!target.enabled_nodes) target.enabled_nodes = new Set();
         this.parent = target;
-        this.set_active(target.active);
-        target.active_nodes.add(this);
+        this.set_enabled(target.enabled);
+        target.enabled_nodes.add(this);
         return this;
     }
 
-    unmark_active() {
-        if (!target.active_nodes) target.active_nodes = new Set();
+    unmark_enabled() {
+        const target = this.parent;
         delete this.parent;
-        this.set_active(target.active);
-        target.active_nodes.add(this);
+        this.set_enabled(false);
+        target.enabled_nodes.delete(this);
         return this;
     }
 
-    clear_active_nodes() {
-        for (const node of this.active_nodes) {
-            node.unmark_active();
+    clear_enabled_nodes() {
+        for (const node of this.enabled_nodes) {
+            node.unmark_enabled();
         }
-        delete this.active_nodes;
+        delete this.enabled_nodes;
     }
 
-    set_active(active) {
-        if (active !== !!this.active) {
-            this.active = active;
-            const setter = this.opts.active_setter;
+    set_enabled(enabled) {
+        if (enabled !== !!this.enabled) {
+            this.enabled = enabled;
+            const setter = this.opts.enable_setter;
             if (setter) {
-                setter.call(this, active);
-            } else if (this.active_nodes) {
-                for (const node of this.active_nodes) {
-                    node.set_active(active);
+                setter.call(this, enabled);
+            } else if (this.enabled_nodes) {
+                for (const node of this.enabled_nodes) {
+                    node.set_enabled(enabled);
                 }
             }
         }
     }
 
-    active(active = true) {
-        this.set_active(active);
+    enable(enabled = true) {
+        this.set_enabled(enabled);
         return this;
     }
 
@@ -142,8 +146,7 @@ class TypetreeNode {
         if (cmd_handlers) {
             for (const cmd of cmds) {
                 const handle = cmd_handlers[cmd];
-                if (handle) {
-                    handle.call(this, source);
+                if (handle && handle.call(this, source)) {
                     return;
                 }
             }
@@ -180,9 +183,9 @@ globalThis.Editor = new (class {
         this.e_cursor = Elem(".ed-overlay > .i-cursor");
 
         // Listeners
-        this.anchor_elem = null;
-        this.focus_elem = null;
-        this.active_elem = null;
+        this.anchor_elem = Elem();
+        this.focus_elem = Elem();
+        this.active_elem = Elem();
         this.prevent_click = false;
         Elem(document).on("pointerdown", e => {
             if (e.button === 0) {
@@ -209,7 +212,7 @@ globalThis.Editor = new (class {
             }
         });
         this.e_root.on("keydown", e => {
-            if (this.e_root.is(":focus") && this.active_elem) {
+            if (this.e_root.is(":focus") && this.active_elem.length) {
                 e.stopPropagation();
                 e.preventDefault();
                 const node = this.active_elem[0].node;
@@ -220,7 +223,7 @@ globalThis.Editor = new (class {
             if (!this.prevent_click && e.button === 0) {
                 e.stopPropagation();
                 const elem = this.closest_elem(Elem(e.target));
-                if (elem) {
+                if (elem.length) {
                     if (elem.is(this.active_elem)) e.preventDefault();
                     const node = elem[0].node;
                     node.resolve_event(["confirm"]);
@@ -229,7 +232,7 @@ globalThis.Editor = new (class {
         });
     }
 
-    calc_size() {
+    get_size() {
         const root_offset = this.e_overlay.offset();
         return [].map(e => {
             const offset = e.offset();
@@ -243,34 +246,53 @@ globalThis.Editor = new (class {
         );
     }
 
+    calc_rect(elem) {
+        elem = Elem(elem);
+        const root_offset = this.e_overlay.offset();
+        const offset = elem.offset();
+        return [
+            offset.left - root_offset.left,
+            offset.top - root_offset.top,
+            elem.outerWidth(),
+            elem.outerHeight(),
+        ];
+    }
+
     closest_elem(elem) {
         const active_elem = elem.closest(".t-active");
         if (active_elem.length > 0 && active_elem.closest(this.e_inner).length > 0) {
             return active_elem;
         } else {
-            return null;
+            return Elem();
+        }
+    }
+
+    update_cursor_rect() {
+        const elem = this.active_elem;
+        if (elem.length) {
+            const [x, y, w, h] = this.calc_rect(elem);
+            this.e_overlay.css("--cursor-x", `${x}px`);
+            this.e_overlay.css("--cursor-y", `${y}px`);
+            this.e_overlay.css("--cursor-w", `${w}px`);
+            this.e_overlay.css("--cursor-h", `${h}px`);
         }
     }
 
     set_active_elem(elem) {
+        elem = Elem(elem);
         const cur_animation = this.e_cursor[0].getAnimations()[0];
         if (cur_animation) cur_animation.currentTime = 0;
-        if (elem) {
-            const root_offset = this.e_overlay.offset();
-            const offset = elem.offset();
-            this.e_cursor.css("--x", `${offset.left - root_offset.left}px`);
-            this.e_cursor.css("--y", `${offset.top - root_offset.top}px`);
-            this.e_cursor.css("--w", `${elem.outerWidth()}px`);
-            this.e_cursor.css("--h", `${elem.outerHeight()}px`);
+        if (elem.length) {
             this.e_cursor.addClass("f-show");
         } else {
             this.e_cursor.removeClass("f-show");
         }
-        if (elem !== this.active_elem) {
-            if (elem) elem.addClass("f-active");
-            if (this.active_elem) this.active_elem.removeClass("f-active");
+        if (!elem.is(this.active_elem)) {
+            if (this.active_elem.length) this.active_elem.removeClass("f-active");
+            if (elem.length) elem.addClass("f-active");
             this.active_elem = elem;
         }
+        this.update_cursor_rect();
     }
 
     sign_node_type(opts) {
@@ -303,7 +325,7 @@ globalThis.Editor = new (class {
     }
 
     set_view(view) {
-        this.e_inner.empty().append(view.elem);
+        this.e_inner.empty().append(view.enable().elem);
         // update_win_size();
     }
 
@@ -316,7 +338,6 @@ globalThis.$ = Editor.get_scope();
 
 const cvt_event = e => {
     const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-    console.log(shortcut);
     const cmds = ShortcutMap.get(shortcut) ?? [];
     return cmds;
 };
@@ -344,7 +365,7 @@ const update_window_title = (title = null) => {
 const update_win_size = () => {
     const win_width = window.innerWidth
     const win_height = window.innerHeight
-    const [editor_width, editor_height] = Editor.calc_size()
+    const [editor_width, editor_height] = Editor.get_size()
     const delta_width = Math.round(editor_width - win_width)
     const delta_height = Math.round(editor_height - win_height)
     if (delta_width !== 0 || delta_height !== 0) window.resizeBy(delta_width, delta_height);
@@ -398,15 +419,15 @@ if (globalThis.native) {
 //     ]),
 // );
 
-// Editor.set_view(
-//     $.array([
-//         $.boolean(),
-//         $.boolean(true),
-//         $.string("Hello"),
-//         $.number(3.14),
-//         $.array([]),
-//     ]).active(),
-// );
+Editor.set_view(
+    $.array([
+        $.boolean(),
+        $.boolean(true),
+        $.string("Hello"),
+        $.number(3.14),
+        $.array([]),
+    ]),
+);
 
 // Editor.set_view(
 //     $.dict({

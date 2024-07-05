@@ -19,19 +19,19 @@ Editor.sign_node_type({
     struct() {
         return $.div({class: "core-dict-root"}, [
             $.div({class: "core-dict-inner"}).bind(this, "inner"),
-        ]).mark_active(this);
+        ]).mark_enabled(this);
     },
     setter() {
         for (const [key, value] of this.data) {
             this.ref.inner.do.add(
-                $.div({class: "i-key-box"}, [$.div({class: "i-key core-s-code", text: key})]).mark_active(this),
-                value.mark_active(this),
+                $.div({class: "i-key-box"}, [$.div({class: "i-key core-s-code", text: key})]).mark_enabled(this),
+                value.mark_enabled(this),
             );
         }
     },
     resetter() {
         this.ref.inner.do.clear();
-        this.clear_active_nodes();
+        this.clear_enabled_nodes();
     },
     cmds: {
         "confirm"() {

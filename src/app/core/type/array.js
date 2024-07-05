@@ -17,24 +17,54 @@ Editor.sign_node_type({
     struct() {
         return $.div({class: "core-array-root"}, [
             $.div({class: "i-inner"}).bind(this, "inner"),
-        ]).mark_active(this);
+        ]).mark_enabled(this);
     },
     setter() {
         if (is_inline_data(this.data)) {
             this.root.do.add_class("f-inline");
         }
         for (const item of this.data) {
-            this.ref.inner.do.add(item.mark_active(this));
+            this.ref.inner.do.add(item.mark_enabled(this));
         }
     },
     resetter() {
         this.root.do.remove_class("f-inline");
         this.ref.inner.do.clear();
-        this.clear_active_nodes();
+        this.clear_enabled_nodes();
+    },
+    methods: {
+        insert_after(src, node) {
+            if (src !== this.root) {
+                node = node.mark_enabled(this);
+                this.data.splice(this.data.indexOf(src) + 1, 0, node);
+                this.ref.inner.do.insert_after(src, node);
+                Editor.set_active_elem(node.elem);
+                return true
+            } else {
+                return false;
+            }
+        },
+        delete(src) {
+            const index = this.data.indexOf(src);
+            if (index >= 0) {
+                this.ref.inner.do.delete(src);
+                this.data.splice(index, 1);
+                src.unmark_enabled();
+                if (index >= 1) {
+                    Editor.set_active_elem(this.data[index - 1].elem);
+                } else {
+                    Editor.set_active_elem(this.elem);
+                }
+                return true;
+            }
+        },
     },
     cmds: {
-        "confirm"() {
-            // TODO
+        "insert_after"(src) {
+            return this.do.insert_after(src, $.null());
         },
+        "delete"(src) {
+            return this.do.delete(src);
+        }
     },
 });
