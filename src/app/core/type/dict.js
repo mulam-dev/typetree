@@ -12,7 +12,7 @@ Editor.sign_node_type({
         }
         return raw;
     },
-    from_raw(raw) {
+    from_raw(raw = {}) {
         if (raw instanceof Array) return raw;
         else return Object.keys(raw).map(k => [k, raw[k]]);
     },

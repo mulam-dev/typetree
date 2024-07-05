@@ -6,6 +6,7 @@
 @import "style/dict.css";
 
 @import "style/inline-editor.css";
+@import "style/type-selector.css";
 
 .core-s-code {
     font-family: 'Source Code Pro', monospace;

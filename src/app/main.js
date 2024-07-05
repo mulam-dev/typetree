@@ -15,22 +15,23 @@ const CmdMap = {
   insert_into:      ["Insert"],
   insert_outof:     ["Shift+Insert"],
   delete:           ["Delete", "Backspace"],
+  switch:           ["Tab"],
   switch_next:      ["Tab"],
   switch_prev:      ["Shift+Tab"],
   into:             ["Alt+Enter"],
-  outof:            ["Esc"],
+  outof:            ["Escape"],
   up:               ["ArrowUp"],
   right:            ["ArrowRight"],
   down:             ["ArrowDown"],
   left:             ["ArrowLeft"],
   next:             ["ArrowDown", "ArrowRight"],
-  prev:             ["ArrowTop", "ArrowLeft"],
+  prev:             ["ArrowUp", "ArrowLeft"],
   select_up:        ["Shift+ArrowUp"],
   select_right:     ["Shift+ArrowRight"],
   select_down:      ["Shift+ArrowDown"],
   select_left:      ["Shift+ArrowLeft"],
   select_next:      ["Shift+ArrowDown", "Shift+ArrowRight"],
-  select_prev:      ["Shift+ArrowTop", "Shift+ArrowLeft"],
+  select_prev:      ["Shift+ArrowUp", "Shift+ArrowLeft"],
   move_up:          ["Ctrl+ArrowUp"],
   move_right:       ["Ctrl+ArrowRight"],
   move_down:        ["Ctrl+ArrowDown"],
@@ -125,6 +126,10 @@ class TypetreeNode {
         delete this.enabled_nodes;
     }
 
+    has_enabled_node(node) {
+        return this.enabled_nodes && this.enabled_nodes.has(node);
+    }
+
     set_enabled(enabled) {
         if (enabled !== !!this.enabled) {
             this.enabled = enabled;
@@ -144,12 +149,12 @@ class TypetreeNode {
         return this;
     }
 
-    resolve_event(cmds, source = null) {
+    async resolve_event(cmds, source = null) {
         const cmd_handlers = this.opts.cmds;
         if (cmd_handlers) {
             for (const cmd of cmds) {
                 const handle = cmd_handlers[cmd];
-                if (handle && handle.call(this, source)) {
+                if (handle && await handle.call(this, source)) {
                     return;
                 }
             }
@@ -212,6 +217,7 @@ globalThis.Editor = new (class {
         this.node_types = new Map();
         this.plugins = new Map();
         this.scope = new Map();
+        this.node_type_name_map = new Map();
 
         // Elements
         this.e_root = Elem(".editor");
@@ -365,12 +371,9 @@ globalThis.Editor = new (class {
             ...opts,
         };
         this.node_types.set(opts.id, opts);
+        if (opts.visible && opts.name) this.node_type_name_map.set(opts.name.toLowerCase(), opts);
         if (opts.scope)
-            this.scope.set(opts.scope, (...args) => {
-                const node = new TypetreeNode(opts);
-                node.construct(...args);
-                return node;
-            });
+            this.scope.set(opts.scope, (...args) => this.make_node(opts, ...args));
     }
 
     sign_plugin(opts) {
@@ -390,6 +393,29 @@ globalThis.Editor = new (class {
         this.e_overlay.append(plugin.elem);
     }
 
+    make_node(type, ...args) {
+        const node = new TypetreeNode(type);
+        node.construct(...args);
+        return node;
+    }
+
+    fuzzy_query_node_type(str) {
+        str = str.toLowerCase();
+        if (str === '') {
+            return [...this.node_type_name_map.entries()]
+                .sort(([name_a], [name_b]) => name_a < name_b ? -1 : name_a === name_b ? 0 : 1)
+                .map(e => e[1]);
+        } else {
+            const score_to_opts_list = [];
+            for (const [name, opts] of this.node_type_name_map) {
+                const score = fuzzy_score(name, str);
+                if (score > 0) score_to_opts_list.push([score, opts]);
+            }
+            score_to_opts_list.sort((a, b) => b[0] - a[0]);
+            return score_to_opts_list.map(e => e[1]);
+        }
+    }
+
     get_scope() {
         return new Proxy(this.scope, Editor.scope_handler);
     }
@@ -405,6 +431,21 @@ globalThis.Editor = new (class {
 })();
 
 globalThis.$ = Editor.get_scope();
+
+const fuzzy_score = (str, pattern) => {
+    let score = 0;
+    let start_index = 0;
+    for (const c of pattern) {
+        const new_index = str.indexOf(c, start_index);
+        if (new_index >= 0) {
+            start_index = new_index + 1;
+            score += 2 ** -(new_index + 1);
+        } else {
+            return 0;
+        }
+    }
+    return score;
+};
 
 const json_to_view = json_obj => {
     if (json_obj === null) return $.null();

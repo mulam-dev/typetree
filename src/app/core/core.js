@@ -7,3 +7,4 @@ import "./type/array.js";
 import "./type/dict.js";
 
 import "./plugin/inline-editor.js";
+import "./plugin/type-selector.js";

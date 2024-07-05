@@ -12,6 +12,10 @@
       "icon": "res/icons",
       "target": "rpm"
     },
+    "win": {
+      "target": "nsis",
+      "icon": "res/icon.ico"
+    },
     "fileAssociations": [
       {
         "ext": "typetree",

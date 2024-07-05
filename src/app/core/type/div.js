@@ -34,6 +34,15 @@ Editor.sign_node_type({
         insert_after(src, ...nodes) {
             Elem(nodes.map(n => n.elem)).insertAfter(src.elem);
         },
+        insert(index, ...nodes) {
+            const elems = Elem(nodes.map(n => n.elem));
+            const children = Elem(this.elem).children();
+            if (index < children.length) {
+                elems.insertBefore(children.eq(index));
+            } else {
+                elems.appendTo(this.elem);
+            }
+        },
         delete(...nodes) {
             Elem(nodes.map(n => n.elem)).remove();
         },
