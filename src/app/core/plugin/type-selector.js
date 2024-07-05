@@ -1,22 +1,22 @@
 Editor.sign_plugin({
-    id: "core:InlineEditor",
-    scope: "InlineEditor",
+    id: "core:TypeSelector",
+    scope: "TypeSelector",
     overlay() {
         return Elem(`
-            <div class="ext-inline-editor-root">
+            <div class="ext-type-selector-root">
                 <div class="i-input core-s-code" spellcheck="false" contenteditable></div>
+                <div class="i-list"></div>
             </div>
         `);
     },
     init() {
         this.e_input = this.elem.children(".i-input");
+        this.e_list = this.elem.children(".i-list");
     },
     methods: {
         request(node, opts = {}) {
             return new Promise(resolve => {
-                this.e_input.text(opts.text ?? '');
-                this.e_input.attr("prefix", opts.prefix ?? '');
-                this.e_input.attr("postfix", opts.postfix ?? '');
+                this.e_input.text('');
                 this.elem.addClass("f-show");
                 const listen_cmds = opts.listen_cmds ?? [];
                 const keydown_handle = e => {

@@ -5,3 +5,5 @@ import "./type/string.js";
 import "./type/boolean.js";
 import "./type/array.js";
 import "./type/dict.js";
+
+import "./plugin/inline-editor.js";

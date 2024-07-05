@@ -1,9 +1,8 @@
 .core-null {
-    font-weight: bold;
     color: var(--rt-color);
     padding: 0 0.25em;
 }
 
 .core-null::after {
-    content: "Nil";
+    content: "Null";
 }

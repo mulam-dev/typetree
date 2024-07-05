@@ -22,12 +22,22 @@ Editor.sign_node_type({
     },
     cmds: {
         async "confirm"() {
-            const res = await Editor.plugins.InlineTextEditor.request_text({
-                anchor: this.root,
+            const res = await $.InlineEditor.do.request(this, {
+                text: this.data,
+                listen_cmds: ["insert_after"],
+                prefix: '"', postfix: '"',
             });
             if (res !== null) {
                 this.data = res;
                 this.update();
+                Editor.set_active_node(this);
+            }
+            return true;
+        },
+        "insert_after"(src) {
+            if (src instanceof EditorPlugin) {
+                $.InlineEditor.do.confirm();
+                return true;
             }
         },
     },

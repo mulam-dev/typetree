@@ -8,7 +8,7 @@
 .core-dict-inner {
     flex-grow: 1;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: minmax(2em, auto) 1fr;
     gap: 2px;
     justify-items: start;
     align-items: start;
@@ -19,32 +19,43 @@
     align-self: stretch;
     display: flex;
     flex-direction: column;
+    background: #3F361F;
+    border-radius: var(--border-radius);
 }
 
 .core-dict-inner > .i-key-box > .i-key {
-    padding: 0 0.25em;
     display: flex;
-    color: #aaaaaa;
     position: sticky;
     top: 2px;
 }
 
+.core-dict-inner > .i-key-box > .i-key > .i-text {
+    padding: 0 0.25em;
+    color: #cebd96;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 12em;
+}
+
 .core-dict-inner > .i-key-box > .i-key::after {
+    --rt-color: #FFB710;
     content: "→";
-    font-weight: bold;
     margin-left: auto;
     width: 1.2em;
     text-align: center;
     color: var(--rt-color);
+    flex-shrink: 0;
 }
 
 .core-dict-root::before {
+    --rt-color: #FFB710;
     position: sticky;
     top: 2px;
     --border-radius: calc(var(--rt-width) * 2);
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
+    background: var(--rt-color);
     border: var(--rt-border) solid var(--rt-color);
     border-radius: var(--border-radius) 0 0 var(--border-radius);
     border-right: 0 none

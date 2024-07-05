@@ -38,10 +38,8 @@ Editor.sign_node_type({
                 node = node.mark_enabled(this);
                 this.data.splice(this.data.indexOf(src) + 1, 0, node);
                 this.ref.inner.do.insert_after(src, node);
-                Editor.set_active_elem(node.elem);
+                Editor.set_active_node(node);
                 return true
-            } else {
-                return false;
             }
         },
         delete(src) {
@@ -51,9 +49,9 @@ Editor.sign_node_type({
                 this.data.splice(index, 1);
                 src.unmark_enabled();
                 if (index >= 1) {
-                    Editor.set_active_elem(this.data[index - 1].elem);
+                    Editor.set_active_node(this.data[index - 1]);
                 } else {
-                    Editor.set_active_elem(this.elem);
+                    Editor.set_active_node(this);
                 }
                 return true;
             }

@@ -1,0 +1,42 @@
+.ext-inline-editor-root {
+    --gap: 0px;
+    --border: 2px;
+    position: absolute;
+    /* left: calc(var(--cursor-x) - 0.25em); */
+    /* top: calc(var(--cursor-y) + var(--cursor-h) + var(--border) + var(--gap) * 2); */
+    left: calc(var(--cursor-x));
+    top: calc(var(--cursor-y) - var(--gap));
+    pointer-events: all;
+    display: none;
+    padding: var(--gap);
+    background: #222222;
+    outline: #0088ff solid var(--border);
+    border-radius: var(--border-radius);
+}
+
+.ext-inline-editor-root.f-show {
+    display: flex;
+}
+
+.ext-inline-editor-root > .i-input {
+    padding: 0 0.25em;
+    width: max-content;
+    border: none;
+    outline: none;
+    color: #dddddd;
+    cursor: text;
+    caret-color: #44ccff;
+}
+
+.ext-inline-editor-root > .i-input::before {
+    content: attr(prefix);
+}
+
+.ext-inline-editor-root > .i-input::after {
+    content: attr(postfix);
+}
+
+.ext-inline-editor-root > .i-input::selection,
+.ext-inline-editor-root > .i-input *::selection {
+    background: #0066dd;
+}

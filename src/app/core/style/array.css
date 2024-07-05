@@ -23,9 +23,11 @@
 }
 
 .core-array-root::before, .core-array-root.f-inline::after {
+    --rt-color: #2bbcff;
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
+    background: #244b5d;
     border: var(--rt-border) solid var(--rt-color);
 }
 

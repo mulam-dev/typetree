@@ -1,8 +1,11 @@
-Scrollbar.init(document.body, {
-    damping: 0.2,
-});
-
 globalThis.Elem = jQuery;
+
+document.select = elem => {
+    elem = Elem(elem);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    for (const node of elem) sel.selectAllChildren(node);
+};
 
 const CmdMap = {
   confirm:          ["Space"],
@@ -163,6 +166,40 @@ Object.defineProperty(TypetreeNode.prototype, "do", {
     },
 });
 
+globalThis.TypetreeNode = TypetreeNode;
+
+class EditorPlugin {
+    static do_handle = {
+        get(plugin, key) {
+            return plugin.opts.methods[key].bind(plugin);
+        },
+    };
+
+    constructor(opts) {
+        this.opts = opts;
+    }
+    init() {
+        const overlay = this.opts.overlay;
+        if (overlay) {
+            this.elem = Elem(overlay.call(this));
+        } else {
+            this.elem = Elem();
+        }
+        const initer = this.opts.init;
+        if (initer) {
+            initer.call(this);
+        }
+    }
+}
+
+Object.defineProperty(EditorPlugin.prototype, "do", {
+    get() {
+        return new Proxy(this, EditorPlugin.do_handle);
+    },
+});
+
+globalThis.EditorPlugin = EditorPlugin;
+
 globalThis.Editor = new (class {
     scope_handler = {
         get(scope, key) {
@@ -173,7 +210,7 @@ globalThis.Editor = new (class {
     constructor() {
         // Data Fields
         this.node_types = new Map();
-        this.plugins = {};
+        this.plugins = new Map();
         this.scope = new Map();
 
         // Elements
@@ -189,18 +226,17 @@ globalThis.Editor = new (class {
         this.prevent_click = false;
         Elem(document).on("pointerdown", e => {
             if (e.button === 0) {
-                e.stopPropagation();
                 const elem = this.closest_elem(Elem(e.target));
                 this.anchor_elem = elem;
                 this.focus_elem = null;
                 // this.update_selection();
-                if (elem && !elem.is(this.active_elem)) {
+                if (elem.length && !elem.is(this.active_elem)) {
                     this.prevent_click = true;
+                    e.stopPropagation();
                     e.preventDefault();
                 }
                 this.set_active_elem(elem);
-                if (elem) {
-                    this.e_root.focus();
+                if (elem.length) {
                     Elem(document).one("pointerup", e => {
                         if (e.button === 0) {
                             setTimeout(() => {
@@ -215,16 +251,18 @@ globalThis.Editor = new (class {
             if (this.e_root.is(":focus") && this.active_elem.length) {
                 e.stopPropagation();
                 e.preventDefault();
-                const node = this.active_elem[0].node;
-                node.resolve_event(cvt_event(e));
+                const node = this.get_active_node();
+                node.resolve_event(Editor.cvt_event(e));
             }
         });
-        this.e_root.on("click", e => {
+        this.e_root.on("dblclick", e => {
             if (!this.prevent_click && e.button === 0) {
-                e.stopPropagation();
                 const elem = this.closest_elem(Elem(e.target));
                 if (elem.length) {
-                    if (elem.is(this.active_elem)) e.preventDefault();
+                    if (elem.is(this.active_elem)) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
                     const node = elem[0].node;
                     node.resolve_event(["confirm"]);
                 }
@@ -267,6 +305,12 @@ globalThis.Editor = new (class {
         }
     }
 
+    cvt_event(e) {
+        const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+        const cmds = ShortcutMap.get(shortcut) ?? [];
+        return cmds;
+    }
+
     update_cursor_rect() {
         const elem = this.active_elem;
         if (elem.length) {
@@ -284,6 +328,7 @@ globalThis.Editor = new (class {
         if (cur_animation) cur_animation.currentTime = 0;
         if (elem.length) {
             this.e_cursor.addClass("f-show");
+            this.e_root.focus();
         } else {
             this.e_cursor.removeClass("f-show");
         }
@@ -293,6 +338,14 @@ globalThis.Editor = new (class {
             this.active_elem = elem;
         }
         this.update_cursor_rect();
+    }
+
+    set_active_node(node) {
+        this.set_active_elem(node.elem);
+    }
+
+    get_active_node() {
+        return this.active_elem.length ? this.active_elem[0].node : null;
     }
 
     sign_node_type(opts) {
@@ -320,6 +373,23 @@ globalThis.Editor = new (class {
             });
     }
 
+    sign_plugin(opts) {
+        opts = {
+            scope: null,
+            overlay: null,
+            init: null,
+            methods: {},
+            ...opts,
+        };
+        const plugin = new EditorPlugin(opts);
+        plugin.init();
+        this.plugins.set(opts.id, plugin);
+        if (opts.scope) {
+            this.scope.set(opts.scope, plugin);
+        }
+        this.e_overlay.append(plugin.elem);
+    }
+
     get_scope() {
         return new Proxy(this.scope, Editor.scope_handler);
     }
@@ -335,12 +405,6 @@ globalThis.Editor = new (class {
 })();
 
 globalThis.$ = Editor.get_scope();
-
-const cvt_event = e => {
-    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-    const cmds = ShortcutMap.get(shortcut) ?? [];
-    return cmds;
-};
 
 const json_to_view = json_obj => {
     if (json_obj === null) return $.null();
@@ -419,15 +483,15 @@ if (globalThis.native) {
 //     ]),
 // );
 
-Editor.set_view(
-    $.array([
-        $.boolean(),
-        $.boolean(true),
-        $.string("Hello"),
-        $.number(3.14),
-        $.array([]),
-    ]),
-);
+// Editor.set_view(
+//     $.array([
+//         $.boolean(),
+//         $.boolean(true, false),
+//         $.string("Hello"),
+//         $.number(3.14),
+//         $.array([]),
+//     ]),
+// );
 
 // Editor.set_view(
 //     $.dict({

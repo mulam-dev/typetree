@@ -6,7 +6,7 @@ Editor.sign_node_type({
     not_embedded: true,
     data: false,
     struct() {
-        return $.div({class: "core-boolean-root"}).mark_enabled(this);
+        return $.div({class: "core-boolean-root core-s-code"}).mark_enabled(this);
     },
     setter() {
         if (this.data)
@@ -18,6 +18,8 @@ Editor.sign_node_type({
         "confirm"() {
             this.data = !this.data
             this.update();
+            Editor.update_cursor_rect();
+            return true;
         },
     },
 });

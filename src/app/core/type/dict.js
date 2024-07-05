@@ -24,7 +24,11 @@ Editor.sign_node_type({
     setter() {
         for (const [key, value] of this.data) {
             this.ref.inner.do.add(
-                $.div({class: "i-key-box"}, [$.div({class: "i-key core-s-code", text: key})]).mark_enabled(this),
+                $.div({class: "i-key-box"}, [
+                    $.div({class: "i-key core-s-code"}, [
+                        $.div({class: "i-text", text: key}),
+                    ]),
+                ]).mark_enabled(this),
                 value.mark_enabled(this),
             );
         }

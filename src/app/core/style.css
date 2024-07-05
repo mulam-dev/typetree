@@ -5,7 +5,10 @@
 @import "style/array.css";
 @import "style/dict.css";
 
+@import "style/inline-editor.css";
+
 .core-s-code {
     font-family: 'Source Code Pro', monospace;
     font-size: 0.9em;
+    white-space: nowrap;
 }
