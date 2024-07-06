@@ -167,7 +167,7 @@ Editor.sign_node_type({
                     this.do.delete(src);
                     Editor.set_active_node(node);
                 } else {
-                    this.do.delete(src);
+                    if (src.elem !== prev_active_node.elem) this.do.delete(src);
                     Editor.set_active_node(prev_active_node);
                 }
                 return true;
