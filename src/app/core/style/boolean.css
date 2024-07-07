@@ -6,9 +6,9 @@
 }
 
 .core-boolean-root::after {
-    content: "False";
+    content: "false";
 }
 
 .core-boolean-root.f-toggle::after {
-    content: "True";
+    content: "true";
 }

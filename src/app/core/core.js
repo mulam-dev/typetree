@@ -1,4 +1,4 @@
-import "./type/div.js";
+import "./type/view.js";
 import "./type/null.js";
 import "./type/number.js";
 import "./type/string.js";

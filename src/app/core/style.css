@@ -11,5 +11,5 @@
 .core-s-code {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9em;
-    white-space: nowrap;
+    white-space: pre;
 }

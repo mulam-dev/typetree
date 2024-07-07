@@ -1,39 +1,61 @@
 .ext-inline-editor-root {
-    --gap: 0px;
     --border: 2px;
     position: absolute;
-    /* left: calc(var(--cursor-x) - 0.25em); */
-    /* top: calc(var(--cursor-y) + var(--cursor-h) + var(--border) + var(--gap) * 2); */
-    left: calc(var(--cursor-x));
-    top: calc(var(--cursor-y) - var(--gap));
+    left: var(--cursor-x);
+    top: var(--cursor-y);
     pointer-events: all;
     display: none;
-    padding: var(--gap);
+    padding: 0 0.25em;
     background: #222222;
     outline: #0088ff solid var(--border);
     border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 .ext-inline-editor-root.f-show {
     display: flex;
 }
 
-.ext-inline-editor-root > .i-input {
-    padding: 0 0.25em;
-    width: max-content;
-    border: none;
-    outline: none;
-    color: #dddddd;
-    cursor: text;
-    caret-color: #44ccff;
+.ext-inline-editor-root::before,
+.ext-inline-editor-root::after {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    white-space: pre;
 }
 
-.ext-inline-editor-root > .i-input::before {
+.ext-inline-editor-root::before {
     content: attr(prefix);
 }
 
-.ext-inline-editor-root > .i-input::after {
+.ext-inline-editor-root::after {
     content: attr(postfix);
+}
+
+.ext-inline-editor-root > .i-view, .ext-inline-editor-root > .i-input {
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+    color: #dddddd;
+    width: max-content;
+}
+
+.ext-inline-editor-root > .i-view::after {
+    content: "​";
+}
+
+.ext-inline-editor-root > .i-input {
+    --offset: 0px;
+    position: absolute;
+    inset: 0;
+    left: var(--offset);
+    cursor: text;
+    caret-color: #44ccff;
+    background: none;
+    width: calc(100% - var(--offset));
+    box-sizing: border-box;
+    overflow: hidden;
+    resize: none;
 }
 
 .ext-inline-editor-root > .i-input::selection,

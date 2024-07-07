@@ -23,8 +23,8 @@ Editor.sign_node_type({
     not_embedded: true,
     data: () => [],
     struct() {
-        return $.div({class: "core-array-root"}, [
-            $.div({class: "i-inner"}).bind(this, "inner"),
+        return $.view({class: "core-array-root"}, [
+            $.view({class: "i-inner"}).bind(this, "inner"),
         ]).mark_enabled(this);
     },
     setter() {

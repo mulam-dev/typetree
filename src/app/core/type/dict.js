@@ -17,16 +17,16 @@ Editor.sign_node_type({
         else return Object.keys(raw).map(k => [k, raw[k]]);
     },
     struct() {
-        return $.div({class: "core-dict-root"}, [
-            $.div({class: "core-dict-inner"}).bind(this, "inner"),
+        return $.view({class: "core-dict-root"}, [
+            $.view({class: "core-dict-inner"}).bind(this, "inner"),
         ]).mark_enabled(this);
     },
     setter() {
         for (const [key, value] of this.data) {
             this.ref.inner.do.add(
-                $.div({class: "i-key-box"}, [
-                    $.div({class: "i-key core-s-code"}, [
-                        $.div({class: "i-text", text: key}),
+                $.view({class: "i-key-box"}, [
+                    $.view({class: "i-key core-s-code"}, [
+                        $.view({class: "i-text", text: key}),
                     ]),
                 ]).mark_enabled(this),
                 value.mark_enabled(this),

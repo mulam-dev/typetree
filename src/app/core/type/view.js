@@ -1,12 +1,12 @@
 Editor.sign_node_type({
-    id: "core:div",
-    scope: "div",
-    name: "Div",
+    id: "core:view",
+    scope: "view",
+    name: "View",
     visible: false,
     not_embedded: false,
     constructor(data = {}, items = null) {
         if (items) data.items = items;
-        const elem = document.createElement("div");
+        const elem = document.createElement(data.name ?? "div");
         if (data.text) {
             elem.textContent = data.text;
         }

@@ -8,7 +8,7 @@ Editor.sign_node_type({
         items: [],
     },
     struct() {
-        return $.div({class: "core-slots-root"});
+        return $.view({class: "core-slots-root"});
     },
     setter() {
         // for (const item of this.data.items)

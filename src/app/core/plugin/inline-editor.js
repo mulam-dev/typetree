@@ -4,20 +4,24 @@ Editor.sign_plugin({
     overlay() {
         return Elem(`
             <div class="ext-inline-editor-root">
-                <div class="i-input core-s-code" spellcheck="false" contenteditable></div>
+                <div class="i-view core-s-code"></div>
+                <textarea class="i-input core-s-code" rows="1" spellcheck="false"></textarea>
             </div>
         `);
     },
     init() {
+        this.e_view = this.elem.children(".i-view");
         this.e_input = this.elem.children(".i-input");
     },
     methods: {
         request(node, opts = {}) {
             return new Promise(resolve => {
-                this.e_input.text(opts.text ?? '');
-                this.e_input.attr("prefix", opts.prefix ?? '');
-                this.e_input.attr("postfix", opts.postfix ?? '');
+                const tab = opts.tab ?? ''.padEnd(4, ' ');
+                this.e_input.val(opts.text ?? '');
+                this.elem.attr("prefix", opts.prefix ?? '');
+                this.elem.attr("postfix", opts.postfix ?? '');
                 this.elem.addClass("f-show");
+                this.e_input.css("--offset", this.e_view.position().left + "px");
                 const listen_cmds = opts.listen_cmds ?? [];
                 const keydown_handle = e => {
                     const cmds = Editor.cvt_event(e);
@@ -25,15 +29,33 @@ Editor.sign_plugin({
                         e.stopPropagation();
                         e.preventDefault();
                         node.resolve_event(cmds, this);
+                    } else {
+                        if (e.key === 'Tab') {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const self = this.e_input[0];
+                            const start = self.selectionStart;
+                            const end = self.selectionEnd;
+                            self.value = self.value.slice(0, start) + tab + self.value.slice(end);
+                            self.selectionStart = self.selectionEnd = start + tab.length;
+                            input_handle();
+                        }
                     }
+                };
+                const input_handle = () => {
+                    this.e_input.css("height", "auto");
+                    this.e_input.css("height", this.e_input[0].scrollHeight + "px");
+                    this.e_view.text(this.e_input.val());
                 };
                 const blur_handle = () => {
                     confirm();
                 };
                 this.e_input.on("keydown", keydown_handle);
+                this.e_input.on("input", input_handle);
                 this.e_input.on("blur", blur_handle);
                 const cleanup = () => {
                     this.e_input.off("keydown", keydown_handle);
+                    this.e_input.off("input", input_handle);
                     this.e_input.off("blur", blur_handle);
                     delete this.h_confirm;
                     delete this.h_cancel;
@@ -41,7 +63,7 @@ Editor.sign_plugin({
                 };
                 const confirm = value => {
                     cleanup();
-                    resolve(value ?? this.e_input.text());
+                    resolve(value ?? this.e_input.val());
                 };
                 const cancel = () => {
                     cleanup();
@@ -49,7 +71,8 @@ Editor.sign_plugin({
                 };
                 this.h_confirm = confirm;
                 this.h_cancel = cancel;
-                document.select(this.e_input);
+                this.e_input.select();
+                input_handle();
             });
         },
         confirm(value = undefined) {

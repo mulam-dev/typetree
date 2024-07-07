@@ -510,13 +510,13 @@ if (globalThis.native) {
 // console.log(Editor);
 
 // Editor.set_view($ =>
-//     $.div({text: "hello", class: "label"}, [
-//         $.div({text: "world"}),
+//     $.view({text: "hello", class: "label"}, [
+//         $.view({text: "world"}),
 //     ]),
 // );
 
 // Editor.set_view($ =>
-//     $.div({}, [
+//     $.view({}, [
 //         $.boolean(),
 //         $.boolean(true),
 //         $.string("Hello"),

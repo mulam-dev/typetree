@@ -6,7 +6,7 @@ Editor.sign_node_type({
     not_embedded: true,
     data: () => "",
     struct() {
-        return $.div({class: "core-string-root core-s-code"}).mark_enabled(this);
+        return $.view({name: "pre", class: "core-string-root core-s-code"}).mark_enabled(this);
     },
     setter() {
         this.root.do.set_text(this.data);
