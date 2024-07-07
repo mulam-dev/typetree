@@ -43,7 +43,7 @@ Editor.sign_node_type({
                 node = node.mark_enabled(this);
                 this.data.splice(index, 0, node);
                 update_style(this);
-                this.ref.inner.do.insert(index, node);
+                this.ref.inner.do.modify_at(index, 0, node);
                 return true
             }
         },

@@ -1,3 +1,24 @@
+const get_index = (self, node) => Elem(self.elem).children().index(node.elem);
+
+const insert_at = (self, index, ...nodes) => {
+    const elems = Elem(nodes.map(n => n.elem));
+    const children = Elem(self.elem).children();
+    if (index < children.length) {
+        elems.insertBefore(children.eq(index));
+    } else {
+        elems.appendTo(self.elem);
+    }
+};
+
+const modify_at = (self, index, delete_count, ...append_nodes) => {
+    const elem = Elem(self.elem);
+    const rst_elem = elem.children().slice(index, index + delete_count).remove();
+    insert_at(self, index, ...append_nodes);
+    return [...rst_elem];
+};
+
+const modify = (self, anchor, delete_count, ...append_nodes) => modify_at(self, get_index(self, anchor), delete_count, ...append_nodes);
+
 Editor.sign_node_type({
     id: "core:view",
     scope: "view",
@@ -28,20 +49,20 @@ Editor.sign_node_type({
         }
     },
     methods: {
+        get_index(node) {
+            return get_index(this, node);
+        },
         add(...nodes) {
             this.elem.append(...nodes.map(n => n.elem));
         },
-        insert_after(src, ...nodes) {
-            Elem(nodes.map(n => n.elem)).insertAfter(src.elem);
+        modify_at(index, delete_count, ...append_nodes) {
+            return modify_at(this, index, delete_count, ...append_nodes);
         },
-        insert(index, ...nodes) {
-            const elems = Elem(nodes.map(n => n.elem));
-            const children = Elem(this.elem).children();
-            if (index < children.length) {
-                elems.insertBefore(children.eq(index));
-            } else {
-                elems.appendTo(this.elem);
-            }
+        modify(anchor, delete_count, ...append_nodes) {
+            return modify(this, anchor, delete_count, ...append_nodes);
+        },
+        modify_after(anchor, delete_count, ...append_nodes) {
+            return modify_at(this, get_index(this, anchor) + 1, delete_count, ...append_nodes);
         },
         delete(...nodes) {
             Elem(nodes.map(n => n.elem)).remove();
