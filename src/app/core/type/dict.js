@@ -71,8 +71,10 @@ Editor.sign_node_type({
                 src.unmark_enabled();
                 Editor.set_active_node(temp_node);
                 return src;
+            } else {
+                Editor.set_active_node(this.data[index][2]);
+                return null;
             }
-            return null;
         },
         delete_entry(index) {
             const entry = this.data[index];
