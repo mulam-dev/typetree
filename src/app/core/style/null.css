@@ -4,5 +4,5 @@
 }
 
 .core-null::after {
-    content: "Null";
+    content: "null";
 }
