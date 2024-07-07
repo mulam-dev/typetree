@@ -9,6 +9,7 @@
     "appId": "com.anlbrain.typetree",
     "icon": "icon.png",
     "linux": {
+      "category": "Utility",
       "icon": "res/icons",
       "target": "rpm"
     },

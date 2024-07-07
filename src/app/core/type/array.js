@@ -21,7 +21,7 @@ Editor.sign_node_type({
     name: "Array",
     visible: true,
     not_embedded: true,
-    data: [],
+    data: () => [],
     struct() {
         return $.div({class: "core-array-root"}, [
             $.div({class: "i-inner"}).bind(this, "inner"),
@@ -81,6 +81,14 @@ Editor.sign_node_type({
             } else if (this.data.includes(src)) {
                 const temp_node = $.null();
                 this.do.insert(this.data.indexOf(src) + 1, temp_node);
+                this.resolve_event(["switch"], temp_node);
+                return true;
+            }
+        },
+        "insert_into"(src) {
+            if (src === this.root) {
+                const temp_node = $.null();
+                this.do.insert(this.data.length, temp_node);
                 this.resolve_event(["switch"], temp_node);
                 return true;
             }

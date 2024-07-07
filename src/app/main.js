@@ -83,7 +83,7 @@ class TypetreeNode {
             if (data !== undefined) {
                 this.data = data;
             } else if (this.opts.data !== undefined) {
-                this.data = this.opts.data;
+                this.data = this.opts.data.call(this);
             }
             const setter = this.opts.setter;
             if (setter) setter.call(this);

@@ -4,7 +4,7 @@ Editor.sign_node_type({
     name: "String",
     visible: true,
     not_embedded: true,
-    data: "",
+    data: () => "",
     struct() {
         return $.div({class: "core-string-root core-s-code"}).mark_enabled(this);
     },

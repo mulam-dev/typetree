@@ -4,7 +4,7 @@ Editor.sign_node_type({
     name: "Dict",
     visible: true,
     not_embedded: true,
-    data: [],
+    data: () => [],
     to_raw() {
         const raw = {};
         for (const [key, value] of this.data) {

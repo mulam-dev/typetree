@@ -4,7 +4,7 @@ Editor.sign_node_type({
     name: "Boolean",
     visible: true,
     not_embedded: true,
-    data: false,
+    data: () => false,
     struct() {
         return $.div({class: "core-boolean-root core-s-code"}).mark_enabled(this);
     },
