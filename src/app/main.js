@@ -544,38 +544,38 @@ if (globalThis.native) {
 //     }),
 // );
 
-// Editor.set_json({
-//     "name": "typetree",
-//     "homepage": "https://anlbrain.com/",
-//     "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
-//     "version": "1.0.0",
-//     "main": "main.js",
-//     "build": {
-//         "productName": "TypeTree",
-//         "appId": "com.anlbrain.typetree",
-//         "icon": "icon.svg",
-//         "linux": {
-//             "target": "rpm"
-//         },
-//         "fileAssociations": [{
-//             "ext": "typetree",
-//             "name": "TypeTree File",
-//             "role": "Editor",
-//             "mimeType": "application/x-typetree"
-//         },{
-//             "ext": "json",
-//             "name": "JSON File",
-//             "role": "Editor",
-//             "mimeType": "application/json"
-//         }]
-//     },
-//     "scripts": {
-//         "start": "electron .",
-//         "package": "electron-builder"
-//     },
-//     "type": "module",
-//     "devDependencies": {
-//         "electron": "^31.1.0",
-//         "electron-builder": "^24.13.3"
-//     }
-// });
+Editor.set_json({
+    "name": "typetree",
+    "homepage": "https://anlbrain.com/",
+    "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
+    "version": "1.0.0",
+    "main": "main.js",
+    "build": {
+        "productName": "TypeTree",
+        "appId": "com.anlbrain.typetree",
+        "icon": "icon.svg",
+        "linux": {
+            "target": "rpm"
+        },
+        "fileAssociations": [{
+            "ext": "typetree",
+            "name": "TypeTree File",
+            "role": "Editor",
+            "mimeType": "application/x-typetree"
+        },{
+            "ext": "json",
+            "name": "JSON File",
+            "role": "Editor",
+            "mimeType": "application/json"
+        }]
+    },
+    "scripts": {
+        "start": "electron .",
+        "package": "electron-builder"
+    },
+    "type": "module",
+    "devDependencies": {
+        "electron": "^31.1.0",
+        "electron-builder": "^24.13.3"
+    }
+});

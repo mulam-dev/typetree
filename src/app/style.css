@@ -16,8 +16,8 @@ body {
     flex-direction: column;
     overflow: auto;
     background: #222;
-    /* --border-radius: 0; */
-    --border-radius: 2px;
+    --border-radius: 0;
+    /* --border-radius: 2px; */
 }
 
 .editor {
