@@ -10,7 +10,8 @@ Editor.sign_node_type({
     },
     cmds: {
         "confirm"() {
-            // TODO
+            this.parent.resolve_event(["switch"], this);
+            return true;
         },
     },
 });
