@@ -5,14 +5,27 @@
     min-height: 1.1em;
 }
 
+.core-array-root > .i-zoom-hint {
+    display: none;
+    --display: block;
+    background: #244b5d;
+    border-radius: var(--border-radius);
+    color: #2bbcff;
+}
+
+.core-array-root > .i-zoom-hint::after {
+    content: "···";
+}
+
 .core-array-root.f-inline {
     align-self: start;
     justify-self: start;
 }
 
 .core-array-root > .i-inner {
+    --display: flex;
     flex-grow: 1;
-    display: flex;
+    display: var(--display);
     flex-direction: column;
     gap: 2px;
     align-items: start;

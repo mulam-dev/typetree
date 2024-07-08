@@ -38,6 +38,8 @@ const CmdMap = {
   move_left:        ["Ctrl+ArrowLeft"],
   move_next:        ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
   move_prev:        ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
+  zoom_in:          ["Ctrl+Equal"],
+  zoom_out:          ["Ctrl+Minus"],
 };
 
 const ShortcutMap = Object

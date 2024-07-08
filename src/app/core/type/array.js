@@ -23,7 +23,8 @@ Editor.sign_node_type({
     not_embedded: true,
     data: () => [],
     struct() {
-        return $.view({class: "core-array-root"}, [
+        return $.view({class: "core-array-root l-level"}, [
+            $.view({class: "i-zoom-hint core-s-code"}),
             $.view({class: "i-inner"}).bind(this, "inner"),
         ]).mark_enabled(this);
     },
@@ -183,6 +184,30 @@ Editor.sign_node_type({
         },
         "delete"(src) {
             return this.do.delete(src);
+        },
+        "zoom_in"(src) {
+            const elem = Elem(this.elem);
+            elem.attr("zoom", (_, v = 5) => (parseInt(v) + 1) % 6);
+            if (parseInt(elem.attr("zoom")) === 5) {
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
+            } else {
+                elem.addClass("t-zoom-root");
+            }
+            Editor.set_active_node(this);
+            return true;
+        },
+        "zoom_out"(src) {
+            const elem = Elem(this.elem);
+            elem.attr("zoom", (_, v = 5) => (parseInt(v) - 1 + 6) % 6);
+            if (parseInt(elem.attr("zoom")) === 5) {
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
+            } else {
+                elem.addClass("t-zoom-root");
+            }
+            Editor.set_active_node(this);
+            return true;
         },
     },
 });

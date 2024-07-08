@@ -5,9 +5,22 @@
     min-height: 1.1em;
 }
 
+.core-dict-root > .i-zoom-hint {
+    display: none;
+    --display: block;
+    background: #3F361F;
+    border-radius: var(--border-radius);
+    color: #cebd96;
+}
+
+.core-dict-root > .i-zoom-hint::after {
+    content: "···";
+}
+
 .core-dict-inner {
+    --display: grid;
     flex-grow: 1;
-    display: grid;
+    display: var(--display);
     grid-template-columns: minmax(2em, auto) 1fr;
     gap: 2px;
     justify-items: start;
