@@ -224,6 +224,7 @@ globalThis.Editor = new (class {
         this.e_inner = Elem(".ed-inner");
         this.e_overlay = Elem(".ed-overlay");
         this.e_cursor = Elem(".ed-overlay > .i-cursor");
+        this.e_scrollbox = Elem(".ed-overlay > .i-scrollbox");
 
         // Listeners
         this.anchor_elem = Elem();
@@ -344,6 +345,7 @@ globalThis.Editor = new (class {
             this.active_elem = elem;
         }
         this.update_cursor_rect();
+        this.scroll_to_cursor();
     }
 
     set_active_node(node) {
@@ -352,6 +354,44 @@ globalThis.Editor = new (class {
 
     get_active_node() {
         return this.active_elem.length ? this.active_elem[0].node : null;
+    }
+
+    scroll_to_node(node) {
+        const elem = node.elem;
+        if (this.t_scrolling !== undefined) {
+            clearTimeout(this.t_scrolling);
+            elem.scrollIntoView({
+                behavior: "instant",
+                block: "nearest",
+                inline: "nearest",
+            });
+        } else {
+            elem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+            });
+        }
+        this.t_scrolling = setTimeout(() => delete this.t_scrolling, 100);
+    }
+
+    scroll_to_cursor() {
+        const elem = this.e_scrollbox[0];
+        if (this.t_scrolling !== undefined) {
+            clearTimeout(this.t_scrolling);
+            elem.scrollIntoView({
+                behavior: "instant",
+                block: "nearest",
+                inline: "nearest",
+            });
+        } else {
+            elem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+            });
+        }
+        this.t_scrolling = setTimeout(() => delete this.t_scrolling, 100);
     }
 
     sign_node_type(opts) {

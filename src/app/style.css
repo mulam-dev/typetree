@@ -77,6 +77,16 @@ body {
     opacity: 0.4;
 }
 
+.ed-overlay > .i-scrollbox {
+    --margin: 16px;
+    position: absolute;
+    pointer-events: none;
+    left: calc(var(--cursor-x) - var(--margin));
+    top: calc(var(--cursor-y) - var(--margin));
+    width: calc(var(--cursor-w) + var(--margin) * 2);
+    height: calc(var(--cursor-h) + var(--margin) * 2);
+}
+
 .editor:focus .ed-overlay > .i-cursor {
     opacity: 1;
     animation: .6s cubic-bezier(.65,.05,.36,1) 0s infinite alternate cursor-blink;
