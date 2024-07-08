@@ -17,7 +17,6 @@ Editor.sign_plugin({
         request(node, opts = {}) {
             return new Promise(resolve => {
                 const tab = opts.tab ?? ''.padEnd(4, ' ');
-                this.e_input.val(opts.text ?? '');
                 this.elem.attr("prefix", opts.prefix ?? '');
                 this.elem.attr("postfix", opts.postfix ?? '');
                 this.elem.addClass("f-show");
@@ -59,6 +58,8 @@ Editor.sign_plugin({
                     this.e_input.off("blur", blur_handle);
                     delete this.h_confirm;
                     delete this.h_cancel;
+                    delete this.h_set;
+                    delete this.h_get;
                     this.elem.removeClass("f-show");
                 };
                 const confirm = value => {
@@ -69,10 +70,17 @@ Editor.sign_plugin({
                     cleanup();
                     resolve(null);
                 };
+                const set = (v) => {
+                    this.e_input.val(v);
+                    this.e_input.select();
+                    input_handle();
+                };
+                const get = () => this.e_input.val();
                 this.h_confirm = confirm;
                 this.h_cancel = cancel;
-                this.e_input.select();
-                input_handle();
+                this.h_set = set;
+                this.h_get = get;
+                set(opts.text ?? '');
             });
         },
         confirm(value = undefined) {
@@ -82,11 +90,10 @@ Editor.sign_plugin({
             if (this.h_cancel) this.h_cancel();
         },
         get() {
-            return this.e_input.text();
+            return this.h_get.call(this);
         },
-        set(text) {
-            this.e_input.text(text);
-            document.select(this.e_input);
+        set(v) {
+            this.h_set.call(this, v);
         },
     },
 });
