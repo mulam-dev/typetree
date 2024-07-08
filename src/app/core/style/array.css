@@ -1,7 +1,7 @@
 .core-array-root {
     display: flex;
-    align-self: stretch;
-    justify-self: stretch;
+    /* align-self: stretch; */
+    /* justify-self: stretch; */
     min-height: 1.1em;
 }
 

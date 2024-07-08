@@ -253,6 +253,10 @@ Editor.sign_node_type({
                         Editor.set_active_node(prev_active_node);
                     }
                 } else {
+                    const elem = Elem(src.elem);
+                    elem.attr("zoom", 0);
+                    elem.addClass("t-zoom-root");
+                    Editor.set_active_node(src);
                     const res = await $.TypeSelector.do.request(this, {
                         listen_cmds: [
                             "switch_next",
@@ -264,6 +268,8 @@ Editor.sign_node_type({
                             "outof",
                         ],
                     });
+                    elem.removeClass("t-zoom-root");
+                    elem.removeAttr("zoom");
                     if (res) {
                         const node = Editor.make_node(res);
                         this.do.insert(idx, entry[0], node);

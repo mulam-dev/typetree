@@ -158,6 +158,9 @@ Editor.sign_node_type({
         async "switch"(src) {
             if (this.data.includes(src)) {
                 const prev_active_node = Editor.get_active_node();
+                const elem = Elem(src.elem);
+                elem.attr("zoom", 0);
+                elem.addClass("t-zoom-root");
                 Editor.set_active_node(src);
                 const res = await $.TypeSelector.do.request(this, {
                     listen_cmds: [
@@ -170,6 +173,8 @@ Editor.sign_node_type({
                         "outof",
                     ],
                 });
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
                 if (res) {
                     const node = Editor.make_node(res);
                     this.do.insert(this.data.indexOf(src), node);
