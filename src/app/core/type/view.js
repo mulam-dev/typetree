@@ -49,6 +49,12 @@ Editor.sign_node_type({
         }
     },
     methods: {
+        has(node) {
+            return [...this.elem.children].includes(node.elem);
+        },
+        get(index) {
+            return this.elem.children[index].node;
+        },
         get_index(node) {
             return get_index(this, node);
         },

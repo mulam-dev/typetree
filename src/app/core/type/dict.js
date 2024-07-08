@@ -55,7 +55,7 @@ Editor.sign_node_type({
                     ]),
                 ]);
                 this.data.splice(index, 0, [key, node, head]);
-                this.ref.inner.do.modify_at(index, 0,
+                this.ref.inner.do.modify_at(index * 2, 0,
                     head.mark_enabled(this),
                     node.mark_enabled(this),
                 );
@@ -108,10 +108,12 @@ Editor.sign_node_type({
     },
     cmds: {
         "insert_before"(src) {
-            if (this.data.includes(src)) {
+            const index = this.ref.inner.do.get_index(src);
+            if (index >= 0) {
+                const idx = 0|(index / 2);
                 const temp_node = $.null();
-                this.do.insert(this.data.indexOf(src), temp_node);
-                this.resolve_event(["switch"], temp_node);
+                this.do.insert(idx, '', temp_node);
+                this.resolve_event(["switch"], this.data[idx][2]);
                 return true;
             }
         },
@@ -119,18 +121,26 @@ Editor.sign_node_type({
             if (src === $.TypeSelector) {
                 $.TypeSelector.do.confirm();
                 return true;
-            } else if (this.data.includes(src)) {
-                const temp_node = $.null();
-                this.do.insert(this.data.indexOf(src) + 1, temp_node);
-                this.resolve_event(["switch"], temp_node);
+            } else if (src === $.InlineEditor) {
+                $.InlineEditor.do.confirm();
                 return true;
+            } else {
+                const index = this.ref.inner.do.get_index(src);
+                if (index >= 0) {
+                    const idx = 0|(index / 2) + 1;
+                    const temp_node = $.null();
+                    this.do.insert(idx, '', temp_node);
+                    this.resolve_event(["switch"], this.data[idx][2]);
+                    return true;
+                }
             }
         },
         "insert_into"(src) {
             if (src === this.root) {
+                const idx = this.data.length;
                 const temp_node = $.null();
-                this.do.insert(this.data.length, temp_node);
-                this.resolve_event(["switch"], temp_node);
+                this.do.insert(idx, '', temp_node);
+                this.resolve_event(["switch"], this.data[idx][2]);
                 return true;
             }
         },
@@ -138,6 +148,11 @@ Editor.sign_node_type({
             if (src === $.TypeSelector) {
                 $.TypeSelector.do.confirm();
                 return true;
+            } else {
+                const index = this.ref.inner.do.get_index(src);
+                if (index >= 0 && index % 2 === 0) {
+                    this.resolve_event(["switch"], src);
+                }
             }
         },
         "switch_prev"(src) {
@@ -156,27 +171,45 @@ Editor.sign_node_type({
             if (src === $.TypeSelector) {
                 $.TypeSelector.do.offset_sel(-1);
                 return true;
+            } else {
+                const index = this.ref.inner.do.get_index(src);
+                if (index >= 0) {
+                    if (index - 2 >= 0) {
+                        Editor.set_active_node(this.ref.inner.do.get(index - 2));
+                    }
+                    return true;
+                }
             }
         },
         "down"(src) {
             if (src === $.TypeSelector) {
                 $.TypeSelector.do.offset_sel(1);
                 return true;
+            } else {
+                const index = this.ref.inner.do.get_index(src);
+                if (index >= 0) {
+                    if (index + 2 < this.data.length * 2) {
+                        Editor.set_active_node(this.ref.inner.do.get(index + 2));
+                    }
+                    return true;
+                }
             }
         },
-        "prev"(src) {
-            if (this.data.includes(src)) {
-                const src_index = this.data.indexOf(src);
-                const index = Math.max(0, src_index - 1);
-                Editor.set_active_node(this.data[index]);
+        "left"(src) {
+            const index = this.ref.inner.do.get_index(src);
+            if (index >= 0) {
+                if (index % 2 === 1) {
+                    Editor.set_active_node(this.ref.inner.do.get(index - 1));
+                }
                 return true;
             }
         },
-        "next"(src) {
-            if (this.data.includes(src)) {
-                const src_index = this.data.indexOf(src);
-                const index = Math.min(this.data.length - 1, src_index + 1);
-                Editor.set_active_node(this.data[index]);
+        "right"(src) {
+            const index = this.ref.inner.do.get_index(src);
+            if (index >= 0) {
+                if (index % 2 === 0) {
+                    Editor.set_active_node(this.ref.inner.do.get(index + 1));
+                }
                 return true;
             }
         },
@@ -184,40 +217,61 @@ Editor.sign_node_type({
             if (src === $.TypeSelector) {
                 $.TypeSelector.do.cancel();
                 return true;
-            } else if (this.data.includes(src)) {
+            } else if (src === $.InlineEditor) {
+                $.InlineEditor.do.cancel();
+                return true;
+            } else if (this.ref.inner.do.has(src)) {
                 Editor.set_active_node(this);
                 return true;
             }
         },
         "into"(src) {
             if (src === this.root && this.data.length) {
-                Editor.set_active_node(this.data[0]);
+                Editor.set_active_node(this.data[0][2]);
                 return true;
             }
         },
         async "switch"(src) {
-            if (this.data.includes(src)) {
+            const index = this.ref.inner.do.get_index(src);
+            if (index >= 0) {
                 const prev_active_node = Editor.get_active_node();
                 Editor.set_active_node(src);
-                const res = await $.TypeSelector.do.request(this, {
-                    listen_cmds: [
-                        "switch_next",
-                        "switch_prev",
-                        "insert_after",
-                        "confirm",
-                        "up",
-                        "down",
-                        "outof",
-                    ],
-                });
-                if (res) {
-                    const node = Editor.make_node(res);
-                    this.do.insert(this.data.indexOf(src), node);
-                    this.do.delete(src);
-                    Editor.set_active_node(node);
+                const idx = 0|(index / 2);
+                const entry = this.data[idx];
+                if (index % 2 === 0) {
+                    const res = await $.InlineEditor.do.request(this, {
+                        text: entry[0],
+                        listen_cmds: ["insert_after", "outof"],
+                    });
+                    if (res !== null) {
+                        entry[0] = res;
+                        Elem(entry[2].elem).find(".i-text").text(res);
+                        Editor.set_active_node(entry[2]);
+                    } else {
+                        if (src.elem !== prev_active_node.elem) this.do.delete(src);
+                        Editor.set_active_node(prev_active_node);
+                    }
                 } else {
-                    if (src.elem !== prev_active_node.elem) this.do.delete(src);
-                    Editor.set_active_node(prev_active_node);
+                    const res = await $.TypeSelector.do.request(this, {
+                        listen_cmds: [
+                            "switch_next",
+                            "switch_prev",
+                            "insert_after",
+                            "confirm",
+                            "up",
+                            "down",
+                            "outof",
+                        ],
+                    });
+                    if (res) {
+                        const node = Editor.make_node(res);
+                        this.do.insert(idx, entry[0], node);
+                        this.do.delete(entry[2]);
+                        Editor.set_active_node(node);
+                    } else {
+                        if (src.elem !== prev_active_node.elem) this.do.delete(src);
+                        Editor.set_active_node(prev_active_node);
+                    }
                 }
                 return true;
             }

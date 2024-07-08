@@ -24,19 +24,25 @@ Editor.sign_node_type({
         async "confirm"() {
             const res = await $.InlineEditor.do.request(this, {
                 text: this.data,
-                listen_cmds: ["insert_after"],
+                listen_cmds: ["insert_after", "outof"],
                 prefix: '"', postfix: '"',
             });
             if (res !== null) {
                 this.data = res;
                 this.update();
-                Editor.set_active_node(this);
             }
+            Editor.set_active_node(this);
             return true;
         },
         "insert_after"(src) {
-            if (src instanceof EditorPlugin) {
+            if (src === $.InlineEditor) {
                 $.InlineEditor.do.confirm();
+                return true;
+            }
+        },
+        "outof"(src) {
+            if (src === $.InlineEditor) {
+                $.InlineEditor.do.cancel();
                 return true;
             }
         },

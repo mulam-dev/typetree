@@ -15,36 +15,42 @@ Editor.sign_node_type({
         async "confirm"() {
             const res = await $.InlineEditor.do.request(this, {
                 text: this.data.toString(),
-                listen_cmds: ["insert_after", "up", "down"],
+                listen_cmds: ["insert_after", "outof", "up", "down"],
             });
             if (res !== null) {
                 try {
                     this.data = Number.parseFloat(res);
                     this.update();
-                    Editor.set_active_node(this);
                 } catch (_) {}
             }
+            Editor.set_active_node(this);
             return true;
         },
         "insert_after"(src) {
-            if (src instanceof EditorPlugin) {
-                src.do.confirm();
+            if (src === $.InlineEditor) {
+                $.InlineEditor.do.confirm();
                 return true;
             }
         },
         "up"(src) {
-            if (src instanceof EditorPlugin) {
+            if (src === $.InlineEditor) {
                 try {
-                    src.do.set(0|(Number.parseFloat(src.do.get()) + 1).toString());
+                    $.InlineEditor.do.set(0|(Number.parseFloat($.InlineEditor.do.get()) + 1).toString());
                 } catch (_) {}
                 return true;
             }
         },
         "down"(src) {
-            if (src instanceof EditorPlugin) {
+            if (src === $.InlineEditor) {
                 try {
-                    src.do.set(0|(Number.parseFloat(src.do.get()) - 1).toString());
+                    $.InlineEditor.do.set(0|(Number.parseFloat($.InlineEditor.do.get()) - 1).toString());
                 } catch (_) {}
+                return true;
+            }
+        },
+        "outof"(src) {
+            if (src === $.InlineEditor) {
+                $.InlineEditor.do.cancel();
                 return true;
             }
         },
