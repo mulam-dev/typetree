@@ -1,0 +1,43 @@
+.core-tutorial {
+    flex-grow: 1;
+    align-self: stretch;
+    justify-self: stretch;
+    padding: var(--rt-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #777777;
+}
+.core-tutorial.t-zoom-root {
+    flex-grow: 0;
+}
+
+.core-tutorial h1,
+.core-tutorial img {
+    text-align: center;
+    align-self: center;
+}
+
+.core-tutorial .p-cmd-box {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-self: center;
+    gap: 4px 16px;
+    font-size: 0.8em;
+}
+
+.core-tutorial .p-cmd-box > .i-entry {
+    align-self: center;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.core-tutorial .p-cmd-box > .i-entry > .i-key {
+    border: 1px solid #444444;
+    border-bottom-width: 2px;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'JetBrains Mono', monospace;
+}

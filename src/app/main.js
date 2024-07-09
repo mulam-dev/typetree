@@ -38,6 +38,11 @@ const CmdMap = {
   move_left:        ["Ctrl+ArrowLeft"],
   move_next:        ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
   move_prev:        ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
+  zoom_in:          ["Ctrl+Equal"],
+  zoom_out:         ["Ctrl+Minus"],
+  save:             ["Ctrl+KeyS"],
+  save_as:          ["Ctrl+Shift+KeyS"],
+  open:             ["Ctrl+KeyO"],
 };
 
 const ShortcutMap = Object
@@ -113,9 +118,11 @@ class TypetreeNode {
 
     unmark_enabled() {
         const target = this.parent;
-        delete this.parent;
-        this.set_enabled(false);
-        target.enabled_nodes.delete(this);
+        if (target) {
+            delete this.parent;
+            this.set_enabled(false);
+            target.enabled_nodes.delete(this);
+        }
         return this;
     }
 
@@ -161,6 +168,15 @@ class TypetreeNode {
         }
         if (this.parent) {
             this.parent.resolve_event(cmds, this);
+        }
+    }
+
+    to_json() {
+        const producer = this.opts.producer;
+        if (producer) {
+            return producer.call(this, node => node.to_json());
+        } else {
+            return this.data;
         }
     }
 }
@@ -224,6 +240,7 @@ globalThis.Editor = new (class {
         this.e_inner = Elem(".ed-inner");
         this.e_overlay = Elem(".ed-overlay");
         this.e_cursor = Elem(".ed-overlay > .i-cursor");
+        this.e_scrollbox = Elem(".ed-overlay > .i-scrollbox");
 
         // Listeners
         this.anchor_elem = Elem();
@@ -344,6 +361,7 @@ globalThis.Editor = new (class {
             this.active_elem = elem;
         }
         this.update_cursor_rect();
+        this.scroll_to_cursor();
     }
 
     set_active_node(node) {
@@ -352,6 +370,44 @@ globalThis.Editor = new (class {
 
     get_active_node() {
         return this.active_elem.length ? this.active_elem[0].node : null;
+    }
+
+    scroll_to_node(node) {
+        const elem = node.elem;
+        if (this.t_scrolling !== undefined) {
+            clearTimeout(this.t_scrolling);
+            elem.scrollIntoView({
+                behavior: "instant",
+                block: "nearest",
+                inline: "nearest",
+            });
+        } else {
+            elem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+            });
+        }
+        this.t_scrolling = setTimeout(() => delete this.t_scrolling, 100);
+    }
+
+    scroll_to_cursor() {
+        const elem = this.e_scrollbox[0];
+        if (this.t_scrolling !== undefined) {
+            clearTimeout(this.t_scrolling);
+            elem.scrollIntoView({
+                behavior: "instant",
+                block: "nearest",
+                inline: "nearest",
+            });
+        } else {
+            elem.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+            });
+        }
+        this.t_scrolling = setTimeout(() => delete this.t_scrolling, 100);
     }
 
     sign_node_type(opts) {
@@ -425,8 +481,27 @@ globalThis.Editor = new (class {
         // update_win_size();
     }
 
-    set_json(json_obj) {
-        this.set_view(json_to_view(json_obj));
+    set_json(path, json_obj) {
+        this.set_view($.json_file({
+            path,
+            data: this.json_to_view(json_obj),
+        }));
+    }
+
+    json_to_view(json_obj) {
+        if (json_obj === null) return $.null();
+        switch (typeof json_obj) {
+            case "boolean": return $.boolean(json_obj);
+            case "string": return $.string(json_obj);
+            case "number": return $.number(json_obj);
+            case "object":
+                if (json_obj instanceof Array) {
+                    return $.array(json_obj.map(o => this.json_to_view(o)));
+                } else {
+                    return $.dict(Object.keys(json_obj).map(k => [k, this.json_to_view(json_obj[k])]));
+                }
+        }
+        throw -1;
     }
 })();
 
@@ -445,22 +520,6 @@ const fuzzy_score = (str, pattern) => {
         }
     }
     return score;
-};
-
-const json_to_view = json_obj => {
-    if (json_obj === null) return $.null();
-    switch (typeof json_obj) {
-        case "boolean": return $.boolean(json_obj);
-        case "string": return $.string(json_obj);
-        case "number": return $.number(json_obj);
-        case "object":
-            if (json_obj instanceof Array) {
-                return $.array(json_obj.map(json_to_view));
-            } else {
-                return $.dict(Object.keys(json_obj).map(k => [k, json_to_view(json_obj[k])]));
-            }
-    }
-    throw -1;
 };
 
 const update_window_title = (title = null) => {
@@ -484,7 +543,7 @@ if (globalThis.native) {
             try {
                 update_window_title(file.file_path.split('/').pop());
                 const json_obj = JSON.parse(file.data);
-                Editor.set_json(json_obj);
+                Editor.set_json(file.file_path, json_obj);
                 native.show_window(true);
                 return;
             } catch(e) {
@@ -499,6 +558,7 @@ if (globalThis.native) {
     });
     native.on_blank_opened(() => {
         update_window_title();
+        Editor.set_view($.json_file());
         native.show_window(true);
     });
 

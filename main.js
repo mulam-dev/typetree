@@ -10,8 +10,8 @@ let main_window;
 
 function create_window() {
   main_window = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 700,
+    height: 540,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -61,7 +61,7 @@ ipcMain.handle('save_file', async (event, { file_path, data }) => {
 
 ipcMain.handle('save_file_as', async (event, { file_path, data }) => {
   const { canceled, filePath: save_path } = await dialog.showSaveDialog(main_window, {
-    defaultPath: file_path
+    defaultPath: file_path ? file_path : undefined
   });
   if (!canceled && save_path) {
     fs.writeFileSync(save_path, data);
@@ -72,7 +72,7 @@ ipcMain.handle('save_file_as', async (event, { file_path, data }) => {
 
 ipcMain.handle('open_file_dialog', async (event, current_file_path) => {
   const { canceled, filePaths } = await dialog.showOpenDialog(main_window, {
-    defaultPath: dirname(current_file_path),
+    defaultPath: current_file_path ? dirname(current_file_path) : undefined,
     properties: ['openFile']
   });
   if (!canceled && filePaths.length > 0) {

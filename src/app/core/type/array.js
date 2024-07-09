@@ -22,8 +22,12 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: () => [],
+    producer(cvt) {
+        return this.data.map(cvt);
+    },
     struct() {
-        return $.view({class: "core-array-root"}, [
+        return $.view({class: "core-array-root l-level"}, [
+            $.view({class: "i-zoom-hint core-s-code"}),
             $.view({class: "i-inner"}).bind(this, "inner"),
         ]).mark_enabled(this);
     },
@@ -35,7 +39,7 @@ Editor.sign_node_type({
     },
     resetter() {
         this.ref.inner.do.clear();
-        this.clear_enabled_nodes();
+        this.data.map(n => n.unmark_enabled());
     },
     methods: {
         insert(index, node) {
@@ -43,7 +47,7 @@ Editor.sign_node_type({
                 node = node.mark_enabled(this);
                 this.data.splice(index, 0, node);
                 update_style(this);
-                this.ref.inner.do.insert(index, node);
+                this.ref.inner.do.modify_at(index, 0, node);
                 return true
             }
         },
@@ -157,6 +161,9 @@ Editor.sign_node_type({
         async "switch"(src) {
             if (this.data.includes(src)) {
                 const prev_active_node = Editor.get_active_node();
+                const elem = Elem(src.elem);
+                elem.attr("zoom", 0);
+                elem.addClass("t-zoom-root");
                 Editor.set_active_node(src);
                 const res = await $.TypeSelector.do.request(this, {
                     listen_cmds: [
@@ -169,6 +176,8 @@ Editor.sign_node_type({
                         "outof",
                     ],
                 });
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
                 if (res) {
                     const node = Editor.make_node(res);
                     this.do.insert(this.data.indexOf(src), node);
@@ -183,6 +192,30 @@ Editor.sign_node_type({
         },
         "delete"(src) {
             return this.do.delete(src);
+        },
+        "zoom_in"(src) {
+            const elem = Elem(this.elem);
+            elem.attr("zoom", (_, v = 5) => (parseInt(v) + 1) % 6);
+            if (parseInt(elem.attr("zoom")) === 5) {
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
+            } else {
+                elem.addClass("t-zoom-root");
+            }
+            Editor.set_active_node(this);
+            return true;
+        },
+        "zoom_out"(src) {
+            const elem = Elem(this.elem);
+            elem.attr("zoom", (_, v = 5) => (parseInt(v) - 1 + 6) % 6);
+            if (parseInt(elem.attr("zoom")) === 5) {
+                elem.removeClass("t-zoom-root");
+                elem.removeAttr("zoom");
+            } else {
+                elem.addClass("t-zoom-root");
+            }
+            Editor.set_active_node(this);
+            return true;
         },
     },
 });

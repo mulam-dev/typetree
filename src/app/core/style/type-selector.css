@@ -17,7 +17,7 @@
     padding: 0 0.25em;
     border: none;
     outline: none;
-    color: #dddddd;
+    color: #cccccc;
     background: #222222;
     cursor: text;
     caret-color: #44ccff;
@@ -34,6 +34,7 @@
     display: flex;
     flex-direction: column;
     padding: 0 var(--border-radius);
+    margin-top: var(--border);
 }
 
 .ext-type-selector-entry {
@@ -41,13 +42,16 @@
     display: flex;
     padding: 2px 0.25em;
     background: #17446c;
+    border-left: #0066dd solid 2px;
+    border-right: #0066dd solid 2px;
 }
 
-.ext-type-selector-entry:first-child {
-    border-top: #0088ff solid 2px;
+.ext-type-selector-entry:hover {
+    background: #0066dd;
 }
 
 .ext-type-selector-entry:last-child {
+    border-bottom: #0066dd solid 2px;
     border-radius: 0 0 var(--n-border-radius) var(--n-border-radius);
 }
 
