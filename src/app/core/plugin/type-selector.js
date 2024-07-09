@@ -37,22 +37,26 @@ Editor.sign_plugin({
                                 <div class="i-name">${type.name}</div>
                                 <div class="i-info">${type.id}</div>
                             </div>
-                        `));
+                        `).on("click", () => confirm(type)));
                     }
                     this.sel_index = 0;
                     this.types = types;
                     this.e_list.children().eq(this.sel_index).addClass("f-active");
                 };
-                const blur_handle = () => {
-                    cancel();
+                const pointerdown_handle = e => {
+                    if (!Elem(e.target).closest(this.elem).length) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        cancel();
+                    }
                 };
                 this.e_input.on("keydown", keydown_handle);
                 this.e_input.on("input", input_handle);
-                this.e_input.on("blur", blur_handle);
+                Elem(document).on("pointerdown", pointerdown_handle);
                 const cleanup = () => {
                     this.e_input.off("keydown", keydown_handle);
                     this.e_input.off("input", input_handle);
-                    this.e_input.off("blur", blur_handle);
+                    Elem(document).off("pointerdown", pointerdown_handle);
                     delete this.h_confirm;
                     delete this.h_cancel;
                     this.elem.removeClass("f-show");

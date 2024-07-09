@@ -46,6 +46,10 @@
     border-right: #0066dd solid 2px;
 }
 
+.ext-type-selector-entry:hover {
+    background: #0066dd;
+}
+
 .ext-type-selector-entry:last-child {
     border-bottom: #0066dd solid 2px;
     border-radius: 0 0 var(--n-border-radius) var(--n-border-radius);
