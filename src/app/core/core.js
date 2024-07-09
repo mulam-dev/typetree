@@ -1,3 +1,4 @@
+import "./type/json-file.js";
 import "./type/view.js";
 import "./type/null.js";
 import "./type/number.js";

@@ -467,8 +467,11 @@ globalThis.Editor = new (class {
         // update_win_size();
     }
 
-    set_json(json_obj) {
-        this.set_view(json_to_view(json_obj));
+    set_json(path, json_obj) {
+        this.set_view($.json_file({
+            path,
+            data: json_to_view(json_obj),
+        }));
     }
 })();
 
@@ -526,7 +529,7 @@ if (globalThis.native) {
             try {
                 update_window_title(file.file_path.split('/').pop());
                 const json_obj = JSON.parse(file.data);
-                Editor.set_json(json_obj);
+                Editor.set_json(file.file_path, json_obj);
                 native.show_window(true);
                 return;
             } catch(e) {
@@ -541,6 +544,7 @@ if (globalThis.native) {
     });
     native.on_blank_opened(() => {
         update_window_title();
+        Editor.set_view($.json_file());
         native.show_window(true);
     });
 

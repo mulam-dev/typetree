@@ -15,9 +15,8 @@ body {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    background: #222;
-    --border-radius: 0;
-    /* --border-radius: 2px; */
+    /* --border-radius: 0; */
+    --border-radius: 2px;
 }
 
 .editor {
@@ -29,17 +28,17 @@ body {
     --rt-color: #666666;
     --rt-border: 2px;
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
-    --ed-padding: 8px;
+    --rt-padding: 8px;
     flex-shrink: 0;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: var(--ed-padding);
+    padding: var(--rt-padding);
     user-select: none;
     -webkit-user-select: none;
     cursor: default;
     position: relative;
     min-width: max-content; min-height: max-content;
-    background: #222;
     border: none;
     outline: none;
 }
@@ -48,6 +47,7 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    flex-grow: 1;
 }
 
 .ed-overlay {
@@ -79,7 +79,7 @@ body {
 }
 
 .ed-overlay > .i-scrollbox {
-    --margin: var(--ed-padding);
+    --margin: var(--rt-padding);
     position: absolute;
     pointer-events: none;
     left: calc(var(--cursor-x) - var(--margin));
