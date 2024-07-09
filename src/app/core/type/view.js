@@ -73,6 +73,9 @@ Editor.sign_node_type({
         delete(...nodes) {
             Elem(nodes.map(n => n.elem)).remove();
         },
+        clear() {
+            Elem(this.elem).empty();
+        },
         add_class(...classes) {
             this.elem.classList.add(...classes);
         },

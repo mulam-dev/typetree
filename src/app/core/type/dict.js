@@ -5,6 +5,9 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: () => [],
+    producer(cvt) {
+        return Object.fromEntries(this.data.map(([k, v]) => [k, cvt(v)]));
+    },
     to_raw() {
         const raw = {};
         for (const [key, value] of this.data) {
@@ -46,6 +49,7 @@ Editor.sign_node_type({
     resetter() {
         this.ref.inner.do.clear();
         this.clear_enabled_nodes();
+        this.elem.mark_enabled(this)
     },
     methods: {
         insert(index, key, node) {

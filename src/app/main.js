@@ -39,7 +39,10 @@ const CmdMap = {
   move_next:        ["Ctrl+ArrowDown", "Ctrl+ArrowRight"],
   move_prev:        ["Ctrl+ArrowTop", "Ctrl+ArrowLeft"],
   zoom_in:          ["Ctrl+Equal"],
-  zoom_out:          ["Ctrl+Minus"],
+  zoom_out:         ["Ctrl+Minus"],
+  save:             ["Ctrl+KeyS"],
+  save_as:          ["Ctrl+Shift+KeyS"],
+  open:             ["Ctrl+KeyO"],
 };
 
 const ShortcutMap = Object
@@ -115,9 +118,11 @@ class TypetreeNode {
 
     unmark_enabled() {
         const target = this.parent;
-        delete this.parent;
-        this.set_enabled(false);
-        target.enabled_nodes.delete(this);
+        if (target) {
+            delete this.parent;
+            this.set_enabled(false);
+            target.enabled_nodes.delete(this);
+        }
         return this;
     }
 
@@ -163,6 +168,15 @@ class TypetreeNode {
         }
         if (this.parent) {
             this.parent.resolve_event(cmds, this);
+        }
+    }
+
+    to_json() {
+        const producer = this.opts.producer;
+        if (producer) {
+            return producer.call(this, node => node.to_json());
+        } else {
+            return this.data;
         }
     }
 }
@@ -470,8 +484,24 @@ globalThis.Editor = new (class {
     set_json(path, json_obj) {
         this.set_view($.json_file({
             path,
-            data: json_to_view(json_obj),
+            data: this.json_to_view(json_obj),
         }));
+    }
+
+    json_to_view(json_obj) {
+        if (json_obj === null) return $.null();
+        switch (typeof json_obj) {
+            case "boolean": return $.boolean(json_obj);
+            case "string": return $.string(json_obj);
+            case "number": return $.number(json_obj);
+            case "object":
+                if (json_obj instanceof Array) {
+                    return $.array(json_obj.map(o => this.json_to_view(o)));
+                } else {
+                    return $.dict(Object.keys(json_obj).map(k => [k, this.json_to_view(json_obj[k])]));
+                }
+        }
+        throw -1;
     }
 })();
 
@@ -490,22 +520,6 @@ const fuzzy_score = (str, pattern) => {
         }
     }
     return score;
-};
-
-const json_to_view = json_obj => {
-    if (json_obj === null) return $.null();
-    switch (typeof json_obj) {
-        case "boolean": return $.boolean(json_obj);
-        case "string": return $.string(json_obj);
-        case "number": return $.number(json_obj);
-        case "object":
-            if (json_obj instanceof Array) {
-                return $.array(json_obj.map(json_to_view));
-            } else {
-                return $.dict(Object.keys(json_obj).map(k => [k, json_to_view(json_obj[k])]));
-            }
-    }
-    throw -1;
 };
 
 const update_window_title = (title = null) => {

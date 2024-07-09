@@ -22,6 +22,9 @@ Editor.sign_node_type({
     visible: true,
     not_embedded: true,
     data: () => [],
+    producer(cvt) {
+        return this.data.map(cvt);
+    },
     struct() {
         return $.view({class: "core-array-root l-level"}, [
             $.view({class: "i-zoom-hint core-s-code"}),
@@ -36,7 +39,7 @@ Editor.sign_node_type({
     },
     resetter() {
         this.ref.inner.do.clear();
-        this.clear_enabled_nodes();
+        this.data.map(n => n.unmark_enabled());
     },
     methods: {
         insert(index, node) {

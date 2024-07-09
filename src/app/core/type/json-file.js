@@ -24,7 +24,7 @@ Editor.sign_node_type({
     },
     resetter() {
         this.ref.inner.do.clear();
-        this.clear_enabled_nodes();
+        this.data.data.unmark_enabled();
     },
     methods: {
         set(node) {
@@ -128,6 +128,32 @@ Editor.sign_node_type({
                     Editor.set_active_node(temp_node);
                 }
                 return true;
+            }
+        },
+        "save"(src) {
+            if (this.data.path) {
+                native.save_file(this.data.path, JSON.stringify(this.data.data.to_json()));
+            } else {
+                this.resolve_event(["save_as"], src);
+            }
+            return true;
+        },
+        async "save_as"(src) {
+            const res = await native.save_file_as(this.data.path, JSON.stringify(this.data.data.to_json()));
+            if (res) {
+                this.data.path = res;
+                this.update();
+            }
+            return true;
+        },
+        async "open"(src) {
+            const res = await native.open_file_dialog(this.data.path);
+            if (res) {
+                this.data.path = res.file_path;
+                const json_obj = JSON.parse(res.data);
+                this.data.data = Editor.json_to_view(json_obj);
+                this.update();
+                Editor.set_active_node(this);
             }
         },
     },
