@@ -1,23 +1,53 @@
-# Standalone Demo of Glimmer DSL for Web
+# TypeTree
 
-This is a demo of [Glimmer DSL for Web](https://github.com/AndyObtiva/glimmer-dsl-web) without the need to run inside a rails app or any app. It is usable in a static site.
-Glimmer DSL for Web allows you to write concise Ruby instead of JavaScript. It is an alternative to React, Vue.js or Svelte.
+一个用于处理树形结构数据的编辑器
 
+## 简介
 
-## How to use:
+TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目前支持编辑JSON数据
 
-Make your changes to script.js.rb
+## 截图
 
-```
-bundle install
-ruby app.rb
-```
+![启动界面](screenshots/welcome.png)
 
-Then open index.html.
+![文件示例](/home/lanesun/Sync/code/sketch/typetree/screenshots/example.png)
 
-For your convience, I included filewatcher.rb which can be used to automatically regenerate the javascript file on edits to the code.
+## 快捷键
 
-
-## Notes
-Rails is currently still a dependency because opal-rails is included in glimmer-dsl-web, but it is technically not necessary.
-
+| Command      | Shortcut(s)                       |
+| ------------ | --------------------------------- |
+| Confirm      | Space                             |
+| InsertAfter  | Enter                             |
+| InsertBefore | Shift+Enter                       |
+| InsertTo     | Ctrl+Enter                        |
+| InsertInto   | Insert                            |
+| InsertOutof  | Shift+Insert                      |
+| Delete       | Delete, Backspace                 |
+| Switch       | Tab                               |
+| SwitchNext   | Tab                               |
+| SwitchPrev   | Shift+Tab                         |
+| Into         | Alt+Enter                         |
+| Outof        | Escape                            |
+| Up           | ArrowUp                           |
+| Right        | ArrowRight                        |
+| Down         | ArrowDown                         |
+| Left         | ArrowLeft                         |
+| Next         | ArrowDown, ArrowRight             |
+| Prev         | ArrowUp, ArrowLeft                |
+| SelectUp     | Shift+ArrowUp                     |
+| SelectRight  | Shift+ArrowRight                  |
+| SelectDown   | Shift+ArrowDown                   |
+| SelectLeft   | Shift+ArrowLeft                   |
+| SelectNext   | Shift+ArrowDown, Shift+ArrowRight |
+| SelectPrev   | Shift+ArrowUp, Shift+ArrowLeft    |
+| MoveUp       | Ctrl+ArrowUp                      |
+| MoveRight    | Ctrl+ArrowRight                   |
+| MoveDown     | Ctrl+ArrowDown                    |
+| MoveLeft     | Ctrl+ArrowLeft                    |
+| MoveNext     | Ctrl+ArrowDown, Ctrl+ArrowRight   |
+| MovePrev     | Ctrl+ArrowTop, Ctrl+ArrowLeft     |
+| ZoomIn       | Ctrl+Equal                        |
+| ZoomOut      | Ctrl+Minus                        |
+| Save         | Ctrl+KeyS                         |
+| SaveAs       | Ctrl+Shift+KeyS                   |
+| Open         | Ctrl+KeyO                         |
