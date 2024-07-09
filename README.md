@@ -10,7 +10,7 @@ TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目
 
 ![启动界面](screenshots/welcome.png)
 
-![文件示例](/home/lanesun/Sync/code/sketch/typetree/screenshots/example.png)
+![文件示例](screenshots/example.png)
 
 ## 快捷键
 
