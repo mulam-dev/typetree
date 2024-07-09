@@ -61,7 +61,7 @@ ipcMain.handle('save_file', async (event, { file_path, data }) => {
 
 ipcMain.handle('save_file_as', async (event, { file_path, data }) => {
   const { canceled, filePath: save_path } = await dialog.showSaveDialog(main_window, {
-    defaultPath: file_path
+    defaultPath: file_path ? file_path : undefined
   });
   if (!canceled && save_path) {
     fs.writeFileSync(save_path, data);

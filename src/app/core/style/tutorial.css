@@ -8,6 +8,9 @@
     justify-content: center;
     color: #777777;
 }
+.core-tutorial.t-zoom-root {
+    flex-grow: 0;
+}
 
 .core-tutorial h1,
 .core-tutorial img {
