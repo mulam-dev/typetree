@@ -6,7 +6,7 @@ Editor.sign_node_type({
     not_embedded: true,
     data: () => ({
         path: null,
-        data: $.null(),
+        data: $.tutorial(),
     }),
     struct() {
         return $.view({class: "core-file-root l-level"}, [
@@ -120,10 +120,10 @@ Editor.sign_node_type({
         },
         "delete"(src) {
             if (this.data.data === src) {
-                if (this.data.data.is("core:null")) {
+                if (this.data.data.is("core:tutorial")) {
                     Editor.set_active_node(this);
                 } else {
-                    const temp_node = $.null();
+                    const temp_node = $.tutorial();
                     this.do.set(temp_node);
                     Editor.set_active_node(temp_node);
                 }
