@@ -1,8 +1,7 @@
 .ext-inline-editor-root {
     --border: 2px;
     position: absolute;
-    left: var(--cursor-x);
-    top: var(--cursor-y);
+    transform: translate3d(var(--cursor-x), var(--cursor-y), 0);
     pointer-events: all;
     display: none;
     padding: 0 0.25em;

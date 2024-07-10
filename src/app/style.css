@@ -55,6 +55,7 @@ body {
     inset: 0;
     pointer-events: none;
     z-index: 10;
+    overflow: hidden;
 }
 
 @keyframes cursor-blink {
@@ -69,8 +70,7 @@ body {
 .ed-overlay > .i-cursor {
     display: none;
     position: absolute;
-    left: var(--cursor-x);
-    top: var(--cursor-y);
+    transform: translate3d(var(--cursor-x), var(--cursor-y), 0);
     width: var(--cursor-w);
     height: var(--cursor-h);
     outline: solid 2px #888888;
@@ -82,8 +82,7 @@ body {
     --margin: var(--rt-padding);
     position: absolute;
     pointer-events: none;
-    left: calc(var(--cursor-x) - var(--margin));
-    top: calc(var(--cursor-y) - var(--margin));
+    transform: translate3d(calc(var(--cursor-x) - var(--margin)), calc(var(--cursor-y) - var(--margin)), 0);
     width: calc(var(--cursor-w) + var(--margin) * 2);
     height: calc(var(--cursor-h) + var(--margin) * 2);
 }

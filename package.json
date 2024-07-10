@@ -2,7 +2,7 @@
   "name": "typetree",
   "homepage": "https://anlbrain.com/",
   "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "main.js",
   "build": {
     "productName": "TypeTree",

@@ -1,8 +1,7 @@
 .ext-type-selector-root {
     --border: 2px;
     position: absolute;
-    left: calc(var(--cursor-x));
-    top: calc(var(--cursor-y) + var(--cursor-h) + var(--border) + 2px);
+    transform: translate3d(var(--cursor-x), calc(var(--cursor-y) + var(--cursor-h) + var(--border) + 2px), 0);
     pointer-events: all;
     display: none;
     flex-direction: column;
