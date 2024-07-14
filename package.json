@@ -1,0 +1,43 @@
+{
+  "name": "typetree",
+  "homepage": "https://anlbrain.com/",
+  "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
+  "version": "0.1-refactored",
+  "main": "src/main.js",
+  "build": {
+    "productName": "TypeTree",
+    "appId": "com.anlbrain.typetree",
+    "icon": "res/icons/512x512.png",
+    "linux": {
+      "category": "Utility",
+      "target": "rpm"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "res/icon.ico"
+    },
+    "fileAssociations": [
+      {
+        "ext": "typetree",
+        "name": "TypeTree File",
+        "role": "Editor",
+        "mimeType": "application/x-typetree"
+      },
+      {
+        "ext": "json",
+        "name": "JSON File",
+        "role": "Editor",
+        "mimeType": "application/json"
+      }
+    ]
+  },
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-builder"
+  },
+  "type": "module",
+  "devDependencies": {
+    "electron": "^31.1.0",
+    "electron-builder": "^24.13.3"
+  }
+}
