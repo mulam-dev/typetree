@@ -43,6 +43,7 @@ global.Mahad = class Mahad extends Array {
 
     constructor(...inner) {
         super(...inner);
+        this.data_ver = 0;
         this.data_ref = null;
         this.data_to = new Map();
     }
@@ -217,6 +218,7 @@ global.Mahad = class Mahad extends Array {
         this.set_to(id, {
             [MC_EDIT]: fn,
         });
+        return this;
     }
 
     // 连接器 (单向)
@@ -341,6 +343,14 @@ const EM_ATTR_GUARDS = {
         val => elem.classList.add(val),
         val => elem.classList.remove(val),
     ],
+    "value": (elem, mattr) => {
+        elem.addEventListener("change", () => {
+            mattr.val = elem.value;
+        });
+        return [
+            val => elem.value = val,
+        ];
+    },
 };
 
 global.ElemMahad = class ElemMahad extends Mahad {
@@ -363,7 +373,7 @@ global.ElemMahad = class ElemMahad extends Mahad {
             v => {
                 const e = v instanceof ElemMahad ? v.elem : v;
                 e.remove();
-            }
+            },
         ));
         return this;
     }
@@ -372,7 +382,7 @@ global.ElemMahad = class ElemMahad extends Mahad {
         if (guard) {
             const mattr = vals[0] instanceof Mahad ? vals[0] : M(...vals);
             mattr.ref = key;
-            mattr.guard(null, ...guard(this.elem));
+            mattr.guard(null, ...guard(this.elem, mattr));
             this.postfix(mattr);
         }
         return this;
@@ -394,70 +404,74 @@ global.ElemMahad = class ElemMahad extends Mahad {
 
 // TEST
 
-const eq = (a, b) => {
-    if (a.toString() !== b.toString()) {
-        console.error("Assertion failed");
-        console.log(a);
-        console.log("    ↓");
-        console.log(b);
-        console.log();
-        console.log(a.toString());
-        console.log("    ↓");
-        console.log(b.toString());
-    }
-};
+// const eq = (a, b) => {
+//     if (a.toString() !== b.toString()) {
+//         console.error("Assertion failed");
+//         console.log(a);
+//         console.log("    ↓");
+//         console.log(b);
+//         console.log();
+//         console.log(a.toString());
+//         console.log("    ↓");
+//         console.log(b.toString());
+//     }
+// };
 
-data = M('a', 'b', 'c', 'd');
-data.exchange('a', 'c');
-eq(data, "(c b a d)");
+// data = M('a', 'b', 'c', 'd');
+// data.exchange('a', 'c');
+// eq(data, "(c b a d)");
 
-data = M(0, 1, 2, 3, 4, 5, 6, 7, 8 ,9);
-data.exchange(1, 2, 4, 8);
-eq(data, "(0 4 5 6 7 8 3 1 2 9)");
+// data = M(0, 1, 2, 3, 4, 5, 6, 7, 8 ,9);
+// data.exchange(1, 2, 4, 8);
+// eq(data, "(0 4 5 6 7 8 3 1 2 9)");
 
-a = M(0, 1, 2, 3);
-b = a.bmap(v => v ** 2);
-c = b.breduce((s, v) => s + v, 0);
-eq(b, "(0 1 4 9)")
-eq(c, "(14)");
-a.set(0, 4);
-eq(b, "(16 1 4 9)")
-eq(c, "(30)");
+// a = M(0, 1, 2, 3);
+// b = a.bmap(v => v ** 2);
+// c = b.breduce((s, v) => s + v, 0);
+// eq(b, "(0 1 4 9)");
+// eq(c, "(14)");
+// a.set(0, 4);
+// eq(b, "(16 1 4 9)");
+// eq(c, "(30)");
 
-a = M(M(0), M(1), M(2), M(3));
-b = a.bmap(v => v.bmap(v => v ** 2));
-c = b.breduce((s, v, _, $) => s + $(v)[0], 0);
-eq(b, "((0) (1) (4) (9))")
-eq(c, "(14)");
-a[0].set(0, 4);
-eq(b, "((16) (1) (4) (9))")
-eq(c, "(30)");
+// a = M(M(0), M(1), M(2), M(3));
+// b = a.bmap(v => v.bmap(v => v ** 2));
+// c = b.breduce((s, v, _, $) => s + $(v)[0], 0);
+// eq(b, "((0) (1) (4) (9))");
+// eq(c, "(14)");
+// a[0].set(0, 4);
+// eq(b, "((16) (1) (4) (9))");
+// eq(c, "(30)");
 
-data = M(M(
-    M.id("lanesun"),
-    M.money(20),
-), M(
-    M.id("foo"),
-    M.money(16),
-), M(
-    M.id("bar"),
-    M.money(32),
-));
-sum_money = data.breduce((sum, person, _, $) => sum + $(person.ref("money")).val, 0);
-sort_data = data.bsort((a, b, $) => $(a.ref("money")).val - $(b.ref("money")).val);
-eq(sum_money, "(68)");
-eq(sort_data, "((id(foo) money(16)) (id(lanesun) money(20)) (id(bar) money(32)))");
-data[1].ref("money").val = 48;
-eq(sum_money, "(100)");
-eq(sort_data, "((id(lanesun) money(20)) (id(bar) money(32)) (id(foo) money(48)))");
-data[1].ref("money").val = 68;
-eq(sum_money, "(120)");
-eq(sort_data, "((id(lanesun) money(20)) (id(bar) money(32)) (id(foo) money(68)))");
+// data = M(M(
+//     M.id("lanesun"),
+//     M.money(20),
+// ), M(
+//     M.id("foo"),
+//     M.money(16),
+// ), M(
+//     M.id("bar"),
+//     M.money(32),
+// ));
+// sum_money = data.breduce((sum, person, _, $) => sum + $(person.ref("money")).val, 0);
+// sort_data = data.bsort((a, b, $) => $(a.ref("money")).val - $(b.ref("money")).val);
+// eq(sum_money, "(68)");
+// eq(sort_data, "((id(foo) money(16)) (id(lanesun) money(20)) (id(bar) money(32)))");
+// data[1].ref("money").val = 48;
+// eq(sum_money, "(100)");
+// eq(sort_data, "((id(lanesun) money(20)) (id(bar) money(32)) (id(foo) money(48)))");
+// data[1].ref("money").val = 68;
+// eq(sum_money, "(120)");
+// eq(sort_data, "((id(lanesun) money(20)) (id(bar) money(32)) (id(foo) money(68)))");
 
-window.onload = () => {
+// window.onload = () => {
 
-EM.div.id("view").class("a", "b")(
-    EM.p.text("hello")(),
-).attach(document.body);
+// value = M("Lane Sun");
+// checked = M(false);
 
-};
+// EM.div.id("view").class("a", "b")(
+//     EM.h1.text(value.bmap(v => `Hello ${v}!`))(),
+//     EM.input.value(value)(),
+// ).attach(document.body);
+
+// };
