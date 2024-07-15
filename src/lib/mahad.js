@@ -173,6 +173,9 @@ global.Mahad = class Mahad extends Array {
     unpostfix(delete_count) {
         return this.modify(this.length - delete_count, delete_count);
     }
+    assign(new_values) {
+        return this.modify(0, this.length, new_values);
+    }
     set(offset, value) {
         return this.modify(offset, 1, [value]);
     }
@@ -198,16 +201,16 @@ global.Mahad = class Mahad extends Array {
     guard(id, into, outof) {
         this.set_to(id, {
             [MC_MODIFY]: (tar, data, deletes, inserts, offset, delete_count) => {
-                if (outof) for (const v of deletes) {
-                    outof(v);
+                if (outof) for (let i = deletes.length - 1; i >= 0; i--) {
+                    outof(deletes[i], offset + i);
                 }
-                if (into) for (const v of inserts) {
-                    into(v);
+                if (into) for (let i = 0; i < inserts.length; i++) {
+                    into(inserts[i], offset + i);
                 }
             },
         });
-        if (into) for (const v of this) {
-            into(v);
+        if (into) for (let i = 0; i < this.length; i++) {
+            into(this[i], i);
         }
         return this;
     }
@@ -228,11 +231,9 @@ global.Mahad = class Mahad extends Array {
         return this;
     }
     make_bind(fns, data) {
-        const tar = new Mahad();
-        tar.bind(this, fns, data);
-        return tar;
+        return new Mahad().bind(this, fns, data);
     }
-    bmap(fn) {
+    bind_map(src, fn) {
         const data = M().guard(null, null, links => links.forEach(([m, id]) => m.unset_to(id)));
         const handle_modify = (tar, data, deletes, inserts, offset, delete_count) => {
             const insert_links_set = [];
@@ -250,45 +251,65 @@ global.Mahad = class Mahad extends Array {
             }));
             data.modify(offset, delete_count, insert_links_set);
         };
-        const tar = this.make_bind({
+        handle_modify(this, data, [], src, 0, 0);
+        return this.bind(src, {
             [MC_MOVE]: (tar, data, moves, offset, count, delta) => {
                 tar.move(offset, count, delta);
                 data.move(offset, count, delta);
             },
             [MC_MODIFY]: handle_modify,
         }, data);
-        handle_modify(tar, data, [], this, 0, 0);
-        return tar;
+    }
+    bind_reduce(src, fn, init_value) {
+        const data = [];
+        const update = () => {
+            data[0]?.forEach(([m, id]) => m.unset_to(id));
+            const links = [];
+            const mark = _make_marker(links, update);
+            this.val = src.reduce((pre, cur, index) => fn(pre, cur, index, mark), init_value);
+            data[0] = links;
+        };
+        update();
+        return this.bind(src, {
+            [MC_MODIFY]: update,
+        }, data);
+    }
+    bind_sort(src, fn) {
+        const data = [];
+        const update = () => {
+            data[0]?.forEach(([m, id]) => m.unset_to(id));
+            const links = [];
+            const mark = _make_marker(links, update);
+            this.assign(src.toSorted((a, b) => fn(a, b, mark)));
+            data[0] = links;
+        };
+        update();
+        return this.bind(src, {
+            [MC_MODIFY]: update,
+        }, data);
+    }
+    bind_clone(src) {
+        this.assign(src);
+        return this.bind(src, {
+            [MC_MOVE]: (tar, data, moves, offset, count, delta) => {
+                tar.move(offset, count, delta);
+            },
+            [MC_MODIFY]: (tar, data, deletes, inserts, offset, delete_count) => {
+                tar.modify(offset, delete_count, inserts);
+            },
+        }, data);
+    }
+    bmap(fn) {
+        return new Mahad().bind_map(this, fn);
     }
     breduce(fn, init_value) {
-        const data = [];
-        const update = () => {
-            data[0]?.forEach(([m, id]) => m.unset_to(id));
-            const links = [];
-            const mark = _make_marker(links, update);
-            tar.val = this.reduce((pre, cur, index) => fn(pre, cur, index, mark), init_value);
-            data[0] = links;
-        };
-        const tar = this.make_bind({
-            [MC_MODIFY]: update,
-        }, data);
-        update();
-        return tar;
+        return new Mahad().bind_reduce(this, fn, init_value);
     }
     bsort(fn) {
-        const data = [];
-        const update = () => {
-            data[0]?.forEach(([m, id]) => m.unset_to(id));
-            const links = [];
-            const mark = _make_marker(links, update);
-            tar.modify(0, tar.length, this.toSorted((a, b) => fn(a, b, mark)));
-            data[0] = links;
-        };
-        const tar = this.make_bind({
-            [MC_MODIFY]: update,
-        }, data);
-        update();
-        return tar;
+        return new Mahad().bind_sort(this, fn);
+    }
+    bclone() {
+        return new Mahad().bind_clone(this);
     }
 };
 
@@ -296,7 +317,7 @@ const _em_handle_head = {
     apply: (_t, _s, args) => {
         const em = new ElemMahad();
         em.init();
-        em.ref("inner").postfix(...args);
+        if (args.length) em.attr("inner", args);
         return em;
     },
     get: (_, name) => {
@@ -312,16 +333,20 @@ const _em_handle_tail = {
         const em = new ElemMahad();
         em.name = tar.ename;
         em.init();
-        em.ref("inner").postfix(...args);
+        if (args.length) em.attr("inner", args);
         for (const [key, vals] of tar.attrs) {
             em.attr(key, vals);
         }
         return em;
     },
-    get: (tar, key) => (...vals) => {
+    get: (tar, key) => (...args) => {
         const ntar = () => {};
         ntar.ename = tar.ename;
-        ntar.attrs = tar.attrs.concat([[key, vals]]);
+        if (key.startsWith('$')) {
+            ntar.attrs = tar.attrs.concat([[key.slice(1), args[0]]]);
+        } else {
+            ntar.attrs = tar.attrs.concat([[key, args]]);
+        }
         return new Proxy(ntar, _em_handle_tail);
     },
 };
@@ -351,6 +376,19 @@ const EM_ATTR_GUARDS = {
             val => elem.value = val,
         ];
     },
+    "inner": elem => [
+        (v, i) => {
+            const e = v instanceof ElemMahad ? v.elem : v instanceof Node ? v : new Text(v);
+            if (i === elem.childNodes.length) {
+                elem.append(e);
+            } else {
+                elem.insertBefore(e, elem.childNodes[i]);
+            }
+        },
+        (v, i) => {
+            elem.childNodes[i].remove();
+        },
+    ],
 };
 
 global.ElemMahad = class ElemMahad extends Mahad {
@@ -361,26 +399,12 @@ global.ElemMahad = class ElemMahad extends Mahad {
     init() {
         this.elem = document.createElement(this.name);
         this.elem[EMK_MAHAD] = this;
-        this.postfix(M.inner().guard(null,
-            (v, i) => {
-                const e = v instanceof ElemMahad ? v.elem : v;
-                if (i === this.elem.children.length) {
-                    this.elem.append(e);
-                } else {
-                    this.elem.insertBefore(e, this.elem.children[i]);
-                }
-            },
-            v => {
-                const e = v instanceof ElemMahad ? v.elem : v;
-                e.remove();
-            },
-        ));
         return this;
     }
     attr(key, vals = ['']) {
         const guard = EM_ATTR_GUARDS[key];
         if (guard) {
-            const mattr = vals[0] instanceof Mahad ? vals[0] : M(...vals);
+            const mattr = vals instanceof Mahad ? vals : M(...vals);
             mattr.ref = key;
             mattr.guard(null, ...guard(this.elem, mattr));
             this.postfix(mattr);
@@ -469,9 +493,26 @@ global.ElemMahad = class ElemMahad extends Mahad {
 // value = M("Lane Sun");
 // checked = M(false);
 
-// EM.div.id("view").class("a", "b")(
-//     EM.h1.text(value.bmap(v => `Hello ${v}!`))(),
-//     EM.input.value(value)(),
+// const {div, h1, input} = EM;
+
+// div.id("view").class("a", "b")(
+//     h1.$text(value.bmap(v => `Hello ${v}!`))(),
+//     input.$value(value)(),
 // ).attach(document.body);
+
+// data = M.div(
+//     M.h1("Title"),
+//     M.p(
+//         "this is some text",
+//     ),
+// );
+
+// map_fn = m => m instanceof Mahad ? EM[m.data_ref].$inner(m.bmap(map_fn))() : m;
+
+// map_fn(data).attach(document.body);
+
+// data.postfix(M.p("new line: "));
+// data[2].postfix(M.b("bold text"), " and ", M.i("italic text"), " and ", M.del("this will be deleted"));
+// data[2].unpostfix(2);
 
 // };
