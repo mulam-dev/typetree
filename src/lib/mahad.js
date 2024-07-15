@@ -14,12 +14,17 @@ global.M = new Proxy(() => {}, {
     },
 });
 
-const MC_MOVE = Symbol("move");
-const MC_MODIFY = Symbol("modify");
+const MC_MOVE = 0;
+const MC_MODIFY = 1;
+const MC_EDIT = 2;
+const MC_SIZE = 3;
 
-const MT_TRANSFORM = Symbol("transform");
-
-const MN_ALL = Symbol("all");
+const _make_marker = (links, updater) => m => {
+    const id = Symbol();
+    links.push([m, id]);
+    m.listen(id, updater);
+    return m;
+};
 
 global.Mahad = class Mahad extends Array {
     static unfold(init_value, fn) {
@@ -39,12 +44,7 @@ global.Mahad = class Mahad extends Array {
     constructor(...inner) {
         super(...inner);
         this.data_ref = null;
-        this.data_guard = [];
-        this.data_to = [];
-        this.data_notify = [];
-        for (let i = 0; i < this.length; i++) {
-            this.into_guard(this[i], i);
-        }
+        this.data_to = new Map();
     }
     get [Symbol.toStringTag]() {
         return this.ref ? `Mahad:${this.ref}` : "Mahad";
@@ -80,33 +80,24 @@ global.Mahad = class Mahad extends Array {
                 case MC_MOVE:
                     const [count, delta] = args;
                     const moves = this.splice(offset, count);
-                    for (let i = 0; i < count; i++) {
-                        this.outof_guard(moves[i], offset + i);
-                    }
                     this.splice(offset + delta, 0, ...moves);
-                    for (let i = 0; i < count; i++) {
-                        this.into_guard(moves[i], offset + delta + i);
+                    for (const [tar, [fns, data]] of this.data_to) {
+                        fns[MC_MOVE]?.call(this, tar, data, moves, offset, count, delta);
                     }
                     break;
                 case MC_MODIFY:
-                    const [delete_count, ...insert_values] = args;
-                    res = this.splice(offset, delete_count, ...insert_values);
-                    for (let i = 0; i < delete_count; i++) {
-                        this.outof_guard(res[i], offset + i);
+                    const [delete_count, inserts] = args;
+                    const deletes = this.splice(offset, delete_count, ...inserts);
+                    for (const [tar, [fns, data]] of this.data_to) {
+                        fns[MC_MODIFY]?.call(this, tar, data, deletes, inserts, offset, delete_count);
                     }
-                    for (let i = 0; i < insert_values.length; i++) {
-                        this.into_guard(insert_values[i], offset + i);
-                    }
+                    res = deletes;
                     break;
             }
         }
-        for (const opts of [...this.data_notify]) {
-            const [_, type] = opts;
-            if (type === MN_ALL) {
-                this.notify(opts);
-            }
+        for (const [tar, [fns, data]] of [...this.data_to]) {
+            fns[MC_EDIT]?.call(this, tar, data, this);
         }
-        this.push_to_all();
         return res;
     }
     move(offset, count, delta) {
@@ -152,28 +143,28 @@ global.Mahad = class Mahad extends Array {
             );
         }
     }
-    modify(offset, delete_count, ...insert_values) {
-        return this.edit([MC_MODIFY, offset, delete_count, ...insert_values]);
+    modify(offset, delete_count, inserts = []) {
+        return this.edit([MC_MODIFY, offset, delete_count, inserts]);
     }
-    modify_at(value, delete_count, ...insert_values) {
-        return this.modify(this.index(value), delete_count, ...insert_values);
+    modify_at(value, delete_count, inserts) {
+        return this.modify(this.index(value), delete_count, inserts);
     }
-    modify_before(value, delete_count, ...insert_values) {
-        return this.modify(this.index(value) - delete_count, delete_count, ...insert_values);
+    modify_before(value, delete_count, inserts) {
+        return this.modify(this.index(value) - delete_count, delete_count, inserts);
     }
-    modify_after(value, delete_count, ...insert_values) {
-        return this.modify(this.index(value) + 1, delete_count, ...insert_values);
+    modify_after(value, delete_count, inserts) {
+        return this.modify(this.index(value) + 1, delete_count, inserts);
     }
-    modify_range(start_value, end_value, ...insert_values) {
+    modify_range(start_value, end_value, inserts) {
         const start_index = this.index(start_value);
         const end_index = this.index(end_value) + 1;
-        return this.modify(start_index, end_index - start_index, ...insert_values);
+        return this.modify(start_index, end_index - start_index, inserts);
     }
     prefix(...values) {
-        return this.modify(0, 0, ...values);
+        return this.modify(0, 0, values);
     }
     postfix(...values) {
-        return this.modify(this.length, 0, ...values);
+        return this.modify(this.length, 0, values);
     }
     unprefix(delete_count) {
         return this.modify(0, delete_count);
@@ -182,190 +173,120 @@ global.Mahad = class Mahad extends Array {
         return this.modify(this.length - delete_count, delete_count);
     }
     set(offset, value) {
-        return this.modify(offset, 1, value);
+        return this.modify(offset, 1, [value]);
     }
     set val(value) {
-        this.modify(0, 1, value);
-    }
-
-    // 守卫器
-
-    set_guard(...guards) {
-        for (const guard of guards) {
-            if (!this.data_guard.includes(guard)) {
-                this.data_guard.push(guard);
-                this.guard_into(guard);
-            }
-        }
-    }
-    unset_guard(...guards) {
-        for (const guard of guards) {
-            const index = this.data_guard.indexOf(guard);
-            if (index >= 0) {
-                this.data_guard.splice(index, 1);
-                this.guard_outof(guard);
-            }
-        }
-    }
-    guard_into([into]) {
-        for (let i = 0; i < this.length; i++) {
-            into(this[i], i);
-        }
-    }
-    guard_outof([_, outof]) {
-        for (let i = 0; i < this.length; i++) {
-            outof(this[i], i);
-        }
-    }
-    into_guard(v, i) {
-        this._on_into_guard(v, i);
-        for (const [into] of this.data_guard) {
-            into(v, i);
-        }
-    }
-    outof_guard(v, i) {
-        const data_guard = this.data_guard;
-        for (let gi = data_guard.length - 1; gi >= 0; gi--) {
-            const [_, outof] = data_guard[gi];
-            outof(v, i);
-        }
-        this._on_outof_guard(v, i);
-    }
-    _on_into_guard(v, i) {}
-    _on_outof_guard(v, i) {}
-
-    // 通知器
-
-    set_notify(tar, type, ...args) {
-        const opts = [tar, type, ...args];
-        this.data_notify.push(opts);
-        return opts;
-    }
-    unset_notify(opts) {
-        this.data_notify.splice(this.data_notify.indexOf(opts), 1);
-    }
-    notify(opts) {
-        const [[src, push_opts]] = opts;
-        src.push_to(push_opts);
-        return opts;
-    }
-    notify_all() {
-        for (const opts of this.data_notify) {
-            this.notify(opts);
-        }
+        this.modify(0, 1, [value]);
     }
 
     // 推送器
 
-    set_to(tar, type, ...args) {
-        const opts = [tar, [], type, ...args];
-        this.data_to.push(opts);
-        return opts;
+    set_to(tar, fns, data = []) {
+        const vfns = new Array(MC_SIZE);
+        for (const type in fns) {
+            vfns[type] = fns[type];
+        }
+        this.data_to.set(tar, [vfns, data]);
     }
-    push_to(opts) {
-        const [tar, data, type, ...args] = opts;
-        switch (type) {
-            case MT_TRANSFORM:
-                data[0]?.();
-                const [fn] = args;
-                const notifies = [];
-                const make_proxy = m => new Proxy(m, {
-                    get: (target, p) => {
-                        if (p === "self") return target;
-                        notifies.push([target, target.set_notify([this, opts], MN_ALL)]);
-                        if (typeof p === "number") {
-                            const v = target[p];
-                            return v instanceof Mahad ? make_proxy(v) : v;
-                        } else switch (p) {
-                            case "get":
-                                return p => {
-                                    const v = target.get(p);
-                                    return v instanceof Mahad ? make_proxy(v) : v;
-                                };
-                            case "index":
-                                // TODO
-                            case "ref":
-                                return p => {
-                                    const v = target.ref(p);
-                                    return v instanceof Mahad ? make_proxy(v) : v;
-                                };
-                            case "val":
-                                const v = target.val;
-                                return v instanceof Mahad ? make_proxy(v) : v;
-                        }
-                        return Reflect.get(target, p);
-                    },
-                });
-                const res = fn(this.map(v => v instanceof Mahad ? make_proxy(v) : v));
-                data[0] = () => {
-                    for (const [tar, opts] of notifies) {
-                        tar.unset_notify(opts);
-                    }
+    unset_to(tar) {
+        this.data_to.delete(tar);
+    }
+
+    // 守卫器
+
+    guard(id, into, outof) {
+        this.set_to(id, {
+            [MC_MODIFY]: (tar, data, deletes, inserts, offset, delete_count) => {
+                if (outof) for (const v of deletes) {
+                    outof(v);
                 }
-                tar.edit([MC_MODIFY, 0, tar.length, ...res]);
-                break;
+                if (into) for (const v of inserts) {
+                    into(v);
+                }
+            },
+        });
+        if (into) for (const v of this) {
+            into(v);
         }
-        return opts;
+        return this;
     }
-    push_to_all() {
-        for (const opts of this.data_to) {
-            this.push_to(opts);
-        }
+
+    // 监听器
+
+    listen(id, fn) {
+        this.set_to(id, {
+            [MC_EDIT]: fn,
+        });
     }
 
     // 连接器 (单向)
 
-    bind(src, [ahead_xfmr]) {
-        src.push_to(src.set_to(this, ...ahead_xfmr));
+    bind(src, fns, data) {
+        src.set_to(this, fns, data);
+        return this;
     }
-    make_bind(xfmr) {
+    make_bind(fns, data) {
         const tar = new Mahad();
-        tar.bind(this, xfmr);
+        tar.bind(this, fns, data);
         return tar;
-    }
-    btrans(fn) {
-        return this.make_bind([[MT_TRANSFORM, fn]]);
     }
     bmap(fn) {
-        return this.btrans(src => src.map(fn));
-    }
-    breduce(fn, init_value) {
-        return this.btrans(src => [src.reduce(fn, init_value)]);
-    }
-    bsort(fn) {
-        return this.btrans(src => src.toSorted(fn).map(p => p.self));
-    }
-
-    // 连接器 (双向)
-
-    sync(src, [ahead_xfmr, back_xfmr]) {
-        this.set_to(src, ...back_xfmr);
-        src.push_to(src.set_to(this, ...ahead_xfmr));
-    }
-    make_sync(xfmr) {
-        const tar = new Mahad();
-        tar.sync(this, xfmr);
+        const data = M().guard(null, null, links => links.forEach(([m, id]) => m.unset_to(id)));
+        const handle_modify = (tar, data, deletes, inserts, offset, delete_count) => {
+            const insert_links_set = [];
+            tar.modify(offset, delete_count, inserts.map((v, i) => {
+                const index = offset + i;
+                const insert_links = [];
+                const update = () => {
+                    const insert_links = [];
+                    tar.set(index, fn(v, index, _make_marker(insert_links, update)));
+                    data.set(index, insert_links);
+                };
+                const res = fn(v, index, _make_marker(insert_links, update));
+                insert_links_set.push(insert_links);
+                return res;
+            }));
+            data.modify(offset, delete_count, insert_links_set);
+        };
+        const tar = this.make_bind({
+            [MC_MOVE]: (tar, data, moves, offset, count, delta) => {
+                tar.move(offset, count, delta);
+                data.move(offset, count, delta);
+            },
+            [MC_MODIFY]: handle_modify,
+        }, data);
+        handle_modify(tar, data, [], this, 0, 0);
         return tar;
     }
-    strans(fn, bfn) {
-        return this.make_bind([[MT_TRANSFORM, fn], [MT_TRANSFORM, bfn]]);
+    breduce(fn, init_value) {
+        const data = [];
+        const update = () => {
+            data[0]?.forEach(([m, id]) => m.unset_to(id));
+            const links = [];
+            const mark = _make_marker(links, update);
+            tar.val = this.reduce((pre, cur, index) => fn(pre, cur, index, mark), init_value);
+            data[0] = links;
+        };
+        const tar = this.make_bind({
+            [MC_MODIFY]: update,
+        }, data);
+        update();
+        return tar;
     }
-    smap(fn, bfn) {
-        return this.strans(src => src.map(fn), tar => tar.map(bfn));
-    }
-    sreduce(fn, bfn, init_value) {
-        return this.strans(src => [src.reduce(fn, init_value)], tar => Mahad.unfold(tar.val, bfn));
-    }
-
-    // 写入器
-
-    set_writer(type, ...args) {
-        const opts = [[], type, ...args];
-        this.data_writer.push(opts);
-        return opts;
-    }
-    write(opts) {
-        //
+    bsort(fn) {
+        const data = [];
+        const update = () => {
+            data[0]?.forEach(([m, id]) => m.unset_to(id));
+            const links = [];
+            const mark = _make_marker(links, update);
+            tar.modify(0, tar.length, this.toSorted((a, b) => fn(a, b, mark)));
+            data[0] = links;
+        };
+        const tar = this.make_bind({
+            [MC_MODIFY]: update,
+        }, data);
+        update();
+        return tar;
     }
 };
 
@@ -430,9 +351,20 @@ global.ElemMahad = class ElemMahad extends Mahad {
     init() {
         this.elem = document.createElement(this.name);
         this.elem[EMK_MAHAD] = this;
-        const eminner = new ElemMahadInner();
-        eminner.elem = this.elem;
-        this.postfix(eminner);
+        this.postfix(M.inner().guard(null,
+            (v, i) => {
+                const e = v instanceof ElemMahad ? v.elem : v;
+                if (i === this.elem.children.length) {
+                    this.elem.append(e);
+                } else {
+                    this.elem.insertBefore(e, this.elem.children[i]);
+                }
+            },
+            v => {
+                const e = v instanceof ElemMahad ? v.elem : v;
+                e.remove();
+            }
+        ));
         return this;
     }
     attr(key, vals = ['']) {
@@ -440,7 +372,7 @@ global.ElemMahad = class ElemMahad extends Mahad {
         if (guard) {
             const mattr = vals[0] instanceof Mahad ? vals[0] : M(...vals);
             mattr.ref = key;
-            mattr.set_guard(guard(this.elem));
+            mattr.guard(null, ...guard(this.elem));
             this.postfix(mattr);
         }
         return this;
@@ -457,27 +389,6 @@ global.ElemMahad = class ElemMahad extends Mahad {
         }
     }
 };
-
-class ElemMahadInner extends Mahad {
-    constructor(...inner) {
-        super(...inner);
-        this.data_ref = "inner";
-    }
-    _on_into_guard(v, i) {
-        super._on_into_guard(v, i);
-        const e = v instanceof ElemMahad ? v.elem : v;
-        if (i === this.elem.children.length) {
-            this.elem.append(e);
-        } else {
-            this.elem.insertBefore(e, this.elem.children[i]);
-        }
-    }
-    _on_outof_guard(v, i) {
-        super._on_outof_guard(v, i);
-        const e = v instanceof ElemMahad ? v.elem : v;
-        e.remove();
-    }
-}
 
 })(globalThis);
 
@@ -515,7 +426,7 @@ eq(c, "(30)");
 
 a = M(M(0), M(1), M(2), M(3));
 b = a.bmap(v => v.bmap(v => v ** 2));
-c = b.breduce((s, v) => s + v[0], 0);
+c = b.breduce((s, v, _, $) => s + $(v)[0], 0);
 eq(b, "((0) (1) (4) (9))")
 eq(c, "(14)");
 a[0].set(0, 4);
@@ -532,8 +443,8 @@ data = M(M(
     M.id("bar"),
     M.money(32),
 ));
-sum_money = data.breduce((sum, person) => sum + person.ref("money").val, 0);
-sort_data = data.bsort((a, b) => a.ref("money").val - b.ref("money").val);
+sum_money = data.breduce((sum, person, _, $) => sum + $(person.ref("money")).val, 0);
+sort_data = data.bsort((a, b, $) => $(a.ref("money")).val - $(b.ref("money")).val);
 eq(sum_money, "(68)");
 eq(sort_data, "((id(foo) money(16)) (id(lanesun) money(20)) (id(bar) money(32)))");
 data[1].ref("money").val = 48;
