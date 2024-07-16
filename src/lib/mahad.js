@@ -48,7 +48,7 @@ global.Mahad = class Mahad extends Array {
         if (this[data_to_field]) {
             return this[data_to_field];
         } else {
-            const data_to = new Map();
+            const data_to = Array(MC_SIZE).fill(0).map(v => new Map());
             this[data_to_field] = data_to;
             return data_to;
         }
@@ -91,6 +91,7 @@ global.Mahad = class Mahad extends Array {
     // 修改器
 
     edit(...cmds) {
+        const vdata_to = this[data_to];
         let res = null;
         for (const [cmd, offset, ...args] of cmds) {
             switch (cmd) {
@@ -98,22 +99,22 @@ global.Mahad = class Mahad extends Array {
                     const [count, delta] = args;
                     const moves = this.splice(offset, count);
                     this.splice(offset + delta, 0, ...moves);
-                    for (const [tar, [fns, data]] of this[data_to]) {
-                        fns[MC_MOVE]?.call(this, tar, data, moves, offset, count, delta);
+                    for (const [tar, [fn, data]] of vdata_to[MC_MOVE]) {
+                        fn.call(this, tar, data, moves, offset, count, delta);
                     }
                     break;
                 case MC_MODIFY:
                     const [delete_count, inserts] = args;
                     const deletes = this.splice(offset, delete_count, ...inserts);
-                    for (const [tar, [fns, data]] of this[data_to]) {
-                        fns[MC_MODIFY]?.call(this, tar, data, deletes, inserts, offset, delete_count);
+                    for (const [tar, [fn, data]] of vdata_to[MC_MODIFY]) {
+                        fn.call(this, tar, data, deletes, inserts, offset, delete_count);
                     }
                     res = deletes;
                     break;
             }
         }
-        for (const [tar, [fns, data]] of [...this[data_to]]) {
-            fns[MC_EDIT]?.call(this, tar, data, this);
+        for (const [tar, [fn, data]] of [...vdata_to[MC_EDIT]]) {
+            fn.call(this, tar, data, this);
         }
         return res;
     }
@@ -202,14 +203,15 @@ global.Mahad = class Mahad extends Array {
     // 推送器
 
     set_to(tar, fns, data = []) {
-        const vfns = new Array(MC_SIZE);
+        const vdata_to = this[data_to];
         for (const type in fns) {
-            vfns[type] = fns[type];
+            vdata_to[type].set(tar, [fns[type], data]);
         }
-        this[data_to].set(tar, [vfns, data]);
     }
     unset_to(tar) {
-        this[data_to].delete(tar);
+        for (const set of this[data_to]) {
+            set.delete(tar);
+        }
     }
 
     // 守卫器
