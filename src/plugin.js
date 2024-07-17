@@ -19,7 +19,14 @@ export class TypeTreePlugin {
         this.root = editor;
         this.require = Object.fromEntries(
             this.constructor.requires(plugins)
-                .flatMap(p => p.constructor.provides.map(t => [t, p])),
+                .flatMap(p => p.constructor.provides.map(t => [t, new Proxy(p, plugin_proxyer)])),
         );
     }
 }
+
+const plugin_proxyer = {
+    get(tar, p) {
+        const res = Reflect.get(tar, p);
+        return res.bind?.(tar) ?? res;
+    },
+};

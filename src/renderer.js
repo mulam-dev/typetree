@@ -60,7 +60,8 @@ import { TypeTreePlugin } from "./plugin.js";
         }));
         loaders = next_loaders;
     }
-    console.log(plugin_instances);
+
+    global.Editor.elem.attach(document.body);
 
 })(globalThis);
 

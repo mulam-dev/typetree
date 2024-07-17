@@ -1,6 +1,6 @@
 const id = "core:view";
 const provides = ["view"];
-const requires = [];
+const requires = ["init-manager"];
 
 export default class extends TypeTreePlugin {
     static id = id
@@ -18,7 +18,10 @@ export default class extends TypeTreePlugin {
         return () => this.load();
     }
 
+    loaded = Symbol("loaded");
+
     async load() {
+        const {finish} = this.require["init-manager"];
         const views = Object.fromEntries(
             (await Promise.all(this.root.plugins.map(plugin =>
                 plugin.$view_data?.()
@@ -27,6 +30,7 @@ export default class extends TypeTreePlugin {
                 .flatMap(data => data instanceof Array ? data : [data])
                 .map(view_data => [view_data.id, view_data])
         );
-        console.log(views);
+        this.views.assign(views);
+        finish(this.loaded);
     }
 }
