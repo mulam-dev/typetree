@@ -9,6 +9,10 @@ export default class extends TypeTreePlugin {
         return this.req_must(plugins, ...requires);
     }
 
-    init() {
+    import_type(...types) {
+        for (const type of types) {
+            this.root.scope.set(type.id, type);
+            if (type.type) this.root.scope.set(type.type, type);
+        }
     }
 }

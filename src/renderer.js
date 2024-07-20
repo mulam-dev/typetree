@@ -1,9 +1,11 @@
 import { Editor } from "./editor.js";
+import { TypeTreeNode } from "./node.js";
 import { TypeTreePlugin } from "./plugin.js";
 
-(async global => {
+await (async global => {
 
     global.Editor = new Editor();
+    global.TypeTreeNode = TypeTreeNode;
     global.TypeTreePlugin = TypeTreePlugin;
 
     /* 
@@ -11,7 +13,7 @@ import { TypeTreePlugin } from "./plugin.js";
     */
 
     // 从 plugin.json 文件中读取要加载的插件列表
-    const plugin_list = await (await fetch("./plugins.json")).json() ;
+    const plugin_list = await (await fetch("./plugins.json")).json();
     const plugins = await Promise.all(plugin_list.map(
         async path => (await import(`./${path}.js`)).default,
     ));

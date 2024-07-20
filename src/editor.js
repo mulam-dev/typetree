@@ -2,6 +2,7 @@ export class Editor {
     constructor() {
         this.init();
     }
+
     init() {
         /* 
             # 根视图元素
@@ -19,6 +20,25 @@ export class Editor {
             # 插件
             为编辑器提供热插拔的、独立于Tree之外的特性或功能
         */
-       this.plugins = [];
+        this.plugins = [];
+
+        /* 
+            # 节点类型存储
+            存储编辑器所导入的所有类型节点的类
+        */
+        this.scope = new Map();
+    }
+
+    get require() {
+        return new Proxy(this, require_proxy);
+    }
+
+    set_tree(tree) {
+        this.inner.val = tree;
+        return this;
     }
 }
+
+const require_proxy = {
+    get: (ed, query) => (data) => new (ed.scope.get(query))(ed, data),
+};

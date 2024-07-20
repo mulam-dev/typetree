@@ -22,13 +22,15 @@ export default class extends TypeTreePlugin {
 
     load() {
         const {views} = this.require["view"];
+        // this.root.elem.attr("inner").bind_clone(
+        //     views
+        //         .bmap((view, _, $) => $(view).root)
+        //         .bvalues(),
+        // );
+        // console.log(views)
         this.root.elem.attr("inner").bind_clone(
-            views
-                .bmap((view, _, $) => $(view).root)
-                .bvalues(),
+            this.root.inner
+                .bmap(node => node.elem),
         );
-        console.log(views)
     }
 }
-
-const s_view_guard = Symbol();
