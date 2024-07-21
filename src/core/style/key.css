@@ -1,6 +1,9 @@
 .core-key-label {
+    position: sticky;
+    top: 2px;
     display: flex;
     flex-grow: 1;
+    align-self: start;
 }
 
 .core-key-label > :first-child {
