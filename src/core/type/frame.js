@@ -42,7 +42,7 @@ export default class extends TypeTreeNode {
             "--color-fg":       format_color({...bobj, h: hue, s: sat, l: lum * 0.64}),
             "--color-bg":       format_color({...bobj, h: hue, s: sat, l: 0.56, alpha: 0.14}),
             "--color-stroke":   format_color({...bobj, h: hue, s: sat, l: lum * 0.64}),
-            "--color-fill":     format_color({...bobj, h: hue, s: sat, l: 0.56, alpha: 0.14}),
+            "--color-fill":     format_color({...bobj, h: hue, s: sat, l: 0.56, alpha: 0.32}),
         });
         return this;
     }
