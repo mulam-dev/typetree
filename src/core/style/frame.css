@@ -1,0 +1,44 @@
+.core-frame {
+    --color-fg: #ffffff;
+    --color-bg: #444444;
+    --color-stroke: #ffffff;
+    --color-fill: #444444;
+    --rt-border: 2px;
+    --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
+    --rt-border-radius: calc(var(--rt-width) * 2);
+    align-self: start;
+    justify-self: start;
+    display: flex;
+    color: var(--color-fg);
+}
+
+.core-frame.f-inline {
+    background: var(--color-bg);
+    padding: 0 0.25em;
+    border-radius: var(--border-radius);
+}
+
+.core-frame.f-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    white-space: pre;
+}
+
+.core-frame.f-hint-before::before {
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    background: var(--color-stroke);
+    border: var(--rt-border) solid var(--color-stroke);
+    border-radius: var(--rt-border-radius) 0 0 var(--rt-border-radius);
+    border-right: 0 none;
+}
+
+.core-frame.f-sbracket-before::before {
+    content: " ";
+    margin: 4px 2px;
+    width: var(--rt-width);
+    background: var(--color-fill);
+    border: var(--rt-border) solid var(--color-stroke);
+    border-right: 0 none;
+}

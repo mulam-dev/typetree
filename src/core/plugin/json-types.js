@@ -15,9 +15,13 @@ export default class extends TypeTreePlugin {
         const {import_type} = this.require["base"];
         
         const type_list = [
+            "null",
             "boolean",
-            "dict",
             "string",
+            "number",
+            "object",
+            "key",
+            "array",
         ];
         const types = await Promise.all(type_list.map(
             async path => (await import(`../type/${path}.js`)).default,

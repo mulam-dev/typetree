@@ -1,2 +1,9 @@
-@import "core/style/frame.css";
-@import "core/style/grid.css";
+@import "res/jetbrains-mono/font.css";
+@import "core/style.css";
+
+.tt-editor-inner {
+    --border-radius: 2px;
+    user-select: none;
+    background: #222222;
+    padding: 8px;
+}

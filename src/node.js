@@ -11,5 +11,6 @@ export class TypeTreeNode {
 
     set struct(tree) {
         this.elem = tree.elem;
+        this.tree = tree;
     }
 }

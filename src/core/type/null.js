@@ -1,23 +1,21 @@
-const id = "#core:boolean";
-const type = ".json:boolean";
-const name = "Boolean";
+const id = "#core:null";
+const type = ".json:null";
+const name = "Null";
 
 export default class extends TypeTreeNode {
     static id = id
     static type = type
     static name = name
 
-    init(data) {
+    init() {
         const {
             "#core:frame": frame,
         } = this.require;
-        
-        this.data = data ?? [false];
 
         this.struct =
-            frame(this.data.bmap(v => v.toString()))
+            frame(["null"])
                 .name(name)
-                .color(207, 0.62)
+                .color(0, 0, 0.8)
                 .style_on("inline", "code");
     }
 

@@ -8,7 +8,7 @@ export class Editor {
             # 根视图元素
             将由 layout 插件向里面填充内容
         */
-        this.elem = ME.div();
+        this.elem = ME.div.class("tt-editor-inner")();
         
         /* 
             # 内部节点

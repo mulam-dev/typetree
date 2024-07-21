@@ -1,6 +1,6 @@
-const id = "#core:boolean";
-const type = ".json:boolean";
-const name = "Boolean";
+const id = "#core:number";
+const type = ".json:number";
+const name = "Number";
 
 export default class extends TypeTreeNode {
     static id = id
@@ -12,12 +12,12 @@ export default class extends TypeTreeNode {
             "#core:frame": frame,
         } = this.require;
         
-        this.data = data ?? [false];
+        this.data = data ?? [0];
 
         this.struct =
             frame(this.data.bmap(v => v.toString()))
                 .name(name)
-                .color(207, 0.62)
+                .color(83, 0.32)
                 .style_on("inline", "code");
     }
 

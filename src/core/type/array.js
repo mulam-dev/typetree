@@ -1,6 +1,6 @@
-const id = "#core:dict";
-const type = ".json:dict";
-const name = "Dict";
+const id = "#core:array";
+const type = ".json:array";
+const name = "Array";
 
 export default class extends TypeTreeNode {
     static id = id
@@ -10,17 +10,18 @@ export default class extends TypeTreeNode {
     init(data) {
         const {
             "#core:frame": frame,
-            "#core:grid": grid,
         } = this.require;
 
         this.data = data ?? [];
 
         this.struct =
             frame([
-                grid(
-                    this.data.bclone(),
-                )
-            ]).name(name);
+                ME.div
+                    .class("core-array-flex")
+                    .$inner(
+                        this.data.bflat().bmap(node => node.elem)
+                    )(),
+            ]).name(name).color(200).style_on("sbracket-before");
     }
 
     to_json() {

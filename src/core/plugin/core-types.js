@@ -16,7 +16,6 @@ export default class extends TypeTreePlugin {
         
         const type_list = [
             "frame",
-            "grid",
         ];
         const types = await Promise.all(type_list.map(
             async path => (await import(`../type/${path}.js`)).default,

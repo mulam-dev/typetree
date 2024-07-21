@@ -1,0 +1,9 @@
+.core-key-label {
+    display: flex;
+    flex-grow: 1;
+}
+
+.core-key-label > :first-child {
+    flex-grow: 1;
+    margin-right: 0.5em;
+}

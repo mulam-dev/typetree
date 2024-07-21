@@ -15,7 +15,10 @@ export default class extends TypeTreeNode {
         this.data = data ?? [''];
 
         this.struct =
-            frame(this.data.bclone()).name(name);
+            frame(this.data.bmap(v => `"${v}"`))
+                .name(name)
+                .color(24, 0.56)
+                .style_on("inline", "code");
     }
 
     to_json() {
