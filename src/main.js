@@ -5,6 +5,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const WINDOW_MIN_WIDTH = 400;
+const WINDOW_MIN_HEIGHT = 200;
+
 const App = new (class {
     window = null;
 
@@ -12,12 +15,15 @@ const App = new (class {
         this.window = new BrowserWindow({
             width: 700,
             height: 540,
+            minWidth: WINDOW_MIN_WIDTH,
+            minHeight: WINDOW_MIN_HEIGHT,
             webPreferences: {
                 contextIsolation: false,
                 nodeIntegration: true,
             },
             autoHideMenuBar: true,
             show: false,
+            frame: false,
         });
         this.window.loadFile(join(__dirname, "app.html"));
         this.window.setMenuBarVisibility(false);
@@ -31,6 +37,13 @@ const App = new (class {
             }
         });
         ipcMain.handle("show_window", () => this.window.show());
+        ipcMain.handle("minimize_window", () => this.window.minimize());
+        ipcMain.handle("toggle_maximize_window", () => this.window.isMaximized() ? this.window.unmaximize() : this.window.maximize());
+        ipcMain.handle("resize_window_by", (_, dw, dh) => {
+            const {x: px, width: pw, height: ph} = this.window.getBounds();
+            dw = Math.max(dw, WINDOW_MIN_WIDTH - pw);
+            this.window.setBounds({x: px - dw, width: pw + dw, height: ph + dh}, true);
+        });
         ipcMain.handle("exit", () => app.exit());
     }
 })();

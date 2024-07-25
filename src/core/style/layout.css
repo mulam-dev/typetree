@@ -1,34 +1,147 @@
 .core-layout-root {
     flex-grow: 1;
     display: flex;
+    --border-color: #2e2e2e;
+    --border-size: 3px;
+    --border: var(--border-size) solid var(--border-color);
+    border: var(--border);
+    position: relative;
+    min-width: 0;
 }
 
-.core-layout-views {
+.core-layout-main {
+    flex-grow: 1;
+    flex-shrink: 2;
     display: flex;
     flex-direction: column;
-    min-width: 8em;
-    background: #1a1a1a;
-    border-right: 2px solid #161616;
-    padding: 8px;
-    gap: 8px;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.core-layout-head {
+    display: flex;
+    user-select: none;
+    -webkit-app-region: drag;
+    min-width: 0;
+}
+
+.core-layout-htitle {
+    flex-shrink: 2;
+    margin: 0.25em auto;
+    padding: 0.25em 1em;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #888888;
+    background: #222222;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+    border-radius: calc(var(--border-radius) * 2);
+}
+
+.core-layout-htool {
+    -webkit-app-region: no-drag;
+    display: flex;
+}
+
+.core-layout-hcontrol {
+    flex-shrink: 0;
+    -webkit-app-region: no-drag;
+    position: relative;
+    bottom: var(--border-size);
+    left: var(--border-size);
+    height: calc(100% + var(--border-size));
+    background: var(--border-color);
+    border-bottom-left-radius: calc(var(--border-radius) * 2);
+    overflow: hidden;
+    display: flex;
+}
+
+.core-layout-hbutton {
+    --size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2.4em;
+    color: #888888;
+}
+
+.core-layout-hbutton > svg {
+    height: 1.4em;
+}
+
+.core-layout-htool > .core-layout-hbutton {
+    width: 2em;
+    background: #222222;
+    cursor: pointer;
+}
+
+.core-layout-htool > .core-layout-hbutton:hover {
+    color: #ffffff;
+}
+
+.core-layout-hcontrol > .core-layout-hbutton:hover {
+    background: #ffffff11;
+    color: #ffffff;
+}
+
+.core-layout-hcontrol > .core-layout-hbutton#ctl-close:hover {
+    background: #D3112266;
+}
+
+.core-layout-viewport {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #88888844 transparent;
+}
+
+.core-layout-content {
+    padding: calc(45vh - 1.4em) 45%;
+    width: fit-content;
+    height: fit-content;
 }
 
 .core-layout-inner {
-    flex-grow: 1;
     user-select: none;
-    padding: 8px;
+    width: fit-content;
+    height: fit-content;
+}
+
+.core-layout-views {
+    --gap: 6px;
+    --color-bg: #191919;
+    display: flex;
+    flex-direction: column;
+    width: 8em;
+    background: var(--color-bg);
+    padding: var(--gap);
+    gap: var(--gap);
+    position: relative;
+    min-width: 0;
+    z-index: 1;
+}
+
+.core-layout-views.f-hide {
+    display: none;
 }
 
 .core-layout-vroot {
     display: flex;
     flex-direction: column;
-    border-radius: var(--border-radius);
+    border-radius: min(var(--gap), calc(var(--border-radius) * 2));
     overflow: hidden;
     background: #222222;
+    min-width: 0;
 }
 
 .core-layout-vhead {
-    padding: 0.25em 0.5em;
+    padding: 0.1em 0.5em;
+    text-align: center;
     font-size: 0.8em;
     font-weight: bold;
     color: #888888;
@@ -36,7 +149,7 @@
 }
 
 .core-layout-vbody {
-    border-top: 1px solid #1a1a1a;
+    border-top: 1px solid var(--color-bg);
     min-height: 1.4em;
 }
 

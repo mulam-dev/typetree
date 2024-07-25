@@ -16,14 +16,21 @@
             padding: 0; margin: 0;
             display: flex;
             flex-grow: 1;
+            min-width: 0;
         }
     </style>
     <link rel="stylesheet" href="style.css">
+    <script>
+        if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>
     <script src="lib/jquery/jquery-3.7.1.min.js"></script>
     <script src="lib/culori/culori.min.js"></script>
-    <script src="lib/mahadjs/dist/mahad.min.js"></script>
-    <!-- <script src="lib/mahadjs/mahad.js"></script>
-    <script src="lib/mahadjs/mahad-dom.js"></script> -->
+    <!-- <script src="lib/mahadjs/dist/mahad.min.js"></script> -->
+    <script src="lib/mahadjs/mahad.js"></script>
+    <script src="lib/mahadjs/mahad-dom.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
     <script type="module" src="api.js"></script>
 </head>
 <body>
