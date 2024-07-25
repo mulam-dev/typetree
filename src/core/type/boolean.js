@@ -7,6 +7,23 @@ export default class extends TypeTreeNode {
     static type = type
     static name = name
 
+    static modifiers = {
+        "toggle": class extends TTModer.Sym {
+            modify(node) {
+                super.modify(node);
+                node.data.val = !node.data.val;
+            }
+        },
+    }
+    static actions = {
+        "toggle": class extends TTAction {
+            static name = Names("Toggle")
+            static call(node) {
+                node.mod.toggle();
+            }
+        },
+    }
+
     init(data) {
         const {
             "#core:frame": frame,

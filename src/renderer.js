@@ -1,11 +1,11 @@
 import { Editor } from "./editor.js";
-import { TypeTreeNode } from "./node.js";
+import * as node from "./node.js";
 import { TypeTreePlugin } from "./plugin.js";
 
 await (async global => {
 
     global.Editor = new Editor();
-    global.TypeTreeNode = TypeTreeNode;
+    Object.assign(global, {...node});
     global.TypeTreePlugin = TypeTreePlugin;
 
     /* 
@@ -40,7 +40,7 @@ await (async global => {
             global.Editor,
             plugin_instances,
         );
-        plugin_instances.postfix(instance);
+        plugin_instances.suffix(instance);
     }
 
     // 装载到编辑器

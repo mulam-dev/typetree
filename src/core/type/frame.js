@@ -50,7 +50,7 @@ export default class extends TypeTreeNode {
     style_on(...styles) {
         for (const style of styles) {
             if (!this.data_styles.includes(style)) {
-                this.data_styles.postfix(style);
+                this.data_styles.suffix(style);
             }
         }
         return this;
