@@ -1,9 +1,9 @@
 @import "res/jetbrains-mono/font.css";
 @import "core/style.css";
 
-.tt-editor-inner {
+.tt-editor {
+    flex-grow: 1;
     --border-radius: 2px;
-    user-select: none;
     background: #222222;
-    padding: 8px;
+    display: flex;
 }

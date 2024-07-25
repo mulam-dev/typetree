@@ -37,10 +37,13 @@ export default class extends TypeTreePlugin {
     }
 
     finish(token) {
-        this.pendings = this.pendings.map(rule => this.resolve(rule, token)).filter(r => r !== s_finished);
+        const handles = [];
+        const push_handle = handle => handles.push(handle);
+        this.pendings = this.pendings.map(rule => this.resolve(rule, token, push_handle)).filter(r => r !== s_finished);
+        for (const handle of handles) handle();
     }
 
-    resolve(rule, token) {
+    resolve(rule, token, push_handle) {
         if (rule instanceof InitRule) {
             switch (rule.type) {
                 case "all":
@@ -60,7 +63,7 @@ export default class extends TypeTreePlugin {
                 case "after":
                     const res = this.resolve(rule.rules[0], token);
                     if (res === s_finished) {
-                        rule.opts.handle();
+                        push_handle(rule.opts.handle);
                         return s_finished;
                     } else {
                         rule.rules[0] = res;

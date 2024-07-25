@@ -20,17 +20,30 @@ export default class extends TypeTreePlugin {
         ), () => this.load());
     }
 
+    loaded = Symbol("loaded");
+
     load() {
+        const cname = name => "core-layout-" + name;
+        const {finish} = this.require["init-manager"];
         const {views} = this.require["view"];
-        // this.root.elem.attr("inner").bind_clone(
-        //     views
-        //         .bmap((view, _, $) => $(view).root)
-        //         .bvalues(),
-        // );
-        // console.log(views)
-        this.root.elem.attr("inner").bind_clone(
-            this.root.inner
-                .bmap(node => node.elem),
-        );
+        const {div} = ME;
+        div.class(cname("root"))(
+            div.class(cname("views")).$inner(
+                views
+                    .bvalues()
+                    .bmap((view, _, $) => {
+                        $(view);
+                        return div.class(cname("vroot"))(
+                            div.class(cname("vhead"))(view.name.get()),
+                            div.class(cname("vbody"))(view.elem),
+                        );
+                    })
+            )(),
+            div.class(cname("inner")).$inner(
+                this.root.inner
+                    .bmap(node => node.elem),
+            )(),
+        ).attach(this.root.elem);
+        finish(this.loaded);
     }
 }

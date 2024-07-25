@@ -22,8 +22,8 @@ export default class extends TypeTreePlugin {
     $view_data() {
         return {
             id,
-            root: ME.div(),
-            name: "时间线",
+            elem: ME.div(),
+            name: Names("Timeline"),
         };
     }
 }

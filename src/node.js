@@ -50,7 +50,7 @@ export class TTName {
         this.trans = trans;
     }
 
-    get(locale) {
+    get(locale = navigator.language) {
         return this.trans[locale] ?? this.raw;
     }
 }
