@@ -25,6 +25,22 @@ Editor.set_tree(
         [key(["object"]), object([
             [key(["name"]), string(["Lane Sun"])],
             [key(["employed"]), boolean([true])],
+            [key(["object"]), object([
+                [key(["name"]), string(["Lane Sun"])],
+                [key(["employed"]), boolean([true])],
+                [key(["object"]), object([
+                    [key(["name"]), string(["Lane Sun"])],
+                    [key(["employed"]), boolean([true])],
+                    [key(["object"]), object([
+                        [key(["name"]), string(["Lane Sun"])],
+                        [key(["employed"]), boolean([true])],
+                        [key(["object"]), object([
+                            [key(["name"]), string(["Lane Sun"])],
+                            [key(["employed"]), boolean([true])],
+                        ])],
+                    ])],
+                ])],
+            ])],
         ])],
         [key(["array"]), array([
             object([

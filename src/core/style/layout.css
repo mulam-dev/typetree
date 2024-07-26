@@ -121,6 +121,7 @@
 .core-layout-views {
     --gap: 6px;
     --color-bg: #191919;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     width: 8em;
