@@ -29,19 +29,21 @@ export default class extends TypeTreePlugin {
             const padding = 24;
             let rviewport = me_viewport.elem.getClientRects()[0];
             let rinner = me_inner.elem.getClientRects()[0];
-            const delta_w = Math.ceil(rinner.width - rviewport.width + padding * 2);
-            const delta_h = Math.ceil(rinner.height - rviewport.height + padding * 2);
-            native.app.resize_window_by(delta_w, delta_h, initial);
-            await frame();
-            await frame();
-            rviewport = me_viewport.elem.getClientRects()[0];
-            rinner = me_inner.elem.getClientRects()[0];
+            if (!initial) {
+                const delta_w = Math.ceil(rinner.width - rviewport.width + padding * 2);
+                const delta_h = Math.ceil(rinner.height - rviewport.height + padding * 2);
+                native.app.resize_window_by(delta_w, delta_h, initial);
+                await frame();
+                await frame();
+                rviewport = me_viewport.elem.getClientRects()[0];
+                rinner = me_inner.elem.getClientRects()[0];
+            }
             const delta_x = Math.round(rinner.left - rviewport.left - padding);
             const delta_y = Math.round(rinner.top - rviewport.top - padding);
             me_viewport.elem.scrollBy({
                 top: delta_y,
                 left: delta_x,
-                behavior: initial ? "instant" : "smooth",
+                behavior: "smooth",
             });
         };
         const views_show = [false];

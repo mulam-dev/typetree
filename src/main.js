@@ -13,8 +13,8 @@ const App = new (class {
 
     init() {
         this.window = new BrowserWindow({
-            width: WINDOW_MIN_WIDTH,
-            height: WINDOW_MIN_HEIGHT,
+            width: 700,
+            height: 500,
             minWidth: WINDOW_MIN_WIDTH,
             minHeight: WINDOW_MIN_HEIGHT,
             webPreferences: {
