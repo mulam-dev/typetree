@@ -27,7 +27,9 @@ export default class extends TypeTreePlugin {
     }
 
     after(rule, handle) {
-        this.pendings.push(new InitRule("after", {handle}, [rule]));
+        return new Promise(res => {
+            this.pendings.push(new InitRule("after", {handle: async () => res(await handle())}, [rule]));
+        });
     }
 
     wait(rule) {
