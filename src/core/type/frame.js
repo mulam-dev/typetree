@@ -1,13 +1,22 @@
-import { TypeTreeNode } from "../../node.js";
+import { TTPack, TTNode } from "../../node.js";
 
 const id = "#core:frame";
 const type = null;
 const name = "Frame";
 
-export default class extends TypeTreeNode {
+export default class extends TTNode {
     static id = id
     static type = type
     static name = name
+
+    static handles = {...this.handles,
+        "core:dom-event:mousedown"(p, e) {
+            this.parent.request_parent(p.repack(["core:inner-active", this.parent])).closed.val ||
+            this.parent.request(p.repack(["core:active"])).closed.val ||
+            this.$require.caret.set(this.parent, [this.parent]);
+            p.close();
+        },
+    }
 
     init(data) {
         this.data = data ?? [];
@@ -15,14 +24,19 @@ export default class extends TypeTreeNode {
         this.data_color = {};
         this.data_styles = [];
 
-        this.elem =
+        const reciver = recv_dom_event(this);
+
+        this.melem =
             ME.div
                 .$class([["core-frame"], this.data_styles.bmap(s => `f-${s}`)].bflat())
                 .$style(this.data_color)
+                .$on({
+                    "mousedown": reciver,
+                })
                 .$inner
             (
                 this.data.bmap(node =>
-                    node instanceof TypeTreeNode ? node.elem : node
+                    node instanceof TTNode ? node.melem : node
                 )
             )();
     }
@@ -37,12 +51,10 @@ export default class extends TypeTreeNode {
     }
 
     color(hue, sat = 1, lum = 1) {
-        const bobj = {mode: "hsl"};
         this.data_color.assign({
-            "--color-fg":       format_color({...bobj, h: hue, s: sat, l: lum * 0.64}),
-            "--color-bg":       format_color({...bobj, h: hue, s: sat, l: 0.56, alpha: 0.14}),
-            "--color-stroke":   format_color({...bobj, h: hue, s: sat, l: lum * 0.64}),
-            "--color-fill":     format_color({...bobj, h: hue, s: sat, l: 0.56, alpha: 0.32}),
+            "--fc-fg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
+            "--fc-bg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-base) + var(--fc-l-dir) * ${lum * 100}%))`,
+            "--fc-fill": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-base) + var(--fc-l-dir) * ${lum * 160}%))`,
         });
         return this;
     }
@@ -65,3 +77,9 @@ export default class extends TypeTreeNode {
 }
 
 const format_color = culori.formatHex8;
+const s_close_dom_event = Symbol("close_dom_event");
+const recv_dom_event = self => e => {
+    const pack = TTPack.create([`core:dom-event:${e.type}`, e]);
+    pack.closed.guard(s_close_dom_event, v => v && (e.preventDefault(), e.stopPropagation()));
+    self.request(pack);
+};

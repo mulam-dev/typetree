@@ -1,5 +1,8 @@
-export class Editor {
+import { TTNode } from "./node.js";
+
+export class Editor extends TTNode {
     constructor() {
+        super();
         this.init();
     }
 
@@ -8,7 +11,7 @@ export class Editor {
             # 根视图元素
             将由 layout 插件向里面填充内容
         */
-        this.elem = ME.div.class("tt-editor")();
+        this.melem = ME.div.class("tt-editor")();
         
         /* 
             # 内部节点
@@ -20,16 +23,35 @@ export class Editor {
             # 插件
             为编辑器提供热插拔的、独立于Tree之外的特性或功能
         */
-        this.plugins = [];
+        this.plugins = [].guard(null, p => {
+            for (const key of p.constructor.provides) {
+                const sets = this.provides.get(key);
+                if (sets) {
+                    sets.push(p);
+                } else {
+                    this.provides.set(key, [p]);
+                }
+            }
+        });
+
+        /*
+            # 特性
+            由插件提供，用于兼容性依赖处理
+        */
+        this.provides = new Map();
 
         /* 
             # 节点类型存储
             存储编辑器所导入的所有类型节点的类
         */
-        this.scope = new Map();
+        this.types = new Map();
     }
 
-    get require() {
+    get $type() {
+        return new Proxy(this, type_proxy);
+    }
+
+    get $require() {
         return new Proxy(this, require_proxy);
     }
 
@@ -39,6 +61,14 @@ export class Editor {
     }
 }
 
+const type_proxy = {
+    get: (ed, query) => (data) => new (ed.types.get(query))(ed, data),
+};
+
 const require_proxy = {
-    get: (ed, query) => (data) => new (ed.scope.get(query))(ed, data),
+    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], plugins_proxyer),
+};
+
+const plugins_proxyer = {
+    get: (plugins, method) => (...args) => plugins.map(p => p[method](...args)),
 };

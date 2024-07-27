@@ -6,7 +6,7 @@ const requires = [];
     # 为需要使用依赖性初始化的插件提供支持
 */
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
@@ -16,7 +16,7 @@ export default class extends TypeTreePlugin {
     /* 
         # 正在等待中的规则
     */
-    pendings = [];
+    pendings = []
     
     all(...rules) {
         return new InitRule("all", {}, rules);

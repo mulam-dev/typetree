@@ -2,12 +2,12 @@ const id = "#core:boolean";
 const type = ".json:boolean";
 const name = "Boolean";
 
-export default class extends TypeTreeNode {
+export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {
+    static modifiers = {...this.modifiers,
         "toggle": class extends TTModer.Sym {
             modify(node) {
                 super.modify(node);
@@ -15,7 +15,7 @@ export default class extends TypeTreeNode {
             }
         },
     }
-    static actions = {
+    static actions = {...this.actions,
         "toggle": class extends TTAction {
             static name = Names("Toggle")
             static call(node) {
@@ -27,14 +27,15 @@ export default class extends TypeTreeNode {
     init(data) {
         const {
             "#core:frame": frame,
-        } = this.require;
+        } = this.$type;
         
         this.data = data ?? [false];
 
         this.struct =
             frame(this.data.bmap(v => v.toString()))
+                .into(this)
                 .name(name)
-                .color(207, 0.62)
+                .color(200, 0.62)
                 .style_on("inline", "code");
     }
 

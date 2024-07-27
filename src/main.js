@@ -25,7 +25,8 @@ const App = new (class {
             show: false,
             frame: false,
         });
-        this.window.loadFile(join(__dirname, "app.html"));
+        // this.window.loadFile(join(__dirname, "app.html"));
+        this.window.loadURL("http://127.0.0.1:5500/src/app.html");
         this.window.setMenuBarVisibility(false);
 
         ipcMain.handle("get_arg", () => {

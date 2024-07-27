@@ -1,0 +1,37 @@
+.core-caret-root {
+    position: relative;
+    width: 0; height: 0;
+    margin: 0; padding: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes cursor-blink {
+    0% {
+        outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240);
+    }
+    100% {
+        outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0.1 240);
+    }
+}
+
+.core-caret-container {
+    position: absolute;
+    left: calc(var(--x) * 1px);
+    top: calc(var(--y) * 1px);
+    /* transform: translate3d(calc(var(--x) * 1px), calc(var(--y) * 1px), 0); */
+    width: calc(var(--w) * 1px);
+    height: calc(var(--h) * 1px);
+    outline: none;
+}
+
+.core-caret-container.f-show_box {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.14 240);
+    outline: solid 2px var(--c-b);
+    border-radius: var(--border-radius);
+}
+
+.core-caret-container:focus {
+    outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240);
+    animation: .6s cubic-bezier(.65,.05,.36,1) .3s infinite alternate cursor-blink;
+}

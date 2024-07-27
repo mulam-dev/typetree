@@ -2,12 +2,12 @@ const id = "#core:array";
 const type = ".json:array";
 const name = "Array";
 
-export default class extends TypeTreeNode {
+export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {
+    static modifiers = {...this.modifiers,
         "modify": class extends TTModer.Map {
             modify(node, offset, delete_count, inserts) {
                 super.modify(node);
@@ -23,7 +23,7 @@ export default class extends TypeTreeNode {
             }
         },
     }
-    static actions = {
+    static actions = {...this.actions,
         "modify": class extends TTAction {
             static name = Names("Modify")
             static args = [{
@@ -57,11 +57,13 @@ export default class extends TypeTreeNode {
             }
         },
     }
+    static handles = {...this.handles,
+    }
 
     init(data) {
         const {
             "#core:frame": frame,
-        } = this.require;
+        } = this.$type;
 
         this.data = data ?? [];
 
@@ -70,9 +72,9 @@ export default class extends TypeTreeNode {
                 ME.div
                     .class("core-array-flex")
                     .$inner(
-                        this.data.bflat().bmap(node => node.elem)
+                        this.data.bflat().bmap(node => node.melem)
                     )(),
-            ]).name(name).color(200).style_on("sbracket-before");
+            ]).into(this).name(name).color(200).style_on("sbracket-before");
     }
 
     to_json() {

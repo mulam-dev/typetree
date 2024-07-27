@@ -5,7 +5,7 @@ const requires = [
     "view",
 ];
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
@@ -15,7 +15,7 @@ export default class extends TypeTreePlugin {
     $view_data() {
         return {
             id,
-            elem: ME.div(),
+            melem: ME.div(),
             name: Names("File System"),
         };
     }

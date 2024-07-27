@@ -6,15 +6,27 @@
     <link rel="shortcut icon" href="../icon.svg" type="image/svg+xml">
     <title>TypeTree</title>
     <style>
-        html {
-            background: #2e2e2e;
-            color: #eeeeee;
-            width: 100%; height: 100%;
+        @media (prefers-color-scheme: dark) {
+            html {
+                background: #161616;
+                color: #AEAEAE;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            html {
+                background: #F5F5F5;
+                color: #636363;
+            }
+        }
+        html, body {
+            overflow: hidden;
             display: flex;
+            padding: 0; margin: 0;
+        }
+        html {
+            width: 100%; height: 100%;
         }
         body {
-            padding: 0; margin: 0;
-            display: flex;
             flex-grow: 1;
             min-width: 0;
         }

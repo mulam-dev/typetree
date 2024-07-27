@@ -1,12 +1,12 @@
 import { Editor } from "./editor.js";
 import * as node from "./node.js";
-import { TypeTreePlugin } from "./plugin.js";
+import { TTPlugin } from "./plugin.js";
 
 await (async global => {
 
-    global.Editor = new Editor();
     Object.assign(global, {...node});
-    global.TypeTreePlugin = TypeTreePlugin;
+    global.TTPlugin = TTPlugin;
+    global.Editor = new Editor();
 
     /* 
         # 加载插件
@@ -63,7 +63,7 @@ await (async global => {
         loaders = next_loaders;
     }
 
-    global.Editor.elem.attach(document.body);
+    global.Editor.melem.attach(document.body);
 
 })(globalThis);
 

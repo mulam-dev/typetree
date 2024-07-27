@@ -6,7 +6,7 @@ const requires = [
     "init-manager",
 ];
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
@@ -27,16 +27,16 @@ export default class extends TypeTreePlugin {
         const cname = name => "core-layout-" + name;
         const fit_size = async (initial = false) => {
             const padding = 24;
-            let rviewport = me_viewport.elem.getClientRects()[0];
-            let rinner = me_inner.elem.getClientRects()[0];
+            let rviewport = me_viewport.rect;
+            let rinner = me_inner.rect;
             if (!initial) {
                 const delta_w = Math.ceil(rinner.width - rviewport.width + padding * 2);
                 const delta_h = Math.ceil(rinner.height - rviewport.height + padding * 2);
                 native.app.resize_window_by(delta_w, delta_h, initial);
                 await frame();
                 await frame();
-                rviewport = me_viewport.elem.getClientRects()[0];
-                rinner = me_inner.elem.getClientRects()[0];
+                rviewport = me_viewport.rect;
+                rinner = me_inner.rect;
             }
             const delta_x = Math.round(rinner.left - rviewport.left - padding);
             const delta_y = Math.round(rinner.top - rviewport.top - padding);
@@ -60,15 +60,15 @@ export default class extends TypeTreePlugin {
                     $(view);
                     return div.class(cname("vroot"))(
                         div.class(cname("vhead"))(view.name.get()),
-                        div.class(cname("vbody"))(view.elem),
+                        div.class(cname("vbody"))(view.melem),
                     );
                 })
         )();
         const me_inner = div.class(cname("inner")).$inner(
             this.root.inner
-            .bmap(node => node.elem),
+            .bmap(node => node.melem),
         )();
-        const me_viewport = div.class(cname("viewport"))(
+        const me_viewport = div.class(cname("viewport")).tab_index(0)(
             div.class(cname("content"))(
                 me_inner,
             ),
@@ -90,7 +90,7 @@ export default class extends TypeTreePlugin {
                 ),
                 me_viewport,
             ),
-        ).attach(this.root.elem);
+        ).attach(this.root.melem);
         await timeout(100);
         await fit_size(true);
         finish(this.loaded);

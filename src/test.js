@@ -14,7 +14,7 @@ const {
     ".json:object": object,
     ".json:key": key,
     ".json:array": array,
-} = Editor.require;
+} = Editor.$type;
 
 Editor.set_tree(
     object([

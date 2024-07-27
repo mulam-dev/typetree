@@ -5,7 +5,7 @@ const requires = [
     "node-parent",
 ];
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {

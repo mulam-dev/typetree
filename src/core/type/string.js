@@ -2,12 +2,12 @@ const id = "#core:string";
 const type = ".json:string";
 const name = "String";
 
-export default class extends TypeTreeNode {
+export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {
+    static modifiers = {...this.modifiers,
         "set": class extends TTModer.Map {
             modify(node, value) {
                 super.modify(node);
@@ -16,7 +16,7 @@ export default class extends TypeTreeNode {
             }
         },
     }
-    static actions = {
+    static actions = {...this.actions,
         "set": class extends TTAction {
             static name = Names("Set")
             static args = [{
@@ -32,14 +32,15 @@ export default class extends TypeTreeNode {
     init(data) {
         const {
             "#core:frame": frame,
-        } = this.require;
+        } = this.$type;
         
         this.data = data ?? [''];
 
         this.struct =
             frame(this.data.bmap(v => `"${v}"`))
+                .into(this)
                 .name(name)
-                .color(24, 0.56)
+                .color(36, 0.52)
                 .style_on("inline", "code");
     }
 

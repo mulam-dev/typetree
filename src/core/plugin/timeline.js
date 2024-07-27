@@ -6,7 +6,7 @@ const requires = [
     "view",
 ];
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
@@ -17,12 +17,12 @@ export default class extends TypeTreePlugin {
         # 时间线栈
         用来记录所有节点的修改记录，新记录添加在尾端
     */
-    timeline = [];
+    timeline = []
 
     $view_data() {
         return {
             id,
-            elem: ME.div(),
+            melem: ME.div(),
             name: Names("Timeline"),
         };
     }

@@ -1,6 +1,6 @@
-const get_plugin_class = p => p instanceof TypeTreePlugin ? p.constructor : p;
+const get_plugin_class = p => p instanceof TTPlugin ? p.constructor : p;
 
-export class TypeTreePlugin {
+export class TTPlugin {
     static req_must(plugins, ...traits) {
         const res = [];
         for (const trait of traits) {

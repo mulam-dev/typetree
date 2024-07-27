@@ -2,7 +2,7 @@ const id = "core:base";
 const provides = ["base"];
 const requires = [];
 
-export default class extends TypeTreePlugin {
+export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
@@ -11,8 +11,8 @@ export default class extends TypeTreePlugin {
 
     import_type(...types) {
         for (const type of types) {
-            this.root.scope.set(type.id, type);
-            if (type.type) this.root.scope.set(type.type, type);
+            this.root.types.set(type.id, type);
+            if (type.type) this.root.types.set(type.type, type);
         }
     }
 }

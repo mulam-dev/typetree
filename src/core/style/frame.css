@@ -1,19 +1,33 @@
+@media (prefers-color-scheme: dark) {
+    .core-frame {
+        --fc-l-dir: 0.05;
+        --fc-l-base: 12%;
+        --fc-l-fdir: 0.36;
+        --fc-l-fbase: 26%;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .core-frame {
+        --fc-l-dir: -0.1;
+        --fc-l-base: 96%;
+        --fc-l-fdir: -0.42;
+        --fc-l-fbase: 80%;
+    }
+}
+
 .core-frame {
-    --color-fg: #ffffff;
-    --color-bg: #444444;
-    --color-stroke: #ffffff;
-    --color-fill: #444444;
     --rt-border: 2px;
     --rt-width: max(calc(0.5em - var(--rt-border) - 4px), 2px);
     --rt-border-radius: calc(var(--rt-width) * 2);
     align-self: start;
     justify-self: start;
     display: flex;
-    color: var(--color-fg);
+    color: var(--fc-fg);
 }
 
 .core-frame.f-inline {
-    background: var(--color-bg);
+    background: var(--fc-bg);
     padding: 0 0.25em;
     border-radius: var(--border-radius);
 }
@@ -28,8 +42,8 @@
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
-    background: var(--color-stroke);
-    border: var(--rt-border) solid var(--color-stroke);
+    background: var(--fc-fg);
+    border: var(--rt-border) solid var(--fc-fg);
     border-radius: var(--rt-border-radius) 0 0 var(--rt-border-radius);
     border-right: 0 none;
 }
@@ -38,7 +52,37 @@
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
-    background: var(--color-fill);
-    border: var(--rt-border) solid var(--color-stroke);
+    background: var(--fc-fill);
+    border: var(--rt-border) solid var(--fc-fg);
     border-right: 0 none;
 }
+
+.core-frame.f-caret:not(.f-inline) {
+    /* background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 0%) 0.1 240); */
+    filter: sepia(1) brightness(0.24) saturate(200%) hue-rotate(180deg) brightness(3.2);
+}
+
+/* .core-frame.f-caret {
+    background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0.03 240);
+    color: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
+}
+
+.core-frame.f-caret .core-frame.f-inline {
+    background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 14%) 0.08 240);
+    color: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
+}
+
+.core-frame.f-caret::before,
+.core-frame.f-caret::after,
+.core-frame.f-caret .core-frame::before,
+.core-frame.f-caret .core-frame::after {
+    border-color: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
+    background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 24%) 0.12 240);
+}
+
+.core-frame.f-caret.f-hint-before::before,
+.core-frame.f-caret.f-hint-after::after,
+.core-frame.f-caret .core-frame.f-hint-before::before,
+.core-frame.f-caret .core-frame.f-hint-after::after {
+    background: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
+} */

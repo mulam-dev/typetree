@@ -12,7 +12,7 @@ export default class extends string {
     init(data) {
         const {
             "#core:frame": frame,
-        } = this.require;
+        } = this.$type;
         
         this.data = data ?? [''];
 
@@ -23,6 +23,7 @@ export default class extends string {
                     ME.div('→'),
                 ),
             ])
+                .into(this)
                 .name(name)
                 .color(42, 0.6, 1.1)
                 .style_on("inline", "code");

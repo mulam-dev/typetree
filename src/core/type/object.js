@@ -2,12 +2,12 @@ const id = "#core:object";
 const type = ".json:object";
 const name = "Object";
 
-export default class extends TypeTreeNode {
+export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {
+    static modifiers = {...this.modifiers,
         "modify_entries": class extends TTModer.Map {
             modify(node, offset, delete_count, inserts) {
                 super.modify(node);
@@ -30,7 +30,7 @@ export default class extends TypeTreeNode {
             }
         },
     }
-    static actions = {
+    static actions = {...this.actions,
         "modify_entries": class extends TTAction {
             static name = Names("Modify Entries")
             static args = [{
@@ -81,7 +81,7 @@ export default class extends TypeTreeNode {
     init(data) {
         const {
             "#core:frame": frame,
-        } = this.require;
+        } = this.$type;
 
         this.data = data ?? [];
 
@@ -90,9 +90,9 @@ export default class extends TypeTreeNode {
                 ME.div
                     .class("core-object-grid")
                     .$inner(
-                        this.data.bflat().bmap(node => node.elem)
+                        this.data.bflat().bmap(node => node.melem)
                     )(),
-            ]).name(name).color(42).style_on("hint-before");
+            ]).into(this).name(name).color(42).style_on("hint-before");
     }
 
     to_json() {
