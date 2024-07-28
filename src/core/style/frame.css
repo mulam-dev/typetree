@@ -26,6 +26,10 @@
     color: var(--fc-fg);
 }
 
+.core-frame.f-caret {
+    background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 6%) 0 0);
+}
+
 .core-frame.f-inline {
     background: var(--fc-bg);
     padding: 0 0.25em;
@@ -62,12 +66,7 @@
     filter: sepia(1) brightness(0.24) saturate(200%) hue-rotate(180deg) brightness(3.2);
 }
 
-/* .core-frame.f-caret {
-    background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0.03 240);
-    color: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
-}
-
-.core-frame.f-caret .core-frame.f-inline {
+/* .core-frame.f-caret .core-frame.f-inline {
     background: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 14%) 0.08 240);
     color: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 10%) 0.2 240);
 }
