@@ -9,7 +9,7 @@
 
 @media (prefers-color-scheme: light) {
     .core-frame {
-        --fc-l-dir: -0.1;
+        --fc-l-dir: -0.15;
         --fc-l-base: 96%;
         --fc-l-fdir: -0.42;
         --fc-l-fbase: 80%;

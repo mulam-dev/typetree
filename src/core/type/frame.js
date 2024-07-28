@@ -53,8 +53,8 @@ export default class extends TTNode {
     color(hue, sat = 1, lum = 1) {
         this.data_color.assign({
             "--fc-fg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
-            "--fc-bg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-base) + var(--fc-l-dir) * ${lum * 100}%))`,
-            "--fc-fill": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-base) + var(--fc-l-dir) * ${lum * 160}%))`,
+            "--fc-bg": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / calc(var(--fc-l-fbase) * 0.32))`,
+            "--fc-fill": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 24%)`,
         });
         return this;
     }

@@ -8,10 +8,12 @@
 
 @keyframes cursor-blink {
     0% {
-        outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240);
+        opacity: 1;
+        /* outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240); */
     }
     100% {
-        outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0.1 240);
+        opacity: 0;
+        /* outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240 / 0); */
     }
 }
 
@@ -19,19 +21,19 @@
     position: absolute;
     left: calc(var(--x) * 1px);
     top: calc(var(--y) * 1px);
-    /* transform: translate3d(calc(var(--x) * 1px), calc(var(--y) * 1px), 0); */
     width: calc(var(--w) * 1px);
     height: calc(var(--h) * 1px);
     outline: none;
 }
 
 .core-caret-container.f-show_box {
-    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.14 240);
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
     outline: solid 2px var(--c-b);
+    /* box-shadow: 0 0 0 4px oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240 / 20%); */
     border-radius: var(--border-radius);
 }
 
 .core-caret-container:focus {
-    outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240);
+    outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240);
     animation: .6s cubic-bezier(.65,.05,.36,1) .3s infinite alternate cursor-blink;
 }
