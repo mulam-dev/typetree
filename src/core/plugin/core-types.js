@@ -1,7 +1,7 @@
 const id = "core:types:core";
 const provides = ["types:core"];
 const requires = [
-    "base",
+    "type-loader",
 ];
 
 export default class extends TTPlugin {
@@ -11,15 +11,9 @@ export default class extends TTPlugin {
         return this.req_must(plugins, ...requires);
     }
 
-    async init() {
-        const {import_type} = this.require["base"];
-        
-        const type_list = [
+    $type_loader_data() {
+        return [
             "frame",
-        ];
-        const types = await Promise.all(type_list.map(
-            async path => (await import(`../type/${path}.js`)).default,
-        ));
-        import_type(...types);
+        ].map(p => `../type/${p}`);
     }
 }

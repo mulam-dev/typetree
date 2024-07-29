@@ -1,4 +1,4 @@
-import { TTPack, TTNode } from "../../node.js";
+import { TTPack, TTNode } from "../../types.js";
 
 const id = "#core:frame";
 const type = null;

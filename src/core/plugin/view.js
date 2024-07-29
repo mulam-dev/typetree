@@ -1,6 +1,6 @@
 const id = "core:view";
 const provides = ["view"];
-const requires = ["init-manager"];
+const requires = ["base", "init-manager"];
 
 export default class extends TTPlugin {
     static id = id
@@ -21,13 +21,10 @@ export default class extends TTPlugin {
     loaded = Symbol("loaded");
 
     async load() {
+        const {collect_plugins_prop} = this.require["base"];
         const {finish} = this.require["init-manager"];
         const views = Object.fromEntries(
-            (await Promise.all(this.root.plugins.map(plugin =>
-                plugin.$view_data?.()
-            )))
-                .filter(e => e)
-                .flatMap(data => data instanceof Array ? data : [data])
+            (await collect_plugins_prop("$view_data"))
                 .map(view_data => [view_data.id, view_data])
         );
         this.views.assign(views);

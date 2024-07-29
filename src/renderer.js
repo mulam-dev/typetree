@@ -1,10 +1,10 @@
 import { Editor } from "./editor.js";
-import * as node from "./node.js";
+import * as types from "./types.js";
 import { TTPlugin } from "./plugin.js";
 
 await (async global => {
 
-    Object.assign(global, {...node});
+    Object.assign(global, {...types});
     global.TTPlugin = TTPlugin;
     global.Editor = new Editor();
 

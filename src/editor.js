@@ -1,4 +1,4 @@
-import { TTNode } from "./node.js";
+import { TTNode } from "./types.js";
 
 export class Editor extends TTNode {
     constructor() {
@@ -45,6 +45,12 @@ export class Editor extends TTNode {
             存储编辑器所导入的所有类型节点的类
         */
         this.types = new Map();
+        
+        /* 
+            # 规则存储
+            存储插件所导入的所有覆写规则
+        */
+       this.rules = [];
     }
 
     focus() {
@@ -57,6 +63,25 @@ export class Editor extends TTNode {
 
     get $require() {
         return new Proxy(this, require_proxy);
+    }
+
+    get_attr_of(node, parts) {
+        const rules = this.rules.filter(r => r.match(node));
+        for (let i = rules.length - 1; i >= 0; i--) {
+            const res = rules[i].get_attr(parts);
+            if (res !== null && res !== undefined) return res;
+        }
+        return null;
+    }
+
+    get_attrs_of(node, parts) {
+        const rules = this.rules.filter(r => r.match(node));
+        const res = [];
+        for (let i = rules.length - 1; i >= 0; i--) {
+            const rule_res = rules[i].get_attr(parts);
+            if (rule_res !== null && rule_res !== undefined) res.push(rule_res);
+        }
+        return res;
     }
 
     set_tree(tree) {
