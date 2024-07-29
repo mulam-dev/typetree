@@ -10,11 +10,13 @@ export default class extends TTNode {
     static name = name
 
     static handles = {...this.handles,
-        "core:dom-event:mousedown"(p, e) {
-            this.parent.request_parent(p.repack(["core:inner-active", this.parent])).closed.val ||
-            this.parent.request(p.repack(["core:active"])).closed.val ||
-            this.$require.caret.set(this.parent, [this.parent]);
-            p.close();
+        "core:dom-event:mousedown"(p, {button}) {
+            if (button === 0) {
+                this.parent.request_parent(p.repack(["core:inner-active", this.parent])).closed.val ||
+                this.parent.request(p.repack(["core:active"])).closed.val ||
+                this.$require.caret.set(this.parent, [this.parent]);
+                p.close();
+            }
         },
     }
 

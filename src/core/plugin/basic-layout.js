@@ -68,7 +68,29 @@ export default class extends TTPlugin {
             this.root.inner
             .bmap(node => node.melem),
         )();
-        const me_viewport = div.class(cname("viewport"))(
+        const me_viewport = div.class(cname("viewport")).on({
+            mousedown(e) {
+                if (e.button === 1) {
+                    const start_x = e.clientX;
+                    const start_y = e.clientY;
+                    const prev_scroll_x = this.scrollLeft;
+                    const prev_scroll_y = this.scrollTop;
+                    const move_handle = e => {
+                        const delta_x = e.clientX - start_x;
+                        const delta_y = e.clientY - start_y;
+                        this.scrollTo({
+                            left: prev_scroll_x - delta_x,
+                            top: prev_scroll_y - delta_y,
+                            behavior: "instant",
+                        });
+                    };
+                    jQuery(window).on("mousemove", move_handle);
+                    jQuery(window).one("mouseup", ({button}) => {
+                        if (button === 1) jQuery(window).off("mousemove", move_handle);
+                    });
+                }
+            },
+        })(
             div.class(cname("content"))(
                 me_inner,
             ),
