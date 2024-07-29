@@ -68,7 +68,7 @@ export default class extends TTPlugin {
             this.root.inner
             .bmap(node => node.melem),
         )();
-        const me_viewport = div.class(cname("viewport")).tab_index(0)(
+        const me_viewport = div.class(cname("viewport"))(
             div.class(cname("content"))(
                 me_inner,
             ),

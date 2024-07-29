@@ -1,4 +1,5 @@
 .core-caret-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
     position: relative;
     width: 0; height: 0;
     margin: 0; padding: 0;
@@ -6,34 +7,97 @@
     z-index: 1;
 }
 
-@keyframes cursor-blink {
-    0% {
-        opacity: 1;
-        /* outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240); */
-    }
-    100% {
-        opacity: 0;
-        /* outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240 / 0); */
-    }
+@keyframes core-caret-blink {
+    0%      {opacity: 1}
+    100%    {opacity: 0}
 }
 
-.core-caret-container {
+.tt-editor:focus .core-caret-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
+}
+
+.tt-editor:focus .core-caret-root:not(:has(:hover)) {
+    animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-caret-blink;
+}
+
+.core-caret-container,
+.core-caret-handle-container {
     position: absolute;
-    left: calc(var(--x) * 1px);
-    top: calc(var(--y) * 1px);
+    left: calc(var(--cont-x) * 1px);
+    top: calc(var(--cont-y) * 1px);
     width: calc(var(--w) * 1px);
     height: calc(var(--h) * 1px);
-    outline: none;
 }
 
-.core-caret-container.f-show_box {
-    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
+.core-caret-root.f-show_container .core-caret-container::after {
+    content: " ";
+    position: absolute;
+    inset: 0;
     outline: solid 2px var(--c-b);
-    /* box-shadow: 0 0 0 4px oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.25 240 / 20%); */
     border-radius: var(--border-radius);
 }
 
-.core-caret-container:focus {
-    outline-color: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.36 240);
-    animation: .6s cubic-bezier(.65,.05,.36,1) .3s infinite alternate cursor-blink;
+.core-caret-root.f-show_box .core-caret-box {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.16 240 / 40%);
+    position: absolute;
+    left: calc((var(--box-x) - var(--cont-x)) * 1px);
+    top: calc((var(--box-y) - var(--cont-y)) * 1px);
+    width: calc(var(--w) * 1px);
+    height: calc(var(--h) * 1px);
+    background: var(--c-bg);
+}
+
+.core-caret-vector-handle {
+    --gap: 1px;
+    --size: 12px;
+    --hint-size: 6px;
+    display: none;
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    transform: translate(-50%, -50%);
+    pointer-events: all;
+}
+
+.core-caret-vector-handle::after {
+    content: " ";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--hint-size);
+    height: var(--hint-size);
+    transform: translate(-50%, -50%);
+    background: var(--c-b);
+    border-radius: 100%;
+}
+
+.core-caret-vector-handle:hover::after {
+    outline: calc((var(--size) - var(--hint-size)) / 2) solid color-mix(in oklch, var(--c-b) 50%, transparent);
+}
+
+.core-caret-root.f-show_handle_up .core-caret-vector-handle.f-up,
+.core-caret-root.f-show_handle_down .core-caret-vector-handle.f-down,
+.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left,
+.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right {
+    display: block;
+}
+
+.core-caret-root.f-show_handle_up .core-caret-vector-handle.f-up {
+    top: calc(0% - var(--gap));
+    left: max(50%, calc(100% - var(--size)));
+}
+
+.core-caret-root.f-show_handle_down .core-caret-vector-handle.f-down {
+    top: calc(100% + var(--gap));
+    left: min(50%, var(--size));
+}
+
+.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left {
+    left: calc(0% - var(--gap));
+    top: max(50%, calc(100% - var(--size)));
+}
+
+.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right {
+    left: calc(100% + var(--gap));
+    top: min(50%, var(--size));
 }

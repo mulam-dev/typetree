@@ -30,6 +30,7 @@
     background: var(--c-bg);
     position: relative;
     min-width: 0;
+    font-size: 1em;
 }
 
 .core-layout-main {
@@ -125,6 +126,7 @@
     overflow: scroll;
     scrollbar-color: var(--c-scrollbar) transparent;
     outline: none;
+    position: relative;
 }
 
 .core-layout-viewport:hover {

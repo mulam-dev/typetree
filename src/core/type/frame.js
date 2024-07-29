@@ -54,6 +54,7 @@ export default class extends TTNode {
         this.data_color.assign({
             "--fc-fg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
             "--fc-bg": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / calc(var(--fc-l-fbase) * 0.32))`,
+            "--fc-stroke": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 36%)`,
             "--fc-fill": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 24%)`,
         });
         return this;
@@ -76,7 +77,6 @@ export default class extends TTNode {
     }
 }
 
-const format_color = culori.formatHex8;
 const s_close_dom_event = Symbol("close_dom_event");
 const recv_dom_event = self => e => {
     const pack = TTPack.create([`core:dom-event:${e.type}`, e]);

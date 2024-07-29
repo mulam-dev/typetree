@@ -11,7 +11,7 @@ export class Editor extends TTNode {
             # 根视图元素
             将由 layout 插件向里面填充内容
         */
-        this.melem = ME.div.class("tt-editor")();
+        this.melem = ME.div.class("tt-editor").tab_index(0)();
         
         /* 
             # 内部节点
@@ -45,6 +45,10 @@ export class Editor extends TTNode {
             存储编辑器所导入的所有类型节点的类
         */
         this.types = new Map();
+    }
+
+    focus() {
+        this.melem.focus();
     }
 
     get $type() {

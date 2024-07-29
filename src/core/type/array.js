@@ -58,6 +58,13 @@ export default class extends TTNode {
         },
     }
     static handles = {...this.handles,
+        "core:inner-active"(p, node) {
+            this.$require.caret.set(this.parent, [node], {
+                show_handle_up: true,
+                show_handle_down: true,
+            });
+            p.close();
+        },
     }
 
     init(data) {
@@ -66,6 +73,8 @@ export default class extends TTNode {
         } = this.$type;
 
         this.data = data ?? [];
+
+        this.data.guard(null, n => n.into(this), n => n.outof());
 
         this.struct =
             frame([

@@ -21,10 +21,7 @@ export default class extends TTPlugin {
             this.data_offset_observer.unobserve(elem);
         },
     )
-    data_melems = [].guard(null,
-        melem => melem.class.suffix("f-caret"),
-        melem => melem.class.delete_at("f-caret"),
-    )
+    data_melems = []
     data_src = []
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
@@ -36,35 +33,28 @@ export default class extends TTPlugin {
         $(this.data_offset);
         const rect = melem.rect;
         return {
-            "--x": rect.x - this.data_offset.x,
-            "--y": rect.y - this.data_offset.y,
+            "--box-x": rect.x - this.data_offset.x,
+            "--box-y": rect.y - this.data_offset.y,
             "--w": rect.width,
             "--h": rect.height,
         };
     });
-    m_bounding_box = this.m_boxes.breduce((box, cbox) => ({
-        "--x": Math.min(box["--x"], cbox["--x"]),
-        "--y": Math.min(box["--y"], cbox["--y"]),
-        "--w": Math.max(box["--w"], cbox["--w"]),
-        "--h": Math.max(box["--h"], cbox["--h"]),
+    m_container_box = this.m_boxes.breduce((cont, box) => ({
+        "--cont-x": Math.min(cont["--cont-x"], box["--box-x"]),
+        "--cont-y": Math.min(cont["--cont-y"], box["--box-y"]),
+        "--w": Math.max(cont["--w"], box["--w"]),
+        "--h": Math.max(cont["--h"], box["--h"]),
     }), {
-        "--x": Infinity,
-        "--y": Infinity,
+        "--cont-x": Infinity,
+        "--cont-y": Infinity,
         "--w": 0,
         "--h": 0,
     })
 
     melem_container =
         div
-            .$class([
-                [cname("container")],
-                this.data_opts
-                    .bfilter(v => v)
-                    .bkeys()
-                    .bmap(k => "f-" + k),
-            ].bflat())
-            .tab_index(0)
-            .$style(this.m_bounding_box)
+            .class(cname("container"))
+            .$style(this.m_container_box)
             .$inner(this.m_boxes
                 .bmap(box =>
                     div
@@ -72,25 +62,44 @@ export default class extends TTPlugin {
                         .$style(box)()
                 )
             )()
+    melem_handle_container = 
+        div
+            .class(cname("handle-container"))
+            .$style(this.m_container_box)
+        (
+            div.class(cname("vector-handle"), "f-up")(),
+            div.class(cname("vector-handle"), "f-down")(),
+            div.class(cname("vector-handle"), "f-left")(),
+            div.class(cname("vector-handle"), "f-right")(),
+        )
     melem =
         div
-            .class(cname("root"))
+            .$class([
+                [cname("root")],
+                this.data_opts
+                    .bfilter(v => v)
+                    .bkeys()
+                    .bmap(k => "f-" + k),
+            ].bflat())
         (
             this.melem_container,
+            this.melem_handle_container,
         )
 
-    set(src, node_or_melems, opts = {
-        show_box: true,
-        show_handle_top: false,
-        show_handle_right: false,
-        show_handle_bottom: false,
-        show_handle_left: false,
-    }) {
+    set(src, node_or_melems, opts) {
+        opts = ({...{
+            show_container: true,
+            show_box: false,
+            show_handle_up: false,
+            show_handle_down: false,
+            show_handle_right: false,
+            show_handle_left: false,
+        }, ...opts});
         this.data_opts.assign(opts);
         this.data_viewport.val = get_elem_viewport(to_melem(node_or_melems[0]).elem);
         this.data_melems.assign(node_or_melems.map(to_melem));
         this.data_src.val = src;
-        this.melem_container.focus();
+        this.root.focus();
     }
 }
 
@@ -105,3 +114,4 @@ const get_elem_viewport = elem =>
         .first()[0];
 const _detect_overflow_values = ["auto", "scroll"];
 const to_melem = node_or_melem => node_or_melem instanceof TTNode ? node_or_melem.melem : node_or_melem;
+const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());
