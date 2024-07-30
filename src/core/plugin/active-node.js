@@ -44,7 +44,7 @@ export default class extends TTPlugin {
                                 move_x, move_y,
                                 start_rect, current_rect,
                             };
-                            current.request_msgs([`core:scale.${dir}:${suffix}`, data]);
+                            current.request_msgs([`core:scale.${dir}.${suffix}`, data]);
                         }
                     };
                     const move_handle = e => request_handle(e, "move");

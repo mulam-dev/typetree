@@ -32,9 +32,28 @@ export default class extends TTPlugin {
                 } else {
                     if (parts[0] !== '*') rule.self = parts[0];
                 }
-                rule.overrides = overrides;
+                rule.overrides = parse_overrides(overrides);
                 return rule;
             })
         )).forEach(rules => import_rule(...rules));
     }
 }
+
+const parse_overrides = (obj, parts = []) => {
+    if (parts.length) {
+        return {
+            [parts[0]]: parse_overrides(obj, parts.slice(1)),
+        };
+    } else {
+        if (obj instanceof Object && obj.constructor === Object) {
+            const res = {};
+            for (const key in obj) {
+                const parts = key.split('.');
+                res[parts[0]] = parse_overrides(obj[key], parts.slice(1));
+            }
+            return res;
+        } else {
+            return obj;
+        }
+    }
+};
