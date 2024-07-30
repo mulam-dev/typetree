@@ -19,6 +19,8 @@ export default class extends TTPlugin {
         ), () => this.load());
     }
 
+    selections = [].guard(null, sel => sel.into(this.root), sel => sel.outof());
+
     loaded = Symbol("loaded");
 
     async load() {
@@ -63,10 +65,58 @@ export default class extends TTPlugin {
                     );
                 })
         )();
+
         const me_inner = div.class(cname("inner")).$inner(
             this.root.inner
             .bmap(node => node.melem),
-        )();
+        ).on({
+            mousedown: (e) => {
+                if (e.button === 0) {
+                    const e_inner = me_inner.elem;
+                    let telem = e.target;
+                    while (telem !== e_inner && !telem.node) telem = telem.parentNode;
+                    const start_node = telem.node;
+                    if (start_node) {
+                        const anchor_scopes = ancestors(start_node, (node, child) => node.request("core:select.has-node", child).result);
+                        if (anchor_scopes.length) {
+                            const scope = anchor_scopes.at(-1);
+                            const anchor_node = closest(start_node, n => n.parent === scope);
+                            this.selections.val = scope.request("core:select.get-selection", anchor_node, anchor_node).result;
+                            let prev_focus = null;
+                            const move_handle = e => {
+                                let telem = e.target;
+                                if (prev_focus === telem) return;
+                                prev_focus = telem;
+                                while (telem !== e_inner && !telem.node) telem = telem.parentNode;
+                                const end_node = telem.node;
+                                if (end_node) {
+                                    const focus_scopes = ancestors(end_node, (node, child) => node.request("core:select.has-node", child).result);
+                                    if (focus_scopes.length) {
+                                        let scope_idx = -1;
+                                        while (scope_idx + 1 < anchor_scopes.length && anchor_scopes[scope_idx + 1] === focus_scopes[scope_idx + 1]) scope_idx++;
+                                        const scope = anchor_scopes[scope_idx];
+                                        if (scope) {
+                                            const anchor_node = closest(start_node, n => n.parent === scope);
+                                            const focus_node = closest(end_node, n => n.parent === scope);
+                                            this.selections.val = scope.request("core:select.get-selection", anchor_node, focus_node).result;
+                                        }
+                                    }
+                                }
+                            };
+                            const up_handle = e => {
+                                if (e.button === 0) {
+                                    jQuery(e_inner).off("mousemove", move_handle);
+                                    jQuery(window).off("mouseup", up_handle);
+                                }
+                            };
+                            jQuery(e_inner).on("mousemove", move_handle);
+                            jQuery(window).on("mouseup", up_handle);
+
+                        }
+                    }
+                }
+            },
+        })();
         const me_viewport = div.class(cname("viewport")).on({
             mousedown(e) {
                 if (e.button === 1) {
@@ -83,10 +133,14 @@ export default class extends TTPlugin {
                             behavior: "instant",
                         });
                     };
+                    const up_handle = ({button}) => {
+                        if (button === 1) {
+                            jQuery(window).off("mousemove", move_handle);
+                            jQuery(window).off("mouseup", up_handle);
+                        }
+                    };
                     jQuery(window).on("mousemove", move_handle);
-                    jQuery(window).one("mouseup", ({button}) => {
-                        if (button === 1) jQuery(window).off("mousemove", move_handle);
-                    });
+                    jQuery(window).on("mouseup", up_handle);
                 }
             },
         })(
@@ -120,3 +174,19 @@ export default class extends TTPlugin {
 
 const timeout = timeout => new Promise(res => setTimeout(res, timeout));
 const frame = () => new Promise(res => requestAnimationFrame(res));
+const closest = (node, fn, prev = null) => node ? fn(node, prev) ? node : closest(node.parent, fn, node) : null;
+const ancestors = (node, fn) => {
+    const res = [];
+    let prev_node = null;
+    while (true) {
+        node = closest(node, fn, prev_node);
+        if (node) {
+            res.push(node);
+        } else {
+            break;
+        }
+        prev_node = node;
+        node = node.parent;
+    }
+    return res.reverse();
+};

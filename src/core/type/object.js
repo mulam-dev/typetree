@@ -83,7 +83,7 @@ export default class extends TTNode {
             "#core:frame": frame,
         } = this.$type;
 
-        this.data = data ?? [];
+        this.data = (data ?? []).guard(null, entry => entry.forEach(n => n.into(this)), entry => entry.forEach(n => n.outof()));
 
         this.struct =
             frame([

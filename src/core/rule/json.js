@@ -49,40 +49,67 @@ export default {
             }
         }
     },
+    "able.core:select": true,
+    "handles.core:select.has-node"(p, node) {
+        return this.data.includes(node);
+    },
+    "handles.core:select.get-selection"(p, anchor_node, focus_node) {
+        let anchor = this.data.indexOf(anchor_node);
+        let focus = this.data.indexOf(focus_node);
+        if (anchor <= focus) {
+            focus++;
+        } else {
+            anchor++;
+        }
+        return this.$type["#core:selection"]({
+            scope: this,
+            anchor, focus,
+        });
+    },
+    "handles.core:selection:get-nodes"(p, anchor, focus) {
+        return this.data.slice(...[anchor, focus].sort());
+    },
 },
 
-".json:array > *": {
-    able: {
-        "core:delete": true,
-        "core:caret"() {
-            return this.parent.data_column.val > 1 ? {
-                "left": true,
-                "right": true,
-            } : {
-                "top": true,
-                "bottom": true,
-            }
-        },
+".json:object": {
+    "able.core:select": true,
+    "handles.core:select.has-node"(p, node) {
+        return this.data.some(entry => entry.includes(node));
     },
-    handles: {
-        "core:delete"() {
-            //
-        },
-        "core:caret"() {
-            function before_handle() {
-                //
+    "handles.core:select.get-selection"(p, anchor_node, focus_node) {
+        let anchor_entry_idx = this.data.findIndex(entry => entry.includes(anchor_node));
+        let focus_entry_idx = this.data.findIndex(entry => entry.includes(focus_node));
+        if (anchor_entry_idx !== focus_entry_idx) {
+            if (anchor_entry_idx <= focus_entry_idx) {
+                focus_entry_idx++;
+            } else {
+                anchor_entry_idx++;
             }
-            function after_handle() {
-                //
+            return this.$type["#core:selection"]({
+                scope: this,
+                anchor: anchor_entry_idx, focus: focus_entry_idx,
+            });
+        } else {
+            const entry = this.data[anchor_entry_idx];
+            let anchor = entry.indexOf(anchor_node);
+            let focus = entry.indexOf(focus_node);
+            if (anchor <= focus) {
+                focus++;
+            } else {
+                anchor++;
             }
-            return this.parent.data_column.val > 1 ? {
-                "left": before_handle,
-                "right": after_handle,
-            } : {
-                "top": before_handle,
-                "bottom": after_handle,
-            }
-        },
+            return this.$type["#core:selection"]({
+                scope: this,
+                anchor: [anchor_entry_idx, anchor], focus: [focus_entry_idx, focus],
+            });
+        }
+    },
+    "handles.core:selection:get-nodes"(p, anchor, focus) {
+        if (anchor instanceof Array) {
+            return this.data[anchor[0]].slice(...[anchor[1], focus[1]].sort());
+        } else {
+            return this.data.slice(...[anchor, focus].sort()).flat();
+        }
     },
 },
 

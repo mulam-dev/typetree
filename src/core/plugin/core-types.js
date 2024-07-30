@@ -14,6 +14,8 @@ export default class extends TTPlugin {
     $core_type_loader_data() {
         return [
             "frame",
+            "selection",
+            "vector-range",
         ].map(p => `../type/${p}`);
     }
 }

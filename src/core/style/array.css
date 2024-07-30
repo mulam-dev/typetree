@@ -1,5 +1,4 @@
 .core-array-flex {
     display: grid;
     grid-template-columns: repeat(var(--column), auto);
-    gap: 2px;
 }

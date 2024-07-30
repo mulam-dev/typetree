@@ -39,19 +39,17 @@ export default class extends TTPlugin {
     }
 }
 
-const parse_overrides = (obj, parts = []) => {
+const parse_overrides = (obj, parts = [], parent = {}) => {
     if (parts.length) {
-        return {
-            [parts[0]]: parse_overrides(obj, parts.slice(1)),
-        };
+        parent[parts[0]] = parse_overrides(obj, parts.slice(1), parent[parts[0]]);
+        return parent;
     } else {
         if (obj instanceof Object && obj.constructor === Object) {
-            const res = {};
             for (const key in obj) {
                 const parts = key.split('.');
-                res[parts[0]] = parse_overrides(obj[key], parts.slice(1));
+                parse_overrides(obj[key], parts, parent);
             }
-            return res;
+            return parent;
         } else {
             return obj;
         }

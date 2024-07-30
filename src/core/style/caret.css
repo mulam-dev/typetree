@@ -26,15 +26,16 @@
     position: absolute;
     left: calc(var(--cont-x) * 1px);
     top: calc(var(--cont-y) * 1px);
-    width: calc(var(--w) * 1px);
-    height: calc(var(--h) * 1px);
+    width: calc((var(--cont-ex) - var(--cont-x)) * 1px);
+    height: calc((var(--cont-ey) - var(--cont-y)) * 1px);
 }
 
 .core-caret-root.f-show_container .core-caret-container::after {
     content: " ";
     position: absolute;
     inset: 0;
-    outline: solid 2px var(--c-b);
+    outline: solid 1px var(--c-b);
+    border: solid 1px var(--c-b);
     border-radius: var(--border-radius);
 }
 
@@ -43,21 +44,136 @@
     position: absolute;
     left: calc((var(--box-x) - var(--cont-x)) * 1px);
     top: calc((var(--box-y) - var(--cont-y)) * 1px);
-    width: calc(var(--w) * 1px);
-    height: calc(var(--h) * 1px);
+    width: calc((var(--box-ex) - var(--box-x)) * 1px);
+    height: calc((var(--box-ey) - var(--box-y)) * 1px);
     background: var(--c-bg);
 }
 
+/* 基本变量 */
+
 .core-caret-vector-handle {
-    --gap: 1px;
-    --size: 12px;
-    --hint-size: 6px;
+    --outside: 0;
+    --gap: calc(var(--hint-size) * var(--outside));
+    --size: 0.8em;
+    --hint-size: 0.4em;
+    --offset: min(50%, calc((1 - var(--outside)) * var(--size) - var(--outside) * var(--size) / 2));
+    --side-x: 0; --side-y: 0;
+    --flag-x: calc((var(--dir-x) + 1) / 2);
+    --flag-y: calc((var(--dir-y) + 1) / 2);
+    --start-x: calc((1 - var(--flag-x)) * 100%);
+    --start-y: calc((1 - var(--flag-y)) * 100%);
     display: none;
     position: absolute;
+    pointer-events: all;
+}
+
+/* 方位变量 */
+
+.core-caret-vector-handle.f-top,
+.core-caret-vector-handle.f-right,
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-top_right {
+    --dir-y: 1;
+}
+
+.core-caret-vector-handle.f-bottom,
+.core-caret-vector-handle.f-left,
+.core-caret-vector-handle.f-bottom_left,
+.core-caret-vector-handle.f-bottom_right {
+    --dir-y: -1;
+}
+
+.core-caret-vector-handle.f-left,
+.core-caret-vector-handle.f-bottom,
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-bottom_left {
+    --dir-x: 1;
+}
+
+.core-caret-vector-handle.f-right,
+.core-caret-vector-handle.f-top,
+.core-caret-vector-handle.f-top_right,
+.core-caret-vector-handle.f-bottom_right {
+    --dir-x: -1;
+}
+
+.core-caret-vector-handle.f-top,
+.core-caret-vector-handle.f-bottom,
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-top_right,
+.core-caret-vector-handle.f-bottom_left,
+.core-caret-vector-handle.f-bottom_right {
+    --side-y: 1;
+}
+
+.core-caret-vector-handle.f-left,
+.core-caret-vector-handle.f-right,
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-top_right,
+.core-caret-vector-handle.f-bottom_left,
+.core-caret-vector-handle.f-bottom_right {
+    --side-x: 1;
+}
+
+.core-caret-vector-handle.f-top,
+.core-caret-vector-handle.f-bottom,
+.core-caret-vector-handle.f-left,
+.core-caret-vector-handle.f-right {
     width: var(--size);
     height: var(--size);
     transform: translate(-50%, -50%);
-    pointer-events: all;
+    z-index: 1;
+}
+
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-top_right,
+.core-caret-vector-handle.f-bottom_left,
+.core-caret-vector-handle.f-bottom_right {
+    --border-size: var(--hint-size);
+    --s-size: calc(var(--gap) + var(--offset) - var(--hint-size) / 2);
+    --s-border-radius: calc(var(--border-radius) + var(--hint-size) / 2 + var(--gap));
+    width: var(--size); height: var(--size);
+    transform: translate(-50%, -50%);
+}
+
+.core-caret-vector-handle.f-top_left::before,
+.core-caret-vector-handle.f-top_right::before,
+.core-caret-vector-handle.f-bottom_left::before,
+.core-caret-vector-handle.f-bottom_right::before {
+    content: " ";
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(
+        calc((1 - var(--flag-x)) * -100% - var(--dir-x) * var(--border-size) / 2),
+        calc((1 - var(--flag-y)) * -100% - var(--dir-y) * var(--border-size) / 2)
+    );
+    width: var(--s-size); height: var(--s-size);
+    border-style: solid;
+    border-color: var(--c-b);
+    border-width:
+        calc(var(--border-size) * var(--flag-y))
+        calc(var(--border-size) * (1 - var(--flag-x)))
+        calc(var(--border-size) * (1 - var(--flag-y)))
+        calc(var(--border-size) * var(--flag-x));
+    border-radius: 
+        calc(var(--s-border-radius) * var(--flag-y) * var(--flag-x))
+        calc(var(--s-border-radius) * var(--flag-y) * (1 - var(--flag-x)))
+        calc(var(--s-border-radius) * (1 - var(--flag-y)) * (1 - var(--flag-x)))
+        calc(var(--s-border-radius) * (1 - var(--flag-y)) * var(--flag-x));
+    pointer-events: none;
+    opacity: calc(var(--outside) * 0.4);
+}
+
+.core-caret-vector-handle:hover::before,
+.core-caret-vector-handle:active::before {
+    opacity: calc(var(--outside) * 1);
+}
+
+.core-caret-vector-handle.f-top_left::after,
+.core-caret-vector-handle.f-top_right::after,
+.core-caret-vector-handle.f-bottom_left::after,
+.core-caret-vector-handle.f-bottom_right::after {
+    opacity: calc(1 - var(--outside));
 }
 
 .core-caret-vector-handle::after {
@@ -88,58 +204,30 @@
     display: block;
 }
 
-.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top,
-.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
-.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right {
-    top: calc(0% - var(--gap));
-}
-
-.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom,
-.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left,
-.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
-    top: calc(100% + var(--gap));
-}
-
-.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left,
-.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
-.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left {
-    left: calc(0% - var(--gap));
-}
-
-.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right,
-.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right,
-.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
-    left: calc(100% + var(--gap));
-}
-
-.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top {
-    left: max(50%, calc(100% - var(--size)));
-}
-
-.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom {
-    left: min(50%, var(--size));
-}
-
-.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left {
-    top: max(50%, calc(100% - var(--size)));
-}
-
-.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right {
-    top: min(50%, var(--size));
-}
-
-.core-caret-root.f-show_handle_top_left.f-show_container .core-caret-container::after {
-    border-top-left-radius: 0;
-}
-
-.core-caret-root.f-show_handle_top_right.f-show_container .core-caret-container::after {
-    border-top-right-radius: 0;
-}
-
-.core-caret-root.f-show_handle_bottom_left.f-show_container .core-caret-container::after {
-    border-bottom-left-radius: 0;
-}
-
-.core-caret-root.f-show_handle_bottom_right.f-show_container .core-caret-container::after {
-    border-bottom-right-radius: 0;
+.core-caret-vector-handle.f-top,
+.core-caret-vector-handle.f-bottom,
+.core-caret-vector-handle.f-left,
+.core-caret-vector-handle.f-right,
+.core-caret-vector-handle.f-top_left,
+.core-caret-vector-handle.f-top_right,
+.core-caret-vector-handle.f-bottom_left,
+.core-caret-vector-handle.f-bottom_right {
+    top: calc(
+        var(--start-y) -
+        var(--side-y) *
+            var(--dir-y) *
+            var(--gap) +
+        (1 - var(--side-y)) *
+            var(--dir-y) *
+            var(--offset)
+    );
+    left: calc(
+        var(--start-x) -
+        var(--side-x) *
+            var(--dir-x) *
+            var(--gap) +
+        (1 - var(--side-x)) *
+            var(--dir-x) *
+            var(--offset)
+    );
 }

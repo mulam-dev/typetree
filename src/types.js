@@ -52,7 +52,7 @@ export class TTNode {
         const parts = path.split('.');
         return this.get_attr_self(parts) ??
                this.root.get_attr_of(this, parts) ??
-               this.constructor.get_attr(node, parts) ??
+               this.constructor.get_attr(this, parts) ??
                def;
     }
 
@@ -72,7 +72,7 @@ export class TTNode {
         let parent = this[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(node);
+                if (parent.call) parent = parent.call(this);
                 parent = parent[part];
             } else {
                 parent = null;
@@ -82,25 +82,25 @@ export class TTNode {
         return parent;
     }
 
-    request(pack) {
+    request_pack(pack) {
         if (!pack.closed.val) {
-            for (const [type, ...data] of pack.get_msgs()) {
+            for (const [type, ...data] of pack.msgs) {
                 for (const handle of this.attrs("handles." + type)) {
                     if (pack.closed.val) return pack;
-                    handle.call(this, pack, ...data);
+                    const res = handle.call(this, pack, ...data);
+                    if (res !== null && res !== undefined) pack.push_result(res);
                 }
             }
         }
         return pack;
     }
+
     request_msgs(...msgs) {
-        return this.request(TTPack.create(...msgs));
+        return this.request_pack(TTPack.create(...msgs));
     }
-    request_parent(pack) {
-        return this.parent?.request(pack) ?? pack;
-    }
-    request_parent_msgs(...msgs) {
-        return this.request_parent(TTPack.create(...msgs));
+
+    request(...msg) {
+        return this.request_msgs(msg);
     }
 }
 
@@ -148,7 +148,8 @@ export class TTPack {
     constructor(inner, msgs) {
         this.inner = inner;
         this.closed = [false];
-        this.msgs = msgs;
+        this.data_msgs = msgs;
+        this.data_results = [];
     }
     close() {
         this.closed.val = true;
@@ -156,9 +157,25 @@ export class TTPack {
     repack(...msgs) {
         return new this.constructor(this, msgs);
     }
+    push_result(res) {
+        this.data_results.push(res);
+    }
     * get_msgs() {
-        yield* this.msgs.values();
+        yield* this.data_msgs.values();
         if (this.inner) yield* this.inner.get_msgs();
+    }
+    * get_results() {
+        yield* this.data_results.values();
+        if (this.inner) yield* this.inner.get_results();
+    }
+    get msgs() {
+        return this.get_msgs();
+    }
+    get results() {
+        return this.get_results();
+    }
+    get result() {
+        return this.get_results().next().value;
     }
 }
 

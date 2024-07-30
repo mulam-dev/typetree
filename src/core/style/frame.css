@@ -25,6 +25,7 @@
 .core-frame.f-inline {
     background: var(--fc-bg);
     padding: 0 0.25em;
+    border: 1px solid var(--c-bg);
     border-radius: var(--border-radius);
 }
 
