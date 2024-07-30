@@ -92,7 +92,7 @@ export default class extends TTNode {
                     .$inner(
                         this.data.bflat().bmap(node => node.melem)
                     )(),
-            ]).into(this).name(name).color(42).style_on("hint-before");
+            ]).into(this).name(name).color(180, 0.5, 1.1).style_on("hint-before");
     }
 
     to_json() {

@@ -72,18 +72,20 @@ export default class extends TTNode {
             "#core:frame": frame,
         } = this.$type;
 
-        this.data = data ?? [];
-
-        this.data.guard(null, n => n.into(this), n => n.outof());
+        this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
+        this.data_column = [1];
 
         this.struct =
             frame([
                 ME.div
                     .class("core-array-flex")
+                    .$style({
+                        "--column": this.data_column.bclone(),
+                    })
                     .$inner(
                         this.data.bflat().bmap(node => node.melem)
                     )(),
-            ]).into(this).name(name).color(200).style_on("sbracket-before");
+            ]).into(this).name(name).color(200).style_on("sbracket-before", "sbracket-after");
     }
 
     to_json() {

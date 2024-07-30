@@ -12,9 +12,7 @@ export default class extends TTNode {
     static handles = {...this.handles,
         "core:dom-event:mousedown"(p, {button}) {
             if (button === 0) {
-                this.parent.request_parent(p.repack(["core:inner-active", this.parent])).closed.val ||
-                this.parent.request(p.repack(["core:active"])).closed.val ||
-                this.$require.caret.set(this.parent, [this.parent]);
+                this.$require["core:active-node"].set(this.parent);
                 p.close();
             }
         },
@@ -54,9 +52,9 @@ export default class extends TTNode {
 
     color(hue, sat = 1, lum = 1) {
         this.data_color.assign({
-            "--fc-fg": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
+            "--fc-fg": `hsl(${hue}deg ${sat * 130}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
             "--fc-bg": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / calc(var(--fc-l-fbase) * 0.32))`,
-            "--fc-stroke": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 36%)`,
+            "--fc-stroke": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 80}%) / 50%)`,
             "--fc-fill": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 24%)`,
         });
         return this;

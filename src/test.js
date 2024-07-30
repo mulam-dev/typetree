@@ -21,7 +21,7 @@ Editor.set_tree(
         [key(["null"]), nil()],
         [key(["boolean"]), array([boolean([true]), boolean([false])])],
         [key(["string"]), array([string([""]), string(["some text"])])],
-        [key(["number"]), number([-Math.E])],
+        [key(["number"]), array(Array(64).fill(0).map((_, i) => number([i])))],
         [key(["object"]), object([
             [key(["name"]), string(["Lane Sun"])],
             [key(["employed"]), boolean([true])],

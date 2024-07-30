@@ -1,6 +1,6 @@
 const id = "core:type-loader";
-const provides = ["type-loader"];
-const requires = ["base"];
+const provides = ["core:type-loader"];
+const requires = ["core:base"];
 
 /* 
     # 提供更便捷的类型导入方式
@@ -18,9 +18,9 @@ export default class extends TTPlugin {
     }
 
     async load() {
-        const {import_type, for_plugins_prop} = this.require["base"];
+        const {import_type, for_plugins_prop} = this.require["core:base"];
 
-        (await for_plugins_prop("$type_loader_data", (plugin, paths) => Promise.all(
+        (await for_plugins_prop("$core_type_loader_data", (plugin, paths) => Promise.all(
             paths.map(
                 async path => (await import(path + ".js")).default,
             ),

@@ -1,7 +1,7 @@
 const id = "core:types:json";
-const provides = ["types:json"];
+const provides = ["core:types:json"];
 const requires = [
-    "base",
+    "core:type-loader",
 ];
 
 export default class extends TTPlugin {
@@ -11,7 +11,7 @@ export default class extends TTPlugin {
         return this.req_must(plugins, ...requires);
     }
 
-    $type_loader_data() {
+    $core_type_loader_data() {
         return [
             "null",
             "boolean",
@@ -22,4 +22,10 @@ export default class extends TTPlugin {
             "array",
         ].map(p => `../type/${p}`);
     }
+
+    $core_rule_loader_data() {
+        return rules;
+    }
 }
+
+import rules from "../rule/json.js";

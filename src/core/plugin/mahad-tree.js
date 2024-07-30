@@ -1,8 +1,6 @@
 const id = "core:mahad-tree";
-const provides = ["mahad-tree"];
-const requires = [
-    "base",
-];
+const provides = ["core:mahad-tree"];
+const requires = [];
 
 export default class extends TTPlugin {
     static id = id

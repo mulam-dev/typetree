@@ -1,9 +1,7 @@
 const id = "core:timeline";
-const provides = ["timeline"];
+const provides = ["core:timeline"];
 const requires = [
-    "base",
-    "node-path",
-    "view",
+    "core:view",
 ];
 
 export default class extends TTPlugin {
@@ -19,7 +17,7 @@ export default class extends TTPlugin {
     */
     timeline = []
 
-    $view_data() {
+    $core_view_data() {
         return {
             id,
             melem: ME.div(),

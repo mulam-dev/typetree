@@ -3,10 +3,11 @@ export class TTNode {
     static actions = {}
     static handles = {}
 
-    static get_attr(parts) {
+    static get_attr(node, parts) {
         let parent = this[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
+                if (parent.call) parent = parent.call(node);
                 parent = parent[part];
             } else {
                 parent = null;
@@ -51,7 +52,7 @@ export class TTNode {
         const parts = path.split('.');
         return this.get_attr_self(parts) ??
                this.root.get_attr_of(this, parts) ??
-               this.constructor.get_attr(parts) ??
+               this.constructor.get_attr(node, parts) ??
                def;
     }
 
@@ -61,7 +62,7 @@ export class TTNode {
         const self_res = this.get_attr_self(parts);
         if (self_res !== null && self_res !== undefined) res.push(self_res);
         res.push(...this.root.get_attrs_of(this, parts));
-        const class_res = this.constructor.get_attr(parts);
+        const class_res = this.constructor.get_attr(this, parts);
         if (class_res !== null && class_res !== undefined) res.push(class_res);
         if (!res.length) res.push(...def);
         return res;
@@ -71,6 +72,7 @@ export class TTNode {
         let parent = this[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
+                if (parent.call) parent = parent.call(node);
                 parent = parent[part];
             } else {
                 parent = null;
@@ -82,11 +84,9 @@ export class TTNode {
 
     request(pack) {
         if (!pack.closed.val) {
-            const handles = this.constructor.handles;
             for (const [type, ...data] of pack.get_msgs()) {
-                const handle = handles[type];
-                if (handle) {
-                    if (pack.closed.val) break;
+                for (const handle of this.attrs("handles." + type)) {
+                    if (pack.closed.val) return pack;
                     handle.call(this, pack, ...data);
                 }
             }
@@ -126,10 +126,11 @@ export class TTRule {
         ));
     }
 
-    get_attr(parts) {
+    get_attr(node, parts) {
         let parent = this.overrides[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
+                if (parent.call) parent = parent.call(node);
                 parent = parent[part];
             } else {
                 parent = null;

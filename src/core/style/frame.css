@@ -1,16 +1,12 @@
 @media (prefers-color-scheme: dark) {
     .core-frame {
-        --fc-l-dir: 0.05;
-        --fc-l-base: 12%;
-        --fc-l-fdir: 0.36;
+        --fc-l-fdir: 0.4;
         --fc-l-fbase: 26%;
     }
 }
 
 @media (prefers-color-scheme: light) {
     .core-frame {
-        --fc-l-dir: -0.15;
-        --fc-l-base: 96%;
         --fc-l-fdir: -0.42;
         --fc-l-fbase: 80%;
     }
@@ -48,11 +44,19 @@
     border-right: 0 none;
 }
 
-.core-frame.f-sbracket-before::before {
+.core-frame.f-sbracket-before::before,
+.core-frame.f-sbracket-after::after {
     content: " ";
     margin: 4px 2px;
     width: var(--rt-width);
     background: var(--fc-fill);
     border: var(--rt-border) solid var(--fc-stroke);
+}
+
+.core-frame.f-sbracket-before::before {
     border-right: 0 none;
+}
+
+.core-frame.f-sbracket-after::after {
+    border-left: 0 none;
 }

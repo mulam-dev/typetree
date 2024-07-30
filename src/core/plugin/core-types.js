@@ -1,7 +1,7 @@
 const id = "core:types:core";
-const provides = ["types:core"];
+const provides = ["core:types:core"];
 const requires = [
-    "type-loader",
+    "core:type-loader",
 ];
 
 export default class extends TTPlugin {
@@ -11,7 +11,7 @@ export default class extends TTPlugin {
         return this.req_must(plugins, ...requires);
     }
 
-    $type_loader_data() {
+    $core_type_loader_data() {
         return [
             "frame",
         ].map(p => `../type/${p}`);

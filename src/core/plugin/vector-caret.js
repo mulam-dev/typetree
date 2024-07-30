@@ -1,6 +1,8 @@
 const id = "core:vector-caret";
-const provides = ["caret"];
-const requires = ["base"];
+const provides = ["core:caret"];
+const requires = [];
+
+const dirs = ["top", "bottom", "left", "right", "top_left", "top_right", "bottom_left", "bottom_right"];
 
 export default class extends TTPlugin {
     static id = id
@@ -8,6 +10,8 @@ export default class extends TTPlugin {
     static requires(plugins) {
         return this.req_must(plugins, ...requires);
     }
+
+    dirs = dirs;
 
     data_opts = {}
     data_viewport = [].guard(null,
@@ -21,7 +25,10 @@ export default class extends TTPlugin {
             this.data_offset_observer.unobserve(elem);
         },
     )
-    data_melems = []
+    data_melems = [].guard(null,
+        ({elem}) => this.data_offset_observer.observe(elem),
+        ({elem}) => this.data_offset_observer.unobserve(elem),
+    )
     data_src = []
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
@@ -62,16 +69,14 @@ export default class extends TTPlugin {
                         .$style(box)()
                 )
             )()
+    melem_handles = Object.fromEntries(
+        dirs.map(dir => [dir, div.class(cname("vector-handle"), `f-${dir}`)()]),
+    )
     melem_handle_container = 
         div
             .class(cname("handle-container"))
             .$style(this.m_container_box)
-        (
-            div.class(cname("vector-handle"), "f-up")(),
-            div.class(cname("vector-handle"), "f-down")(),
-            div.class(cname("vector-handle"), "f-left")(),
-            div.class(cname("vector-handle"), "f-right")(),
-        )
+            .$inner(Object.values(this.melem_handles))()
     melem =
         div
             .$class([
@@ -87,14 +92,12 @@ export default class extends TTPlugin {
         )
 
     set(src, node_or_melems, opts) {
-        opts = ({...{
+        opts = {
             show_container: true,
             show_box: false,
-            show_handle_up: false,
-            show_handle_down: false,
-            show_handle_right: false,
-            show_handle_left: false,
-        }, ...opts});
+            ...Object.fromEntries(dirs.map(d => [`show_handle_${d}`, false])),
+            ...opts,
+        };
         this.data_opts.assign(opts);
         this.data_viewport.val = get_elem_viewport(to_melem(node_or_melems[0]).elem);
         this.data_melems.assign(node_or_melems.map(to_melem));
@@ -114,4 +117,3 @@ const get_elem_viewport = elem =>
         .first()[0];
 const _detect_overflow_values = ["auto", "scroll"];
 const to_melem = node_or_melem => node_or_melem instanceof TTNode ? node_or_melem.melem : node_or_melem;
-const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());

@@ -4,6 +4,7 @@
     width: 0; height: 0;
     margin: 0; padding: 0;
     pointer-events: none;
+    user-select: none;
     z-index: 1;
 }
 
@@ -16,7 +17,7 @@
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
 }
 
-.tt-editor:focus .core-caret-root:not(:has(:hover)) {
+.tt-editor:focus .core-caret-root:not(:has(:hover, :active)) {
     animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-caret-blink;
 }
 
@@ -71,33 +72,74 @@
     border-radius: 100%;
 }
 
-.core-caret-vector-handle:hover::after {
+.core-caret-vector-handle:hover::after,
+.core-caret-vector-handle:active::after {
     outline: calc((var(--size) - var(--hint-size)) / 2) solid color-mix(in oklch, var(--c-b) 50%, transparent);
 }
 
-.core-caret-root.f-show_handle_up .core-caret-vector-handle.f-up,
-.core-caret-root.f-show_handle_down .core-caret-vector-handle.f-down,
+.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top,
+.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom,
 .core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left,
-.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right {
+.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right,
+.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
+.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right,
+.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left,
+.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
     display: block;
 }
 
-.core-caret-root.f-show_handle_up .core-caret-vector-handle.f-up {
+.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top,
+.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
+.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right {
     top: calc(0% - var(--gap));
+}
+
+.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom,
+.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left,
+.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
+    top: calc(100% + var(--gap));
+}
+
+.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left,
+.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
+.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left {
+    left: calc(0% - var(--gap));
+}
+
+.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right,
+.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right,
+.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
+    left: calc(100% + var(--gap));
+}
+
+.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top {
     left: max(50%, calc(100% - var(--size)));
 }
 
-.core-caret-root.f-show_handle_down .core-caret-vector-handle.f-down {
-    top: calc(100% + var(--gap));
+.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom {
     left: min(50%, var(--size));
 }
 
 .core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left {
-    left: calc(0% - var(--gap));
     top: max(50%, calc(100% - var(--size)));
 }
 
 .core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right {
-    left: calc(100% + var(--gap));
     top: min(50%, var(--size));
+}
+
+.core-caret-root.f-show_handle_top_left.f-show_container .core-caret-container::after {
+    border-top-left-radius: 0;
+}
+
+.core-caret-root.f-show_handle_top_right.f-show_container .core-caret-container::after {
+    border-top-right-radius: 0;
+}
+
+.core-caret-root.f-show_handle_bottom_left.f-show_container .core-caret-container::after {
+    border-bottom-left-radius: 0;
+}
+
+.core-caret-root.f-show_handle_bottom_right.f-show_container .core-caret-container::after {
+    border-bottom-right-radius: 0;
 }

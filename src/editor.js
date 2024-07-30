@@ -68,7 +68,7 @@ export class Editor extends TTNode {
     get_attr_of(node, parts) {
         const rules = this.rules.filter(r => r.match(node));
         for (let i = rules.length - 1; i >= 0; i--) {
-            const res = rules[i].get_attr(parts);
+            const res = rules[i].get_attr(node, parts);
             if (res !== null && res !== undefined) return res;
         }
         return null;
@@ -78,7 +78,7 @@ export class Editor extends TTNode {
         const rules = this.rules.filter(r => r.match(node));
         const res = [];
         for (let i = rules.length - 1; i >= 0; i--) {
-            const rule_res = rules[i].get_attr(parts);
+            const rule_res = rules[i].get_attr(node, parts);
             if (rule_res !== null && rule_res !== undefined) res.push(rule_res);
         }
         return res;

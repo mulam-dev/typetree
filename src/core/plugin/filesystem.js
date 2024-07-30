@@ -1,8 +1,7 @@
 const id = "core:filesystem";
-const provides = ["filesystem"];
+const provides = ["core:filesystem"];
 const requires = [
-    "base",
-    "view",
+    "core:view",
 ];
 
 export default class extends TTPlugin {
@@ -12,7 +11,7 @@ export default class extends TTPlugin {
         return this.req_must(plugins, ...requires);
     }
 
-    $view_data() {
+    $core_view_data() {
         return {
             id,
             melem: ME.div(),

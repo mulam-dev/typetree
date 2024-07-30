@@ -40,7 +40,7 @@ export default class extends TTNode {
             frame(this.data.bmap(v => `"${v}"`))
                 .into(this)
                 .name(name)
-                .color(36, 0.52, 0.9)
+                .color(60, 0.5, 1.1)
                 .style_on("inline", "code");
     }
 

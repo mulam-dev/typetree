@@ -1,9 +1,8 @@
 const id = "core:basic-layout";
-const provides = ["layout"];
+const provides = ["core:layout"];
 const requires = [
-    "base",
-    "view",
-    "init-manager",
+    "core:view",
+    "core:init-manager",
 ];
 
 export default class extends TTPlugin {
@@ -14,9 +13,9 @@ export default class extends TTPlugin {
     }
 
     async init() {
-        const {after, all} = this.require["init-manager"];
+        const {after, all} = this.require["core:init-manager"];
         after(all(
-            this.require["view"].loaded,
+            this.require["core:view"].loaded,
         ), () => this.load());
     }
 
@@ -49,8 +48,8 @@ export default class extends TTPlugin {
         const views_show = [false];
 
 
-        const {finish} = this.require["init-manager"];
-        const {views} = this.require["view"];
+        const {finish} = this.require["core:init-manager"];
+        const {views} = this.require["core:view"];
         const {div} = ME;
 
         const me_views = div.class(cname("views")).$show(views_show).$inner(

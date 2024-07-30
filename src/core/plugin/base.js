@@ -1,5 +1,5 @@
 const id = "core:base";
-const provides = ["base"];
+const provides = ["core:base"];
 const requires = [];
 
 export default class extends TTPlugin {

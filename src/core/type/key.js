@@ -25,7 +25,7 @@ export default class extends string {
             ])
                 .into(this)
                 .name(name)
-                .color(42, 0.6, 1.1)
+                .color(180, 0.5, 1.1)
                 .style_on("inline", "code");
     }
 }
