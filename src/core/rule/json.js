@@ -49,21 +49,20 @@ export default {
     },
     handles: {
         "core:scale": {
-            "right"(p, delta, _, cwidth, swidth) {
-                const rdelta = delta - (cwidth - swidth);
+            "right:move"(p, {move_x, delta_x, start_rect, current_rect}) {
+                delta_x -= current_rect.width - start_rect.width;
                 const prev_node = this.data[this.data_column - 1];
-                const root_r = this.melem.rect;
-                const prev_r = prev_node.melem.rect;
-                if (rdelta > 8) {
-                    const next_node = this.data[this.data_column];
-                    if (next_node) {
-                        const next_r = next_node.melem.rect;
-                        if (prev_r.right - root_r.left + next_r.width / 2 + 2 < root_r.width + rdelta) {
-                            this.data_column.val++;
-                        }
+                const prev_rect = prev_node.melem.rect;
+                const next_node = this.data[this.data_column];
+                if (delta_x > 8 && move_x > 0 && next_node) {
+                    const next_rect = next_node.melem.rect;
+                    if (prev_rect.right - current_rect.left + next_rect.width / 2 <
+                        current_rect.width + delta_x) {
+                        this.data_column.val++;
                     }
-                } else if (rdelta < -8 && this.data_column.val > 1) {
-                    if (prev_r.right - root_r.left - prev_r.width / 2 - 2 > root_r.width + rdelta) {
+                } else if (delta_x < -8 && move_x < 0 && this.data_column.val > 1) {
+                    if (prev_rect.right - current_rect.left - prev_rect.width / 2 >
+                        current_rect.width + delta_x) {
                         this.data_column.val--;
                     }
                 }
