@@ -24,15 +24,15 @@ export default class extends TTNode {
             this.data_offset_observer.unobserve(elem);
         },
     )
-    data_melems = [].guard(null,
-        ({elem}) => this.data_offset_observer.observe(elem),
-        ({elem}) => this.data_offset_observer.unobserve(elem),
-    )
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
         const rect = this.melem.rect;
         if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
     })
+    data_melems = [].guard(null,
+        ({elem}) => this.data_offset_observer.observe(elem),
+        ({elem}) => this.data_offset_observer.unobserve(elem),
+    )
 
     m_boxes = this.data_melems.bmap((melem, _, $) => {
         $(this.data_offset);
@@ -107,7 +107,7 @@ export default class extends TTNode {
 }
 
 const {div} = ME;
-const cname = name => "core-caret-" + name;
+const cname = name => "core-range-" + name;
 const get_elem_viewport = elem =>
     jQuery(elem)
         .parents()

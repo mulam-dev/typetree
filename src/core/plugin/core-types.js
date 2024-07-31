@@ -19,4 +19,10 @@ export default class extends TTPlugin {
             "vector-range",
         ].map(p => `../type/${p}`);
     }
+
+    $core_rule_loader_data() {
+        return rules;
+    }
 }
+
+import rules from "../rule/keymap.js";

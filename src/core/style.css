@@ -1,6 +1,6 @@
 @import "style/layout.css";
-@import "style/caret.css";
 @import "style/cursor.css";
+@import "style/range.css";
 @import "style/frame.css";
 @import "style/object.css";
 @import "style/key.css";

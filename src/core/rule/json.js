@@ -153,7 +153,7 @@ export default {
                         const nentry = this.data[anchor];
                         const krect = nentry[0].melem.rect;
                         const vrect = nentry[1].melem.rect;
-                        return ["cursor", pentry[0], {dir: "y", x: 0, y: 0, size: vrect.right - krect.left}];
+                        return ["cursor", nentry[0], {dir: "y", x: 0, y: 0, size: vrect.right - krect.left}];
                     }
                 } else {
                     const {width: w, height: h} = this.melem.rect;

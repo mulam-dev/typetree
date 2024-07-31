@@ -1,12 +1,9 @@
-import { Editor } from "./editor.js";
 import * as types from "./types.js";
-import { TTPlugin } from "./plugin.js";
 
 await (async global => {
 
     Object.assign(global, {...types});
-    global.TTPlugin = TTPlugin;
-    global.Editor = new Editor();
+    global.Editor = new TTEditor();
 
     /* 
         # 加载插件
