@@ -367,9 +367,9 @@ const type_proxy = {
 };
 
 const require_proxy = {
-    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], plugins_proxyer),
+    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], plugins_proxy),
 };
 
-const plugins_proxyer = {
+const plugins_proxy = {
     get: (plugins, method) => (...args) => plugins.map(p => p[method](...args)),
 };

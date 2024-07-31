@@ -1,4 +1,4 @@
-.core-caret-root {
+.core-range-root {
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
     position: relative;
     width: 0; height: 0;
@@ -8,21 +8,21 @@
     z-index: 1;
 }
 
-@keyframes core-caret-blink {
+@keyframes core-range-blink {
     0%      {opacity: 1}
     100%    {opacity: 0}
 }
 
-.tt-editor:focus .core-caret-root {
+.tt-editor:focus .core-range-root {
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
 }
 
-.tt-editor:focus .core-caret-root:not(:has(:hover, :active)) {
-    animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-caret-blink;
+.tt-editor:focus .core-range-root:not(:has(:hover, :active)) {
+    animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-range-blink;
 }
 
-.core-caret-container,
-.core-caret-handle-container {
+.core-range-container,
+.core-range-handle-container {
     position: absolute;
     left: calc(var(--cont-x) * 1px);
     top: calc(var(--cont-y) * 1px);
@@ -30,7 +30,7 @@
     height: calc((var(--cont-ey) - var(--cont-y)) * 1px);
 }
 
-.core-caret-root.f-show_container .core-caret-container::after {
+.core-range-root.f-show_container .core-range-container::after {
     content: " ";
     position: absolute;
     inset: 0;
@@ -39,7 +39,7 @@
     border-radius: var(--border-radius);
 }
 
-.core-caret-root.f-show_box .core-caret-box {
+.core-range-root.f-show_box .core-range-box {
     --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.16 240 / 40%);
     position: absolute;
     left: calc((var(--box-x) - var(--cont-x)) * 1px);
@@ -51,7 +51,7 @@
 
 /* 基本变量 */
 
-.core-caret-vector-handle {
+.core-range-vector-handle {
     --outside: 0;
     --gap: calc(var(--hint-size) * var(--outside));
     --size: 0.8em;
@@ -69,66 +69,66 @@
 
 /* 方位变量 */
 
-.core-caret-vector-handle.f-top,
-.core-caret-vector-handle.f-right,
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-top_right {
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right {
     --dir-y: 1;
 }
 
-.core-caret-vector-handle.f-bottom,
-.core-caret-vector-handle.f-left,
-.core-caret-vector-handle.f-bottom_left,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
     --dir-y: -1;
 }
 
-.core-caret-vector-handle.f-left,
-.core-caret-vector-handle.f-bottom,
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-bottom_left {
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-bottom_left {
     --dir-x: 1;
 }
 
-.core-caret-vector-handle.f-right,
-.core-caret-vector-handle.f-top,
-.core-caret-vector-handle.f-top_right,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_right {
     --dir-x: -1;
 }
 
-.core-caret-vector-handle.f-top,
-.core-caret-vector-handle.f-bottom,
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-top_right,
-.core-caret-vector-handle.f-bottom_left,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
     --side-y: 1;
 }
 
-.core-caret-vector-handle.f-left,
-.core-caret-vector-handle.f-right,
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-top_right,
-.core-caret-vector-handle.f-bottom_left,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
     --side-x: 1;
 }
 
-.core-caret-vector-handle.f-top,
-.core-caret-vector-handle.f-bottom,
-.core-caret-vector-handle.f-left,
-.core-caret-vector-handle.f-right {
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right {
     width: var(--size);
     height: var(--size);
     transform: translate(-50%, -50%);
     z-index: 1;
 }
 
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-top_right,
-.core-caret-vector-handle.f-bottom_left,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
     --border-size: var(--hint-size);
     --s-size: calc(var(--gap) + var(--offset) - var(--hint-size) / 2);
     --s-border-radius: calc(var(--border-radius) + var(--hint-size) / 2 + var(--gap));
@@ -136,10 +136,10 @@
     transform: translate(-50%, -50%);
 }
 
-.core-caret-vector-handle.f-top_left::before,
-.core-caret-vector-handle.f-top_right::before,
-.core-caret-vector-handle.f-bottom_left::before,
-.core-caret-vector-handle.f-bottom_right::before {
+.core-range-vector-handle.f-top_left::before,
+.core-range-vector-handle.f-top_right::before,
+.core-range-vector-handle.f-bottom_left::before,
+.core-range-vector-handle.f-bottom_right::before {
     content: " ";
     position: absolute;
     left: 50%; top: 50%;
@@ -164,19 +164,19 @@
     opacity: calc(var(--outside) * 0.4);
 }
 
-.core-caret-vector-handle:hover::before,
-.core-caret-vector-handle:active::before {
+.core-range-vector-handle:hover::before,
+.core-range-vector-handle:active::before {
     opacity: calc(var(--outside) * 1);
 }
 
-.core-caret-vector-handle.f-top_left::after,
-.core-caret-vector-handle.f-top_right::after,
-.core-caret-vector-handle.f-bottom_left::after,
-.core-caret-vector-handle.f-bottom_right::after {
+.core-range-vector-handle.f-top_left::after,
+.core-range-vector-handle.f-top_right::after,
+.core-range-vector-handle.f-bottom_left::after,
+.core-range-vector-handle.f-bottom_right::after {
     opacity: calc(1 - var(--outside));
 }
 
-.core-caret-vector-handle::after {
+.core-range-vector-handle::after {
     content: " ";
     position: absolute;
     left: 50%;
@@ -188,30 +188,30 @@
     border-radius: 100%;
 }
 
-.core-caret-vector-handle:hover::after,
-.core-caret-vector-handle:active::after {
+.core-range-vector-handle:hover::after,
+.core-range-vector-handle:active::after {
     outline: calc((var(--size) - var(--hint-size)) / 2) solid color-mix(in oklch, var(--c-b) 50%, transparent);
 }
 
-.core-caret-root.f-show_handle_top .core-caret-vector-handle.f-top,
-.core-caret-root.f-show_handle_bottom .core-caret-vector-handle.f-bottom,
-.core-caret-root.f-show_handle_left .core-caret-vector-handle.f-left,
-.core-caret-root.f-show_handle_right .core-caret-vector-handle.f-right,
-.core-caret-root.f-show_handle_top_left .core-caret-vector-handle.f-top_left,
-.core-caret-root.f-show_handle_top_right .core-caret-vector-handle.f-top_right,
-.core-caret-root.f-show_handle_bottom_left .core-caret-vector-handle.f-bottom_left,
-.core-caret-root.f-show_handle_bottom_right .core-caret-vector-handle.f-bottom_right {
+.core-range-root.f-show_handle_top .core-range-vector-handle.f-top,
+.core-range-root.f-show_handle_bottom .core-range-vector-handle.f-bottom,
+.core-range-root.f-show_handle_left .core-range-vector-handle.f-left,
+.core-range-root.f-show_handle_right .core-range-vector-handle.f-right,
+.core-range-root.f-show_handle_top_left .core-range-vector-handle.f-top_left,
+.core-range-root.f-show_handle_top_right .core-range-vector-handle.f-top_right,
+.core-range-root.f-show_handle_bottom_left .core-range-vector-handle.f-bottom_left,
+.core-range-root.f-show_handle_bottom_right .core-range-vector-handle.f-bottom_right {
     display: block;
 }
 
-.core-caret-vector-handle.f-top,
-.core-caret-vector-handle.f-bottom,
-.core-caret-vector-handle.f-left,
-.core-caret-vector-handle.f-right,
-.core-caret-vector-handle.f-top_left,
-.core-caret-vector-handle.f-top_right,
-.core-caret-vector-handle.f-bottom_left,
-.core-caret-vector-handle.f-bottom_right {
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
     top: calc(
         var(--start-y) -
         var(--side-y) *
