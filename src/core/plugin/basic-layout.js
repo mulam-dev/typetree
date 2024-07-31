@@ -82,12 +82,31 @@ export default class extends TTPlugin {
                             const scope = anchor_scopes.at(-1);
                             const anchor_node = closest(start_node, n => n.parent === scope);
                             this.selections.val = scope.request("core:layout.get-selection", anchor_node, anchor_node).result;
-                            let prev_focus = null;
+                            let prev_focus = telem;
+                            let range_cache = [];
+                            const leave_handle = () => {
+                                const sel = window.getSelection();
+                                if (sel.rangeCount > 0) {
+                                    range_cache = [sel.getRangeAt(0), sel.anchorNode, sel.anchorOffset];
+                                }
+                            };
+                            const enter_handle = e => {
+                                if (range_cache.length) {
+                                    setTimeout(() => e.target.focus(), 0);
+                                    // setTimeout(() => {
+                                    //     const sel = window.getSelection();
+                                    //     sel.removeAllRanges();
+                                    //     sel.addRange(range_cache[0]);
+                                    //     sel.collapse(range_cache[1], range_cache[2]);
+                                    // }, 2000);
+                                }
+                            };
                             const move_handle = e => {
                                 let telem = e.target;
+                                while (telem !== e_inner && !telem.node) telem = telem.parentNode;
                                 if (prev_focus === telem) return;
                                 prev_focus = telem;
-                                while (telem !== e_inner && !telem.node) telem = telem.parentNode;
+                                this.root.focus();
                                 const end_node = telem.node;
                                 if (end_node) {
                                     const focus_scopes = ancestors(end_node, (node, child) => node.attr("able.core:layout.select") && node.request("core:layout.has-node", child).result);
@@ -107,10 +126,14 @@ export default class extends TTPlugin {
                                 if (e.button === 0) {
                                     jQuery(e_inner).off("mousemove", move_handle);
                                     jQuery(window).off("mouseup", up_handle);
+                                    jQuery(e.target).off("mouseleave", leave_handle);
+                                    jQuery(e.target).off("mouseenter", enter_handle);
                                 }
                             };
                             jQuery(e_inner).on("mousemove", move_handle);
                             jQuery(window).on("mouseup", up_handle);
+                            jQuery(e.target).on("mouseleave", leave_handle);
+                            jQuery(e.target).on("mouseenter", enter_handle);
 
                         }
                     }

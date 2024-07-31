@@ -13,7 +13,7 @@
     100%    {opacity: 0}
 }
 
-.tt-editor:focus .core-range-root {
+.tt-editor:focus-within .core-range-root {
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
 }
 
@@ -56,7 +56,8 @@
     --gap: calc(var(--hint-size) * var(--outside));
     --size: 0.8em;
     --hint-size: 0.4em;
-    --offset: min(50%, calc((1 - var(--outside)) * var(--size) - var(--outside) * var(--size) / 2));
+    /* --offset: min(50%, calc((1 - var(--outside)) * var(--size) - var(--outside) * var(--size) / 2)); */
+    --offset: min(50%, calc((1 - var(--outside)) * var(--size)));
     --side-x: 0; --side-y: 0;
     --flag-x: calc((var(--dir-x) + 1) / 2);
     --flag-y: calc((var(--dir-y) + 1) / 2);

@@ -37,9 +37,10 @@ export default class extends TTNode {
         this.data = data ?? [''];
 
         this.struct =
-            frame(this.data.bmap(v => `"${v}"`))
+            frame(this.data.bclone())
                 .into(this)
                 .name(name)
+                .editable().prefix('"').suffix('"')
                 .color(60, 0.5, 1.1)
                 .style_on("inline", "code");
     }

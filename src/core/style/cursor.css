@@ -13,7 +13,7 @@
     100%    {opacity: 0}
 }
 
-.tt-editor:focus .core-cursor-root {
+.tt-editor:focus-within .core-cursor-root {
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
 }
 

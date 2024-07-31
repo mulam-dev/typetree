@@ -12,10 +12,12 @@ export default class extends TTNode {
         this.data_name = [null];
         this.data_color = {};
         this.data_styles = [];
+        this.data_editable = [];
 
         this.melem =
             ME.div
-                .$class([["core-frame"], this.data_styles.bmap(s => `f-${s}`)].bflat())
+                .$class([["core-frame"], this.data_editable.bmap(v => "f-editable"), this.data_styles.bmap(s => `f-${s}`)].bflat())
+                .$content_editable(this.data_editable)
                 .$style(this.data_color)
                 .$inner
             (
@@ -59,6 +61,21 @@ export default class extends TTNode {
         for (const style of styles) {
             this.data_styles.delete_at(style);
         }
+        return this;
+    }
+    
+    editable() {
+        this.data_editable.val = "true";
+        return this;
+    }
+
+    prefix(str) {
+        this.melem.attr("data-prefix").val = str;
+        return this;
+    }
+
+    suffix(str) {
+        this.melem.attr("data-suffix").val = str;
         return this;
     }
 }
