@@ -2,6 +2,8 @@
 @import "style/cursor.css";
 @import "style/range.css";
 @import "style/frame.css";
+@import "style/text-field.css";
+@import "style/number.css";
 @import "style/object.css";
 @import "style/key.css";
 @import "style/array.css";

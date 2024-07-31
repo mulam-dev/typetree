@@ -66,14 +66,17 @@ export default class extends TTPlugin {
                 })
         )();
 
+        let release_timer = null;
+
         const me_inner = div.class(cname("inner")).$inner(
             this.root.inner
             .bmap(node => node.melem),
         ).on({
             mousedown: (e) => {
                 if (e.button === 0) {
+                    const {target} = e;
                     const e_inner = me_inner.elem;
-                    let telem = e.target;
+                    let telem = target;
                     while (telem !== e_inner && !telem.node) telem = telem.parentNode;
                     const start_node = telem.node;
                     if (start_node) {
@@ -83,30 +86,32 @@ export default class extends TTPlugin {
                             const anchor_node = closest(start_node, n => n.parent === scope);
                             this.selections.val = scope.request("core:layout.get-selection", anchor_node, anchor_node).result;
                             let prev_focus = telem;
-                            let range_cache = [];
-                            const leave_handle = () => {
-                                const sel = window.getSelection();
-                                if (sel.rangeCount > 0) {
-                                    range_cache = [sel.getRangeAt(0), sel.anchorNode, sel.anchorOffset];
-                                }
+                            const clear = () => {
+                                jQuery(e_inner).off("mousemove", move_handle);
+                                jQuery(window).off("mouseup", up_handle);
+                                jQuery(target).off("mouseleave", leave_handle);
+                                jQuery(target).off("mouseenter", enter_handle);
+                                if (release_timer) clearTimeout(release_timer);
+                                release_timer = setTimeout(() => {
+                                    this.root.melem.attr("class").delete_at("f-selecting");
+                                    release_timer = null;
+                                }, 200);
                             };
-                            const enter_handle = e => {
-                                if (range_cache.length) {
-                                    setTimeout(() => e.target.focus(), 0);
-                                    // setTimeout(() => {
-                                    //     const sel = window.getSelection();
-                                    //     sel.removeAllRanges();
-                                    //     sel.addRange(range_cache[0]);
-                                    //     sel.collapse(range_cache[1], range_cache[2]);
-                                    // }, 2000);
-                                }
+                            const leave_handle = () => {
+                                setTimeout(() => this.root.focus(), 0);
+                            };
+                            const enter_handle = () => {
+                                setTimeout(() => target.focus(), 0);
                             };
                             const move_handle = e => {
+                                if (e.buttons === 0) {
+                                    clear();
+                                    return;
+                                }
                                 let telem = e.target;
                                 while (telem !== e_inner && !telem.node) telem = telem.parentNode;
                                 if (prev_focus === telem) return;
                                 prev_focus = telem;
-                                this.root.focus();
                                 const end_node = telem.node;
                                 if (end_node) {
                                     const focus_scopes = ancestors(end_node, (node, child) => node.attr("able.core:layout.select") && node.request("core:layout.has-node", child).result);
@@ -123,18 +128,14 @@ export default class extends TTPlugin {
                                 }
                             };
                             const up_handle = e => {
-                                if (e.button === 0) {
-                                    jQuery(e_inner).off("mousemove", move_handle);
-                                    jQuery(window).off("mouseup", up_handle);
-                                    jQuery(e.target).off("mouseleave", leave_handle);
-                                    jQuery(e.target).off("mouseenter", enter_handle);
-                                }
+                                if (e.button === 0) clear();
                             };
                             jQuery(e_inner).on("mousemove", move_handle);
                             jQuery(window).on("mouseup", up_handle);
-                            jQuery(e.target).on("mouseleave", leave_handle);
-                            jQuery(e.target).on("mouseenter", enter_handle);
-
+                            jQuery(target).on("mouseleave", leave_handle);
+                            jQuery(target).on("mouseenter", enter_handle);
+                            const root_class = this.root.melem.attr("class");
+                            if (!root_class.includes("f-selecting")) root_class.suffix("f-selecting");
                         }
                     }
                 }

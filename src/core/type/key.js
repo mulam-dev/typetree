@@ -12,14 +12,17 @@ export default class extends string {
     init(data) {
         const {
             "#core:frame": frame,
+            "#core:text-field": field,
         } = this.$type;
         
         this.data = data ?? [''];
 
+        this.node_field = field(this.data.bclone()).into(this);
+
         this.struct =
             frame([
                 ME.div.class("core-key-label")(
-                    ME.div.$text(this.data.bclone())(),
+                    this.node_field.melem,
                     ME.div('→'),
                 ),
             ])

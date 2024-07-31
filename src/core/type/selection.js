@@ -46,6 +46,7 @@ export default class extends TTNode {
                             opts[`show_handle_${dir}`] = true;
                         }
                         this.node_range.set(nodes, opts);
+                        active_node.request("core:active");
                     } else {
                         this.node_range.set(nodes);
                     }

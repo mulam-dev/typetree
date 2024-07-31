@@ -63,9 +63,9 @@
     --flag-y: calc((var(--dir-y) + 1) / 2);
     --start-x: calc((1 - var(--flag-x)) * 100%);
     --start-y: calc((1 - var(--flag-y)) * 100%);
-    display: none;
     position: absolute;
-    pointer-events: all;
+    pointer-events: none;
+    opacity: 0;
 }
 
 /* 方位变量 */
@@ -194,15 +194,17 @@
     outline: calc((var(--size) - var(--hint-size)) / 2) solid color-mix(in oklch, var(--c-b) 50%, transparent);
 }
 
-.core-range-root.f-show_handle_top .core-range-vector-handle.f-top,
-.core-range-root.f-show_handle_bottom .core-range-vector-handle.f-bottom,
-.core-range-root.f-show_handle_left .core-range-vector-handle.f-left,
-.core-range-root.f-show_handle_right .core-range-vector-handle.f-right,
-.core-range-root.f-show_handle_top_left .core-range-vector-handle.f-top_left,
-.core-range-root.f-show_handle_top_right .core-range-vector-handle.f-top_right,
-.core-range-root.f-show_handle_bottom_left .core-range-vector-handle.f-bottom_left,
-.core-range-root.f-show_handle_bottom_right .core-range-vector-handle.f-bottom_right {
-    display: block;
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top .core-range-vector-handle.f-top,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom .core-range-vector-handle.f-bottom,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_left .core-range-vector-handle.f-left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_right .core-range-vector-handle.f-right,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top_left .core-range-vector-handle.f-top_left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top_right .core-range-vector-handle.f-top_right,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom_left .core-range-vector-handle.f-bottom_left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom_right .core-range-vector-handle.f-bottom_right {
+    transition: opacity 200ms;
+    opacity: 1;
+    pointer-events: all;
 }
 
 .core-range-vector-handle.f-top,

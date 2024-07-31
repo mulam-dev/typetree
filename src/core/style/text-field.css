@@ -1,0 +1,26 @@
+.core-frame > span {
+    flex-grow: 1;
+    padding: 0 0.25em;
+    outline: none;
+}
+
+.core-frame > span::before {
+    content: "\200B";
+}
+
+.core-frame > span::selection {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240 / 40%);
+    background: transparent;
+}
+
+.core-frame > span:focus::selection {
+    background: var(--c-bg);
+}
+
+.core-frame::before {
+    content: attr(data-prefix);
+}
+
+.core-frame::after {
+    content: attr(data-suffix);
+}

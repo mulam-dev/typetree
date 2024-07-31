@@ -20,20 +20,6 @@
     justify-self: start;
     display: flex;
     color: var(--fc-fg);
-    outline: none;
-}
-
-.core-frame::selection {
-    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240 / 40%);
-    background: var(--c-bg);
-}
-
-.core-frame::before {
-    content: attr(data-prefix);
-}
-
-.core-frame::after {
-    content: attr(data-suffix);
 }
 
 .core-frame.f-inline {

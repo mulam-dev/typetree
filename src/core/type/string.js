@@ -28,21 +28,35 @@ export default class extends TTNode {
             }
         },
     }
+    static handles = {...this.handles,
+        "core:text-field": {
+            "edit"(p, content) {
+                if (this.data.val !== content) {
+                    this.mod.set(content);
+                }
+            },
+        },
+        "core:active"(p) {
+            this.node_field.request_pack(p);
+        },
+    }
 
     init(data) {
         const {
-            "#core:frame": frame,
+            "#core:text-field": field,
         } = this.$type;
         
         this.data = data ?? [''];
 
-        this.struct =
-            frame(this.data.bclone())
+        this.node_field =
+            field(this.data.bclone())
                 .into(this)
                 .name(name)
-                .editable().prefix('"').suffix('"')
+                .prefix('"').suffix('"')
                 .color(60, 0.5, 1.1)
                 .style_on("inline", "code");
+
+        this.struct = this.node_field;
     }
 
     to_json() {

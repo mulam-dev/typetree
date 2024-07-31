@@ -1,0 +1,7 @@
+.core-frame.f-t-number {
+    min-width: 2em;
+}
+
+.core-frame.f-t-number > span {
+    text-align: end;
+}

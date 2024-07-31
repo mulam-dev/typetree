@@ -73,7 +73,7 @@ export default class extends TTNode {
         } = this.$type;
 
         this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
-        this.data_column = [1];
+        this.data_column = [this.data.every(n => n.constructor.type === ".json:number") ? data.length : 1];
 
         this.struct =
             frame([

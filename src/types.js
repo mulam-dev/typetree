@@ -106,7 +106,22 @@ export class TTNode {
     request(...msg) {
         return this.request_msgs(msg);
     }
+
+    get mod() {
+        return new Proxy(this, mod_proxy);
+    }
 }
+
+const mod_proxy = {
+    get: (node, path) => (...args) => {
+        const Moder = node.attr(`modifiers.${path}`);
+        if (Moder) {
+            const moder = new Moder(...args);
+            moder.call(node);
+            return node;
+        } else throw new Error(`TTNode: Modifier "${path}" not found for:`, node);
+    },
+};
 
 export class TTRule {
     self = null;
@@ -195,6 +210,10 @@ export class TTModer {
         }
     }
 
+    constructor(...args) {
+        this.data_args = args;
+    }
+
     modify(node) {
         if (this.data_modified) {
             throw new Error("TTModer: Reusing old modifer");
@@ -205,6 +224,10 @@ export class TTModer {
 
     inverse() {
         throw new Error("TTModer: Inverse method not defined");
+    }
+
+    call(node) {
+        this.modify(node, ...this.data_args);
     }
 }
 

@@ -28,20 +28,37 @@ export default class extends TTNode {
             }
         },
     }
+    static handles = {...this.handles,
+        "core:text-field": {
+            "edit"(p, content) {
+                const val = Number.parseFloat(content);
+                if (Number.isNaN(val)) {
+                    this.data.val = this.data.val;
+                } else if (this.data.val.toString() !== content) {
+                    this.mod.set(val);
+                }
+            },
+        },
+        "core:active"(p) {
+            this.node_field.request_pack(p);
+        },
+    }
 
     init(data) {
         const {
-            "#core:frame": frame,
+            "#core:text-field": field,
         } = this.$type;
         
         this.data = data ?? [0];
 
-        this.struct =
-            frame(this.data.bmap(v => v.toString()))
+        this.node_field =
+            field(this.data.bmap(v => v.toString()))
                 .into(this)
                 .name(name)
                 .color(120, 0.5, 1.1)
-                .style_on("inline", "code");
+                .style_on("inline", "code", "t-number");
+
+        this.struct = this.node_field;
     }
 
     to_json() {

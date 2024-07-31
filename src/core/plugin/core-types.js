@@ -14,6 +14,7 @@ export default class extends TTPlugin {
     $core_type_loader_data() {
         return [
             "frame",
+            "text-field",
             "selection",
             "vector-cursor",
             "vector-range",
