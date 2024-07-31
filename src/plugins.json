@@ -1,1 +1,1 @@
-["core/plugin/base","core/plugin/timeline","core/plugin/view","core/plugin/basic-layout","core/plugin/init-manager","core/plugin/core-types","core/plugin/json-types","core/plugin/filesystem","core/plugin/vector-caret","core/plugin/type-loader","core/plugin/rule-loader","core/plugin/active-node"]
+["core/plugin/base","core/plugin/timeline","core/plugin/view","core/plugin/basic-layout","core/plugin/init-manager","core/plugin/core-types","core/plugin/json-types","core/plugin/filesystem","core/plugin/type-loader","core/plugin/rule-loader"]

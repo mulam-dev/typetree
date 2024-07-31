@@ -68,6 +68,10 @@ export class TTNode {
         return res;
     }
 
+    attrs_merged(path, def) {
+        return this.attrs(path, def).reduce((p, c) => Object.assign(p, c.call ? c.call(this) : c), {});
+    }
+
     get_attr_self(parts) {
         let parent = this[parts[0]];
         for (const part of parts.slice(1)) {

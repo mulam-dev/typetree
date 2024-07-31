@@ -49,11 +49,11 @@ export default {
             }
         }
     },
-    "able.core:select": true,
-    "handles.core:select.has-node"(p, node) {
+    "able.core:layout.select": true,
+    "handles.core:layout.has-node"(p, node) {
         return this.data.includes(node);
     },
-    "handles.core:select.get-selection"(p, anchor_node, focus_node) {
+    "handles.core:layout.get-selection"(p, anchor_node, focus_node) {
         let anchor = this.data.indexOf(anchor_node);
         let focus = this.data.indexOf(focus_node);
         if (anchor <= focus) {
@@ -66,17 +66,51 @@ export default {
             anchor, focus,
         });
     },
-    "handles.core:selection:get-nodes"(p, anchor, focus) {
-        return this.data.slice(...[anchor, focus].sort());
+    "handles.core:selection.resolve"(p, anchor, focus) {
+        if (anchor === focus) {
+            if (this.data.length) {
+                const pnode = this.data[anchor - 1];
+                if (pnode) {
+                    const rect = pnode.melem.rect;
+                    return this.data_column > 1 ?
+                        ["cursor", pnode, {dir: "x", x: rect.width, y: 0, size: rect.height}] :
+                        ["cursor", pnode, {dir: "y", x: 0, y: rect.height, size: rect.width}];
+                } else {
+                    const nnode = this.data[anchor];
+                    const rect = nnode.melem.rect;
+                    return this.data_column > 1 ?
+                        ["cursor", nnode, {dir: "x", x: 0, y: 0, size: rect.height}] :
+                        ["cursor", nnode, {dir: "y", x: 0, y: 0, size: rect.width}];
+                }
+            } else {
+                const {width: w, height: h} = this.melem.rect;
+                return this.data_column > 1 ?
+                    ["cursor", this, {dir: "x", x: w / 2, y: 0, size: h}] :
+                    ["cursor", this, {dir: "y", x: 0, y: h / 2, size: w}];
+            }
+        } else {
+            return ["range", this.data.slice(...[anchor, focus].sort())];
+        }
+    },
+    "handles.core:selection.dir"(p, anchor, focus) {
+        return this.data_column > 1 ? {left: true, right: true} : {top: true, bottom: true};
+    },
+    "handles.core:selection.collapse"(p, {dir, anchor, focus}) {
+        if (["top", "left"].includes(dir)) {
+            return Math.min(anchor, focus);
+        }
+        if (["bottom", "right"].includes(dir)) {
+            return Math.max(anchor, focus);
+        }
     },
 },
 
 ".json:object": {
-    "able.core:select": true,
-    "handles.core:select.has-node"(p, node) {
+    "able.core:layout.select": true,
+    "handles.core:layout.has-node"(p, node) {
         return this.data.some(entry => entry.includes(node));
     },
-    "handles.core:select.get-selection"(p, anchor_node, focus_node) {
+    "handles.core:layout.get-selection"(p, anchor_node, focus_node) {
         let anchor_entry_idx = this.data.findIndex(entry => entry.includes(anchor_node));
         let focus_entry_idx = this.data.findIndex(entry => entry.includes(focus_node));
         if (anchor_entry_idx !== focus_entry_idx) {
@@ -104,11 +138,39 @@ export default {
             });
         }
     },
-    "handles.core:selection:get-nodes"(p, anchor, focus) {
+    "handles.core:selection.resolve"(p, anchor, focus) {
         if (anchor instanceof Array) {
-            return this.data[anchor[0]].slice(...[anchor[1], focus[1]].sort());
+            return ["range", this.data[anchor[0]].slice(...[anchor[1], focus[1]].sort())];
         } else {
-            return this.data.slice(...[anchor, focus].sort()).flat();
+            if (anchor === focus) {
+                if (this.data.length) {
+                    const pentry = this.data[anchor - 1];
+                    if (pentry) {
+                        const krect = pentry[0].melem.rect;
+                        const vrect = pentry[1].melem.rect;
+                        return ["cursor", pentry[0], {dir: "y", x: 0, y: krect.height, size: vrect.right - krect.left}];
+                    } else {
+                        const nentry = this.data[anchor];
+                        const krect = nentry[0].melem.rect;
+                        const vrect = nentry[1].melem.rect;
+                        return ["cursor", pentry[0], {dir: "y", x: 0, y: 0, size: vrect.right - krect.left}];
+                    }
+                } else {
+                    const {width: w, height: h} = this.melem.rect;
+                    return ["cursor", this, {dir: "x", x: w / 2, y: 0, size: h}];
+                }
+            } else {
+                return ["range", this.data.slice(...[anchor, focus].sort()).flat()];
+            }
+        }
+    },
+    "handles.core:selection.dir"(p, anchor, focus) {
+        return {top: true, bottom: true};
+    },
+    "handles.core:selection.collapse"(p, {dir, anchor, focus}) {
+        switch (dir) {
+            case "top": return anchor instanceof Array ? anchor[0] : Math.min(anchor, focus);
+            case "bottom": return anchor instanceof Array ? anchor[0] + 1 : Math.max(anchor, focus);
         }
     },
 },

@@ -15,6 +15,7 @@ export default class extends TTPlugin {
         return [
             "frame",
             "selection",
+            "vector-cursor",
             "vector-range",
         ].map(p => `../type/${p}`);
     }

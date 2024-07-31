@@ -1,0 +1,44 @@
+.core-cursor-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
+    position: relative;
+    width: 0; height: 0;
+    margin: 0; padding: 0;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+}
+
+@keyframes core-cursor-blink {
+    0%      {opacity: 1}
+    100%    {opacity: 0}
+}
+
+.tt-editor:focus .core-cursor-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
+}
+
+.tt-editor:focus .core-cursor-root:not(:has(:hover, :active)) {
+    animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-cursor-blink;
+}
+
+.core-cursor-container {
+    position: absolute;
+    left: calc((var(--x) + var(--cursor-x)) * 1px);
+    top: calc((var(--y) + var(--cursor-y)) * 1px);
+}
+
+.core-cursor-container::after {
+    content: " ";
+    position: absolute;
+    left: 0; top: 0;
+    outline: solid 1px var(--c-b);
+    width: 0; height: 0;
+}
+
+.core-cursor-root.f-dir_x .core-cursor-container::after {
+    height: calc(var(--cursor-size) * 1px);
+}
+
+.core-cursor-root.f-dir_y .core-cursor-container::after {
+    width: calc(var(--cursor-size) * 1px);
+}

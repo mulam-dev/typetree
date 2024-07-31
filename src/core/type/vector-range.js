@@ -89,7 +89,7 @@ export default class extends TTNode {
             this.melem_handle_container,
         )
 
-    set(node_or_melems, opts) {
+    set(node_or_melems, opts = {}) {
         opts = {
             show_container: true,
             show_box: false,

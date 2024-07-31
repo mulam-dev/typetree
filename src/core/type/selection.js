@@ -10,11 +10,10 @@ export default class extends TTNode {
     init(data) {
         const scope = data.scope;
         this.data_scope = scope;
-        this.data_anchor = data.anchor;
-        this.data_focus = data.focus;
-        this.data_nodes = scope.request("core:selection:get-nodes", this.data_anchor, this.data_focus).result;
+        this.data_range = [data.anchor, data.focus];
 
         this.node_range = this.$type["#core:vector-range"]();
+        this.node_cursor = this.$type["#core:vector-cursor"]();
     }
 
     into(parent) {
@@ -22,26 +21,47 @@ export default class extends TTNode {
 
         const {melem_handles, dirs} = this.node_range;
 
+        let active_node;
+
         const udpate = () => {
-            if (this.data_nodes.length > 1) {
-                this.node_range.set(this.data_nodes, {
-                    show_box: true,
-                });
-            } else if (this.data_nodes.length === 1) {
-                const [node] = this.data_nodes;
-                const able_scale = node.attrs("able.core:scale").reduce((p, c) => Object.assign(p, c.call ? c.call(node) : c), {});
-                const able_caret = node.attrs("able.core:caret").reduce((p, c) => Object.assign(p, c.call ? c.call(node) : c), {});
-                this.node_range.set(this.data_nodes, Object.fromEntries(
-                    dirs.filter(dir => able_scale[dir] || able_caret[dir]).map(dir => [`show_handle_${dir}`, true]),
-                ));
-            } else {
-                this.node_range.set(this.data_nodes);
+            const scope = this.data_scope;
+            const res = scope.request("core:selection.resolve", ...this.data_range).result;
+            if (res) {
+                const [type, ...args] = res;
+                if (type === "range") {
+                    this.node_cursor.set(null);
+                    const [nodes] = args;
+                    [active_node] = nodes;
+                    const opts = {};
+                    const able_caret_dir = scope.request("core:selection.dir", ...this.data_range).result ?? {};
+                    for (const dir in able_caret_dir) if (able_caret_dir[dir]) {
+                        opts[`show_handle_${dir}`] = true;
+                    }
+                    if (nodes.length > 1) {
+                        opts.show_box = true;
+                        this.node_range.set(nodes, opts);
+                    } else if (nodes.length === 1) {
+                        const able_scale = active_node.attrs_merged("able.core:scale");
+                        for (const dir in able_scale) if (able_scale[dir]) {
+                            opts[`show_handle_${dir}`] = true;
+                        }
+                        this.node_range.set(nodes, opts);
+                    } else {
+                        this.node_range.set(nodes);
+                    }
+                }
+                if (type === "cursor") {
+                    this.node_range.set([]);
+                    const [anchor, opts] = args;
+                    this.node_cursor.set(anchor, opts);
+                }
             }
         };
         
         for (const dir of dirs) {
             melem_handles[dir].listen("mousedown", e => {
-                const [current] = this.data_nodes;
+                const scope = this.data_scope;
+                const current = active_node;
                 if (e.button === 0) {
                     let moved = false;
                     const start_x = e.clientX;
@@ -70,7 +90,16 @@ export default class extends TTNode {
                             jQuery(window).off("mousemove", move_handle);
                             jQuery(window).off("mouseup", up_handle);
                             request_handle(e, "end");
-                            if (!moved) current.request(`core:caret.${dir}`);
+                            if (!moved) {
+                                const pos = scope.request("core:selection.collapse", {
+                                    dir,
+                                    anchor: this.data_range[0],
+                                    focus: this.data_range[1],
+                                }).result;
+                                if (pos !== null && pos !== undefined) {
+                                    this.data_range.assign([pos, pos]);
+                                }
+                            };
                         }
                     }
                     jQuery(window).on("mousemove", move_handle);
@@ -79,13 +108,14 @@ export default class extends TTNode {
             });
         }
 
-        this.data_nodes.listen(null, udpate);
+        this.data_range.listen(null, udpate);
         udpate();
     }
 
     outof() {
         super.outof();
-        this.data_nodes.unlisten(null);
+        this.data_range.unlisten(null);
         this.node_range.set([]);
+        this.node_cursor.set(null);
     }
 }
