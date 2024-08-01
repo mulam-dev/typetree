@@ -63,4 +63,13 @@ export default class extends TTNode {
     to_json() {
         Object.fromEntries(this.data.map(([k, v]) => [k.to_json(), v.to_json()]));
     }
+
+    get(index) {
+        return this.data[index[0]][index[1]];
+    }
+    
+    index(node) {
+        const row = this.data.findIndex(entry => entry.includes(node));
+        return [row, this.data[row].indexOf(node)];
+    }
 }

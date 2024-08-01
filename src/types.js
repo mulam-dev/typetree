@@ -114,6 +114,14 @@ export class TTNode {
     get act() {
         return new Proxy(this, act_proxy);
     }
+
+    get path() {
+        return this.parent ? this.parent.path.concat([this.parent.index(this)]) : [];
+    }
+
+    ref(path) {
+        return path.length ? this.get(path[0]).ref(path.slice(1)) : this;
+    }
 }
 
 const mod_proxy = {
@@ -121,7 +129,9 @@ const mod_proxy = {
         const Moder = node.attr(`modifiers.${path}`);
         if (Moder) {
             const moder = new Moder(...args);
+            moder.id = path;
             moder.call(node);
+            node.request("core:mod", moder);
             return node;
         } else throw new Error(`TTNode: Modifier "${path}" not found`);
     },
@@ -325,7 +335,7 @@ export class TTEditor extends TTNode {
             # 内部节点
             存储当前在编辑的所有顶级节点，一般是文件节点
         */
-        this.inner = [];
+        this.inner = [].guard(null, node => node.into(this), node => node.outof());
 
         /* 
             # 插件
@@ -359,6 +369,8 @@ export class TTEditor extends TTNode {
             存储插件所导入的所有覆写规则
         */
        this.rules = [];
+
+       this.root = this;
     }
 
     focus() {
@@ -399,6 +411,14 @@ export class TTEditor extends TTNode {
     set_tree(tree) {
         this.inner.val = tree;
         return this;
+    }
+
+    index(node) {
+        return this.inner.indexOf(node);
+    }
+
+    get(index) {
+        return this.inner[index];
     }
 }
 

@@ -21,9 +21,7 @@ export default class extends TTPlugin {
         ].map(p => `../type/${p}`);
     }
 
-    $core_rule_loader_data() {
-        return rules;
-    }
+    $core_rule_loader_data = rules
 }
 
 import rules from "../rule/keymap.js";

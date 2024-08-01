@@ -27,9 +27,11 @@ export default class extends TTNode {
         "core:delete": class extends TTAction {
             static name = Names("Delete")
             static call(node, {anchor, focus, selection}) {
-                const [start, end] = [anchor, focus].sort();
-                node.mod.modify(start, end - start, []);
-                selection.set(start, start);
+                if (anchor !== focus) {
+                    const [start, end] = [anchor, focus].sort();
+                    node.mod.modify(start, end - start, []);
+                    selection.set(start, start);
+                }
             }
         },
     }
@@ -57,5 +59,13 @@ export default class extends TTNode {
 
     to_json() {
         Object.fromEntries(this.data.map(([k, v]) => [k.to_json(), v.to_json()]));
+    }
+
+    get(index) {
+        return this.data[index];
+    }
+    
+    index(node) {
+        return this.data.indexOf(node);
     }
 }
