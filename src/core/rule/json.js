@@ -33,7 +33,7 @@ export default {
     "able.core:scale.right": true,
     "handles.core:scale.right.move"(p, {move_x, delta_x, start_rect, current_rect}) {
         if (this.data.length) {
-            this.data_column = Math.min(this.data_column, this.data.length);
+            this.data_column.val = Math.min(this.data_column.val, this.data.length);
             delta_x -= current_rect.width - start_rect.width;
             const prev_node = this.data[this.data_column - 1];
             const prev_rect = prev_node.melem.rect;
