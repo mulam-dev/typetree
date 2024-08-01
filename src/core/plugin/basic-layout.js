@@ -134,12 +134,12 @@ export default class extends TTPlugin {
                                                 this.selections.forEach(sel => sel.request("core:active"));
                                                 break;
                                             case 2:
-                                                if (document.activeElement === this.root.melem.elem) {
+                                                if (this.root.focused()) {
                                                     this.selections.forEach(sel => sel.expand_x());
                                                 }
                                                 break;
                                             case 3:
-                                                if (document.activeElement === this.root.melem.elem) {
+                                                if (this.root.focused()) {
                                                     this.selections.forEach(sel => sel.expand_y());
                                                 }
                                                 break;
@@ -213,6 +213,12 @@ export default class extends TTPlugin {
                 me_viewport,
             ),
         ).attach(this.root.melem);
+        this.root.melem.attr("on", {}).modify("keydown", e => {
+            if (this.root.focused()) {
+                const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+                this.selections.forEach(sel => sel.request(`core:shortcut.${shortcut}`, e));
+            }
+        });
         await timeout(100);
         await fit_size(true);
         finish(this.loaded);

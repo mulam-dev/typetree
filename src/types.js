@@ -352,6 +352,10 @@ export class TTEditor extends TTNode {
         this.melem.focus();
     }
 
+    focused() {
+        return this.melem.focused();
+    }
+
     get $type() {
         return new Proxy(this, type_proxy);
     }

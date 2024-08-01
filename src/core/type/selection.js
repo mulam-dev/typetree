@@ -99,16 +99,7 @@ export default class extends TTNode {
                             jQuery(window).off("mousemove", move_handle);
                             jQuery(window).off("mouseup", up_handle);
                             request_handle(e, "end");
-                            if (!moved) {
-                                const pos = scope.request("core:selection.collapse", {
-                                    dir,
-                                    anchor: this.data_range[0],
-                                    focus: this.data_range[1],
-                                }).result;
-                                if (pos !== null && pos !== undefined) {
-                                    this.data_range.assign([pos, pos]);
-                                }
-                            };
+                            if (!moved) this.collapse(dir);
                         }
                     }
                     jQuery(window).on("mousemove", move_handle);
@@ -140,5 +131,62 @@ export default class extends TTNode {
             this.data_scope.request("core:selection.side", this.data_range[0], "top").result,
             this.data_scope.request("core:selection.side", this.data_range[1], "bottom").result,
         ]);
+    }
+
+    slide(dir) {
+        const [p_anchor, p_focus] = this.data_range;
+        const opts = {
+            anchor: p_anchor,
+            focus: p_focus,
+        }
+        const anchor = this.data_scope.request("core:selection.move", dir, p_anchor, p_focus, opts).result;
+        const focus = this.data_scope.request("core:selection.move", dir, p_focus, p_anchor, opts).result;
+        this.data_range.assign([anchor, focus]);
+    }
+
+    move_anchor(dir) {
+        const [p_anchor, p_focus] = this.data_range;
+        const opts = {
+            anchor: p_anchor,
+            focus: p_focus,
+        }
+        this.data_range.set(0, this.data_scope.request("core:selection.move", dir, p_anchor, p_focus, opts).result);
+    }
+
+    move_focus(dir) {
+        const [p_anchor, p_focus] = this.data_range;
+        const opts = {
+            anchor: p_anchor,
+            focus: p_focus,
+        }
+        this.data_range.set(1, this.data_scope.request("core:selection.move", dir, p_focus, p_anchor, opts).result);
+    }
+
+    collapse(dir) {
+        const pos = this.data_scope.request("core:selection.collapse", {
+            dir,
+            anchor: this.data_range[0],
+            focus: this.data_range[1],
+        }).result;
+        if (pos !== null && pos !== undefined) {
+            this.data_range.assign([pos, pos]);
+            return true;
+        }
+        return false;
+    }
+
+    collapsed() {
+        return this.data_range[0] === this.data_range[1];
+    }
+
+    shrink(dir) {
+        if (this.collapse(dir)) {
+            switch (dir) {
+                case "top": return this.move_focus("bottom");
+                case "bottom": return this.move_focus("top");
+                case "left": return this.move_focus("right");
+                case "right": return this.move_focus("left");
+            }
+        }
     }
 }
