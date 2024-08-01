@@ -30,31 +30,6 @@ export default class extends frame {
                 .draggable("false")
                 .tab_index(-1)
                 .$on({
-                    "input": () => {
-                        setTimeout(() => {
-                            const {elem} = this.melem_content;
-                            const selection = window.getSelection();
-                            const range = selection.getRangeAt(0);
-
-                            const preSelectionRange = range.cloneRange();
-                            preSelectionRange.selectNodeContents(elem);
-                            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-                            const start = preSelectionRange.toString().length;
-    
-                            elem.textContent = elem.textContent;
-    
-                            const newRange = document.createRange();
-                            newRange.setStart(elem.firstChild ?? elem, start);
-                            newRange.collapse(false);
-                            selection.removeAllRanges();
-                            selection.addRange(newRange);
-                        }, 0);
-                    },
-                    "paste": e => {
-                        e.preventDefault();
-                        const text = (e.clipboardData || window.clipboardData).getData('text');
-                        document.execCommand('insertText', false, text);
-                    },
                     "blur": () => this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent),
                 })
                 .$text(this.data)();

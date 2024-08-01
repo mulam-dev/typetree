@@ -103,6 +103,14 @@ export default {
             return Math.max(anchor, focus);
         }
     },
+    "handles.core:selection.side"(p, pos, dir) {
+        if (["top", "left"].includes(dir)) {
+            return 0;
+        }
+        if (["bottom", "right"].includes(dir)) {
+            return this.data.length;
+        }
+    },
 },
 
 ".json:object": {
@@ -171,6 +179,14 @@ export default {
         switch (dir) {
             case "top": return anchor instanceof Array ? anchor[0] : Math.min(anchor, focus);
             case "bottom": return anchor instanceof Array ? anchor[0] + 1 : Math.max(anchor, focus);
+        }
+    },
+    "handles.core:selection.side"(p, pos, dir) {
+        switch (dir) {
+            case "top": return 0;
+            case "bottom": return this.data.length;
+            case "left": return pos instanceof Array ? [pos[0], 0] : pos;
+            case "right": return pos instanceof Array ? [pos[0], 2] : pos;
         }
     },
 },

@@ -128,7 +128,23 @@ export default class extends TTPlugin {
                             const up_handle = e => {
                                 if (e.button === 0) {
                                     clear();
-                                    if (!moved) for (const selection of this.selections) selection.active();
+                                    if (!moved) {
+                                        switch (e.detail) {
+                                            case 1:
+                                                this.selections.forEach(sel => sel.request("core:active"));
+                                                break;
+                                            case 2:
+                                                if (document.activeElement === this.root.melem.elem) {
+                                                    this.selections.forEach(sel => sel.expand_x());
+                                                }
+                                                break;
+                                            case 3:
+                                                if (document.activeElement === this.root.melem.elem) {
+                                                    this.selections.forEach(sel => sel.expand_y());
+                                                }
+                                                break;
+                                        }
+                                    }
                                 };
                             };
                             jQuery(e_inner).on("mousemove", move_handle);

@@ -7,6 +7,14 @@ export default class extends TTNode {
     static type = type
     static name = name
 
+    handles = {...this.handles,
+        "core:active"(p) {
+            if (this.data_nodes.length === 1) {
+                this.data_nodes.val.request_pack(p);
+            }
+        },
+    }
+
     init(data) {
         const scope = data.scope;
         this.data_scope = scope;
@@ -62,8 +70,8 @@ export default class extends TTNode {
         for (const dir of dirs) {
             melem_handles[dir].listen("mousedown", e => {
                 const scope = this.data_scope;
-                const current = active_node;
-                if (e.button === 0) {
+                const [current] = this.data_nodes;
+                if (current && e.button === 0) {
                     let moved = false;
                     const start_x = e.clientX;
                     const start_y = e.clientY;
@@ -120,9 +128,17 @@ export default class extends TTNode {
         this.node_cursor.set(null);
     }
 
-    active() {
-        if (this.data_nodes.length === 1) {
-            this.data_nodes.val.request("core:active");
-        }
+    expand_x() {
+        this.data_range.assign([
+            this.data_scope.request("core:selection.side", this.data_range[0], "left").result,
+            this.data_scope.request("core:selection.side", this.data_range[1], "right").result,
+        ]);
+    }
+
+    expand_y() {
+        this.data_range.assign([
+            this.data_scope.request("core:selection.side", this.data_range[0], "top").result,
+            this.data_scope.request("core:selection.side", this.data_range[1], "bottom").result,
+        ]);
     }
 }
