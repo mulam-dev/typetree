@@ -3,5 +3,6 @@
 }
 
 .core-frame.f-t-number > span {
+    padding: 0 0.25em;
     text-align: end;
 }

@@ -1,6 +1,5 @@
 .core-frame > span {
     flex-grow: 1;
-    padding: 0 0.25em;
     outline: none;
 }
 
@@ -10,11 +9,13 @@
 
 .core-frame > span::selection {
     --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240 / 40%);
-    background: transparent;
+    background: var(--fc-fg);
+    color: var(--c-b);
 }
 
-.core-frame > span:focus::selection {
-    background: var(--c-bg);
+.tt-editor.f-selecting .core-frame > span:not(:hover)::selection {
+    background: transparent;
+    color: var(--fc-fg);
 }
 
 .core-frame::before {
