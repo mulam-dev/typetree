@@ -13,7 +13,8 @@
     color: var(--c-b);
 }
 
-.tt-editor.f-selecting .core-frame > span:not(:hover)::selection {
+.tt-editor.f-selecting .core-frame > span:not(:hover)::selection,
+.tt-editor:not(.f-selecting) .core-frame > span:not(:focus)::selection {
     background: transparent;
     color: var(--fc-fg);
 }

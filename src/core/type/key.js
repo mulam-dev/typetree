@@ -23,7 +23,7 @@ export default class extends string {
             frame([
                 ME.div.class("core-key-label")(
                     this.node_field.melem,
-                    ME.div('→'),
+                    ME.div.class("core-key-hint")('→'),
                 ),
             ])
                 .into(this)

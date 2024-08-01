@@ -25,6 +25,7 @@ export default class extends frame {
             ME.span
                 .content_editable("true")
                 .spellcheck("false")
+                .draggable("false")
                 .$on({
                     "blur": () => this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent),
                 })

@@ -8,5 +8,14 @@
 
 .core-key-label > :first-child {
     flex-grow: 1;
-    margin-right: 0.5em;
+}
+
+.core-key-label > .core-frame > span {
+    padding-right: 1em;
+}
+
+.core-key-hint {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
 }
