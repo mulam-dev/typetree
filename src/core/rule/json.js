@@ -111,20 +111,29 @@ export default {
             return this.data.length;
         }
     },
-    "handles.core:selection.move"(p, dir, cur, opp, {anchor, focus}) {
-        const reversed = cur > opp;
-        const [start, end] = [cur, opp].sort();
+    "handles.core:selection.slide"(p, {dir, anchor, focus}) {
+        const reversed = anchor > focus;
+        const [start, end] = [anchor, focus].sort();
         const length = end - start;
         const clamp = (v, d) => ((v += d) < 0 || v > this.data.length - length) ? v - d : v;
         const resolve = (start, d) => {
             start = clamp(start, d);
-            return reversed ? start + length : start;
+            return reversed ? [start + length, start] : [start, start + length];
         };
         switch (dir) {
             case "top": return resolve(start, -this.data_column.val);
             case "bottom": return resolve(start, this.data_column.val);
             case "left": return resolve(start, -1);
             case "right": return resolve(start, 1);
+        }
+    },
+    "handles.core:selection.move"(p, dir, cur, opp, {anchor, focus}) {
+        const clamp = (v, d) => ((v += d) < 0 || v > this.data.length) ? v - d : v;
+        switch (dir) {
+            case "top": return clamp(cur, -this.data_column.val);
+            case "bottom": return clamp(cur, this.data_column.val);
+            case "left": return clamp(cur, -1);
+            case "right": return clamp(cur, 1);
         }
     },
 },
@@ -205,7 +214,7 @@ export default {
             case "right": return pos instanceof Array ? [pos[0], 2] : pos;
         }
     },
-    "handles.core:selection.move"(p, {dir, anchor, focus}) {
+    "handles.core:selection.slide"(p, {dir, anchor, focus}) {
         const clamp_entry = (v, d) => (v + d < 0 || v + d > this.data.length) ? v : v + d;
         const clamp = (v, d) => (v + d < 0 || v + d > 2) ? v : v + d;
         if (pos instanceof Array) {
@@ -215,6 +224,31 @@ export default {
                 case "left": return [pos[0], clamp(pos[1], -1)];
                 case "right": return [pos[0], clamp(pos[1], 1)];
             }
+        }
+    },
+    "handles.core:selection.slide"(p, dir, {anchor, focus}) {
+        const reversed = anchor > focus;
+        const [start, end] = [anchor, focus].sort();
+        const length = end - start;
+        const clamp = (v, d) => ((v += d) < 0 || v > this.data.length - length) ? v - d : v;
+        const resolve = (start, d) => {
+            start = clamp(start, d);
+            return reversed ? [start + length, start] : [start, start + length];
+        };
+        switch (dir) {
+            case "top": return resolve(start, -this.data_column.val);
+            case "bottom": return resolve(start, this.data_column.val);
+            case "left": return resolve(start, -1);
+            case "right": return resolve(start, 1);
+        }
+    },
+    "handles.core:selection.move"(p, dir, cur, opp, {anchor, focus}) {
+        const clamp = (v, d) => ((v += d) < 0 || v > this.data.length) ? v - d : v;
+        switch (dir) {
+            case "top": return clamp(cur, -this.data_column.val);
+            case "bottom": return clamp(cur, this.data_column.val);
+            case "left": return clamp(cur, -1);
+            case "right": return clamp(cur, 1);
         }
     },
 },

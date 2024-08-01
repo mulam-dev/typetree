@@ -215,6 +215,8 @@ export default class extends TTPlugin {
         ).attach(this.root.melem);
         this.root.melem.attr("on", {}).modify("keydown", e => {
             if (this.root.focused()) {
+                e.stopPropagation();
+                e.preventDefault();
                 const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
                 this.selections.forEach(sel => sel.request(`core:shortcut.${shortcut}`, e));
             }

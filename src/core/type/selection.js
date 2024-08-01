@@ -134,14 +134,9 @@ export default class extends TTNode {
     }
 
     slide(dir) {
-        const [p_anchor, p_focus] = this.data_range;
-        const opts = {
-            anchor: p_anchor,
-            focus: p_focus,
-        }
-        const anchor = this.data_scope.request("core:selection.move", dir, p_anchor, p_focus, opts).result;
-        const focus = this.data_scope.request("core:selection.move", dir, p_focus, p_anchor, opts).result;
-        this.data_range.assign([anchor, focus]);
+        const [anchor, focus] = this.data_range;
+        const opts = {dir, anchor, focus};
+        this.data_range.assign(this.data_scope.request("core:selection.slide", opts).result);
     }
 
     move_anchor(dir) {
@@ -149,7 +144,7 @@ export default class extends TTNode {
         const opts = {
             anchor: p_anchor,
             focus: p_focus,
-        }
+        };
         this.data_range.set(0, this.data_scope.request("core:selection.move", dir, p_anchor, p_focus, opts).result);
     }
 
@@ -158,8 +153,16 @@ export default class extends TTNode {
         const opts = {
             anchor: p_anchor,
             focus: p_focus,
-        }
+        };
         this.data_range.set(1, this.data_scope.request("core:selection.move", dir, p_focus, p_anchor, opts).result);
+    }
+
+    side_anchor(dir) {
+        this.data_range.set(0, this.data_scope.request("core:selection.side", this.data_range[0], dir).result);
+    }
+
+    side_focus(dir) {
+        this.data_range.set(1, this.data_scope.request("core:selection.side", this.data_range[0], dir).result);
     }
 
     collapse(dir) {
