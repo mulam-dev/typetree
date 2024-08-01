@@ -11,7 +11,9 @@ export default class extends frame {
 
     static handles = {...this.handles,
         "core:active"() {
-            setTimeout(() => this.melem_content.focus(), 0);
+            setTimeout(() => {
+                this.melem_content.focus();
+            }, 0);
         },
     }
 
@@ -26,10 +28,11 @@ export default class extends frame {
                 .content_editable("true")
                 .spellcheck("false")
                 .draggable("false")
+                .tab_index(-1)
                 .$on({
                     "blur": () => this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent),
                 })
-                .$inner(this.data)();
+                .$text(this.data)();
         this.melem =
             ME.div
                 .$class([["core-frame", "f-editable"], this.data_styles.bmap(s => `f-${s}`)].bflat())

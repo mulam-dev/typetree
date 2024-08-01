@@ -86,6 +86,7 @@ export default class extends TTPlugin {
                             const anchor_node = closest(start_node, n => n.parent === scope);
                             this.selections.val = scope.request("core:layout.get-selection", anchor_node, anchor_node).result;
                             let prev_focus = telem;
+                            let moved = false;
                             const clear = () => {
                                 jQuery(e_inner).off("mousemove", move_handle);
                                 jQuery(window).off("mouseup", up_handle);
@@ -97,12 +98,8 @@ export default class extends TTPlugin {
                                     release_timer = null;
                                 }, 200);
                             };
-                            const leave_handle = () => {
-                                setTimeout(() => this.root.focus(), 0);
-                            };
-                            const enter_handle = () => {
-                                setTimeout(() => target.focus(), 0);
-                            };
+                            const leave_handle = () => setTimeout(() => this.root.focus(), 0);
+                            const enter_handle = () => setTimeout(() => target.focus(), 0);
                             const move_handle = e => {
                                 if (e.buttons === 0) {
                                     clear();
@@ -111,6 +108,7 @@ export default class extends TTPlugin {
                                 let telem = e.target;
                                 while (telem !== e_inner && !telem.node) telem = telem.parentNode;
                                 if (prev_focus === telem) return;
+                                moved = true;
                                 prev_focus = telem;
                                 const end_node = telem.node;
                                 if (end_node) {
@@ -128,7 +126,10 @@ export default class extends TTPlugin {
                                 }
                             };
                             const up_handle = e => {
-                                if (e.button === 0) clear();
+                                if (e.button === 0) {
+                                    clear();
+                                    if (!moved) for (const selection of this.selections) selection.active();
+                                };
                             };
                             jQuery(e_inner).on("mousemove", move_handle);
                             jQuery(window).on("mouseup", up_handle);
@@ -149,6 +150,8 @@ export default class extends TTPlugin {
                     const prev_scroll_x = this.scrollLeft;
                     const prev_scroll_y = this.scrollTop;
                     const move_handle = e => {
+                        e.stopPropagation();
+                        e.preventDefault();
                         const delta_x = e.clientX - start_x;
                         const delta_y = e.clientY - start_y;
                         this.scrollTo({
@@ -159,12 +162,16 @@ export default class extends TTPlugin {
                     };
                     const up_handle = ({button}) => {
                         if (button === 1) {
+                            e.stopPropagation();
+                            e.preventDefault();
                             jQuery(window).off("mousemove", move_handle);
                             jQuery(window).off("mouseup", up_handle);
                         }
                     };
                     jQuery(window).on("mousemove", move_handle);
                     jQuery(window).on("mouseup", up_handle);
+                    e.stopPropagation();
+                    e.preventDefault();
                 }
             },
         })(

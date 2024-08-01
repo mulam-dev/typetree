@@ -22,7 +22,9 @@
     --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
     --border: var(--border-size) solid var(--c-b);
     --border-size: 3px;
+    /* --border-radius: 0px; */
     --border-radius: 2px;
+    /* --border-radius: 8px; */
     flex-grow: 1;
     display: flex;
     border: var(--border);

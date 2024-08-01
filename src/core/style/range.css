@@ -28,14 +28,19 @@
     top: calc(var(--cont-y) * 1px);
     width: calc((var(--cont-ex) - var(--cont-x)) * 1px);
     height: calc((var(--cont-ey) - var(--cont-y)) * 1px);
+    border-radius: var(--border-radius);
 }
 
-.core-range-root.f-show_container .core-range-container::after {
+.core-range-container {
+    overflow: hidden;
+}
+
+.core-range-root.f-show_container .core-range-handle-container::after {
     content: " ";
     position: absolute;
-    inset: 0;
-    outline: solid 1px var(--c-b);
-    border: solid 1px var(--c-b);
+    inset: 1px;
+    outline: solid 2px var(--c-b);
+    box-sizing: border-box;
     border-radius: var(--border-radius);
 }
 

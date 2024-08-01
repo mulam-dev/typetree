@@ -11,6 +11,7 @@ export default class extends TTNode {
         const scope = data.scope;
         this.data_scope = scope;
         this.data_range = [data.anchor, data.focus];
+        this.data_nodes = [];
 
         this.node_range = this.$type["#core:vector-range"]();
         this.node_cursor = this.$type["#core:vector-cursor"]();
@@ -21,8 +22,6 @@ export default class extends TTNode {
 
         const {melem_handles, dirs} = this.node_range;
 
-        let active_node;
-
         const udpate = () => {
             const scope = this.data_scope;
             const res = scope.request("core:selection.resolve", ...this.data_range).result;
@@ -31,7 +30,7 @@ export default class extends TTNode {
                 if (type === "range") {
                     this.node_cursor.set(null);
                     const [nodes] = args;
-                    [active_node] = nodes;
+                    this.data_nodes.assign(nodes);
                     const opts = {};
                     const able_caret_dir = scope.request("core:selection.dir", ...this.data_range).result ?? {};
                     for (const dir in able_caret_dir) if (able_caret_dir[dir]) {
@@ -41,17 +40,18 @@ export default class extends TTNode {
                         opts.show_box = true;
                         this.node_range.set(nodes, opts);
                     } else if (nodes.length === 1) {
+                        const [active_node] = nodes;
                         const able_scale = active_node.attrs_merged("able.core:scale");
                         for (const dir in able_scale) if (able_scale[dir]) {
                             opts[`show_handle_${dir}`] = true;
                         }
                         this.node_range.set(nodes, opts);
-                        active_node.request("core:active");
                     } else {
                         this.node_range.set(nodes);
                     }
                 }
                 if (type === "cursor") {
+                    this.data_nodes.clear();
                     this.node_range.set([]);
                     const [anchor, opts] = args;
                     this.node_cursor.set(anchor, opts);
@@ -118,5 +118,11 @@ export default class extends TTNode {
         this.data_range.unlisten(null);
         this.node_range.set([]);
         this.node_cursor.set(null);
+    }
+
+    active() {
+        if (this.data_nodes.length === 1) {
+            this.data_nodes.val.request("core:active");
+        }
     }
 }

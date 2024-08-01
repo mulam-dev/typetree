@@ -6,7 +6,7 @@
     align-self: start;
 }
 
-.core-key-label > :first-child {
+.core-key-label > .core-frame {
     flex-grow: 1;
 }
 
