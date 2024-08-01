@@ -32,20 +32,23 @@ export default {
 ".json:array": {
     "able.core:scale.right": true,
     "handles.core:scale.right.move"(p, {move_x, delta_x, start_rect, current_rect}) {
-        delta_x -= current_rect.width - start_rect.width;
-        const prev_node = this.data[this.data_column - 1];
-        const prev_rect = prev_node.melem.rect;
-        const next_node = this.data[this.data_column];
-        if (delta_x > 8 && move_x > 0 && next_node) {
-            const next_rect = next_node.melem.rect;
-            if (prev_rect.right - current_rect.left + next_rect.width / 2 <
-                current_rect.width + delta_x) {
-                this.data_column.val++;
-            }
-        } else if (delta_x < -8 && move_x < 0 && this.data_column.val > 1) {
-            if (prev_rect.right - current_rect.left - prev_rect.width / 2 >
-                current_rect.width + delta_x) {
-                this.data_column.val--;
+        if (this.data.length) {
+            this.data_column = Math.min(this.data_column, this.data.length);
+            delta_x -= current_rect.width - start_rect.width;
+            const prev_node = this.data[this.data_column - 1];
+            const prev_rect = prev_node.melem.rect;
+            const next_node = this.data[this.data_column];
+            if (delta_x > 8 && move_x > 0 && next_node) {
+                const next_rect = next_node.melem.rect;
+                if (prev_rect.right - current_rect.left + next_rect.width / 2 <
+                    current_rect.width + delta_x) {
+                    this.data_column.val++;
+                }
+            } else if (delta_x < -8 && move_x < 0 && this.data_column.val > 1) {
+                if (prev_rect.right - current_rect.left - prev_rect.width / 2 >
+                    current_rect.width + delta_x) {
+                    this.data_column.val--;
+                }
             }
         }
     },
@@ -87,9 +90,7 @@ export default {
                     }
                 } else {
                     const {width: w, height: h} = this.melem.rect;
-                    return this.data_column > 1 ?
-                        ["cursor", this, {dir: "x", x: w / 2, y: 0, size: h}] :
-                        ["cursor", this, {dir: "y", x: 0, y: h / 2, size: w}];
+                    return ["cursor", this, {dir: "x", x: w / 2, y: 0, size: h}];
                 }
             } else {
                 return ["range", this.data.slice(...[anchor, focus].sort())];

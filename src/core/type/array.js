@@ -24,46 +24,13 @@ export default class extends TTNode {
         },
     }
     static actions = {...this.actions,
-        "modify": class extends TTAction {
-            static name = Names("Modify")
-            static args = [{
-                name: Names("Offset"),
-                type: Types.Number,
-            }, {
-                name: Names("Delete Count"),
-                type: Types.Number,
-            }, {
-                name: Names("Inserts"),
-                type: Types.Array,
-            }]
-            static call(node, ...args) {
-                node.mod.modify(...args);
+        "core:delete": class extends TTAction {
+            static name = Names("Delete")
+            static call(node, {anchor, focus, selection}) {
+                const [start, end] = [anchor, focus].sort();
+                node.mod.modify(start, end - start, []);
+                selection.set(start, start);
             }
-        },
-        "move": class extends TTAction {
-            static name = Names("Move")
-            static args = [{
-                name: Names("Offset"),
-                type: Types.Number,
-            }, {
-                name: Names("Count"),
-                type: Types.Number,
-            }, {
-                name: Names("Delta"),
-                type: Types.Number,
-            }]
-            static call(node, ...args) {
-                node.mod.move(...args);
-            }
-        },
-    }
-    static handles = {...this.handles,
-        "core:inner-active"(p, node) {
-            this.$require.caret.set(this.parent, [node], {
-                show_handle_up: true,
-                show_handle_down: true,
-            });
-            p.close();
         },
     }
 

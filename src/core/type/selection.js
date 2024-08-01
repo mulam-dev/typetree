@@ -110,6 +110,17 @@ export default class extends TTNode {
         udpate();
     }
 
+    outof() {
+        super.outof();
+        this.data_range.unlisten(null);
+        this.node_range.set([]);
+        this.node_cursor.set(null);
+    }
+
+    set(anchor, focus) {
+        this.data_range.assign([anchor, focus]);
+    }
+
     request_scope(cmd, ...args) {
         return this.data_scope.request("core:selection." + cmd, ...args, {
             anchor: this.data_range[0],
@@ -117,11 +128,14 @@ export default class extends TTNode {
         }).result;
     }
 
-    outof() {
-        super.outof();
-        this.data_range.unlisten(null);
-        this.node_range.set([]);
-        this.node_cursor.set(null);
+    request_action(act, opts = {}) {
+        return this.data_scope.act[act]({
+            anchor: this.data_range[0],
+            focus: this.data_range[1],
+            nodes: this.data_nodes,
+            selection: this,
+            ...opts,
+        });
     }
 
     expand_x() {

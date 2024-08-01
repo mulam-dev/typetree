@@ -31,49 +31,14 @@ export default class extends TTNode {
         },
     }
     static actions = {...this.actions,
-        "modify_entries": class extends TTAction {
-            static name = Names("Modify Entries")
-            static args = [{
-                name: Names("Offset"),
-                type: Types.Number,
-            }, {
-                name: Names("Delete Count"),
-                type: Types.Number,
-            }, {
-                name: Names("Inserts"),
-                type: Types.Array,
-            }]
-            static call(node, ...args) {
-                node.mod.modify_entries(...args);
-            }
-        },
-        "move_entries": class extends TTAction {
-            static name = Names("Move Entries")
-            static args = [{
-                name: Names("Offset"),
-                type: Types.Number,
-            }, {
-                name: Names("Count"),
-                type: Types.Number,
-            }, {
-                name: Names("Delta"),
-                type: Types.Number,
-            }]
-            static call(node, ...args) {
-                node.mod.move_entries(...args);
-            }
-        },
-        "modify_value": class extends TTAction {
-            static name = Names("Modify Value")
-            static args = [{
-                name: Names("Index"),
-                type: Types.Number,
-            }, {
-                name: Names("value"),
-                type: Types.Node,
-            }]
-            static call(node, ...args) {
-                node.mod.modify_value(...args);
+        "core:delete": class extends TTAction {
+            static name = Names("Delete")
+            static call(node, {anchor: [r1], focus: [r2], selection}) {
+                if (r1 !== r2) {
+                    const [start, end] = [r1, r2].sort();
+                    node.mod.modify_entries(start, end - start, []);
+                    selection.set([start, 0], [start, 2]);
+                }
             }
         },
     }

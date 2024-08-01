@@ -131,49 +131,48 @@ export default {
         /*
             # 插入/编辑/删除相关
         */
-        "Enter"() {
+        "Insert"() {
             this.collapse("right");
-            this.request_insert();
+            this.request_action("core:insert");
         },
-        "Shift+Enter"() {
+        "Shift+Insert"() {
             this.collapse("left");
-            this.request_insert();
+            this.request_action("core:insert");
         },
-        "Ctrl+Enter"() {
+        "Ctrl+Insert"() {
             this.collapse("bottom");
-            this.request_insert();
+            this.request_action("core:insert");
         },
-        "Ctrl+Shift+Enter"() {
+        "Ctrl+Shift+Insert"() {
             this.collapse("top");
-            this.request_insert();
+            this.request_action("core:insert");
         },
         "Backspace"() {
             if (this.collapsed("x")) {
                 this.shrink("right");
             }
-            this.request_delete();
+            this.request_action("core:delete");
         },
         "Delete"() {
             if (this.collapsed("x")) {
                 this.shrink("left");
             }
-            this.request_delete();
+            this.request_action("core:delete");
         },
         "Shift+Backspace"() {
             if (this.collapsed("y")) {
                 this.shrink("bottom");
             }
-            this.request_delete();
+            this.request_action("core:delete");
         },
         "Shift+Delete"() {
             if (this.collapsed("y")) {
                 this.shrink("top");
             }
-            this.request_delete();
+            this.request_action("core:delete");
         },
         "Tab"() {
-            this.shrink("left");
-            this.request_switch();
+            this.request_action("core:switch");
         },
     },
 },

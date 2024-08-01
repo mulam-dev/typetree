@@ -1,4 +1,6 @@
 .core-array-flex {
     display: grid;
     grid-template-columns: repeat(var(--column), auto);
+    min-height: 1.25em;
+    min-width: 0.5em;
 }

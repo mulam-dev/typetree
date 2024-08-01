@@ -110,6 +110,10 @@ export class TTNode {
     get mod() {
         return new Proxy(this, mod_proxy);
     }
+
+    get act() {
+        return new Proxy(this, act_proxy);
+    }
 }
 
 const mod_proxy = {
@@ -119,7 +123,16 @@ const mod_proxy = {
             const moder = new Moder(...args);
             moder.call(node);
             return node;
-        } else throw new Error(`TTNode: Modifier "${path}" not found for:`, node);
+        } else throw new Error(`TTNode: Modifier "${path}" not found`);
+    },
+};
+
+const act_proxy = {
+    get: (node, path) => async opts => {
+        const Action = node.attr(`actions.${path}`);
+        if (Action) {
+            return await Action.call(node, opts);
+        } else throw new Error(`TTNode: Action "${path}" not found`);
     },
 };
 

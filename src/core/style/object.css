@@ -1,6 +1,8 @@
 .core-object-grid {
     display: grid;
     grid-template-columns: repeat(2, auto);
+    min-height: 1.25em;
+    min-width: 1em;
 }
 
 .core-object-grid > :nth-child(2n + 1) {
