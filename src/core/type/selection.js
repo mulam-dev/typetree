@@ -31,8 +31,7 @@ export default class extends TTNode {
         const {melem_handles, dirs} = this.node_range;
 
         const udpate = () => {
-            const scope = this.data_scope;
-            const res = scope.request("core:selection.resolve", ...this.data_range).result;
+            const res = this.request_scope("resolve");
             if (res) {
                 const [type, ...args] = res;
                 if (type === "range") {
@@ -40,7 +39,7 @@ export default class extends TTNode {
                     const [nodes] = args;
                     this.data_nodes.assign(nodes);
                     const opts = {};
-                    const able_caret_dir = scope.request("core:selection.dir", ...this.data_range).result ?? {};
+                    const able_caret_dir = this.request_scope("dir") ?? {};
                     for (const dir in able_caret_dir) if (able_caret_dir[dir]) {
                         opts[`show_handle_${dir}`] = true;
                     }
@@ -69,7 +68,6 @@ export default class extends TTNode {
         
         for (const dir of dirs) {
             melem_handles[dir].listen("mousedown", e => {
-                const scope = this.data_scope;
                 const [current] = this.data_nodes;
                 if (current && e.button === 0) {
                     let moved = false;
@@ -112,6 +110,13 @@ export default class extends TTNode {
         udpate();
     }
 
+    request_scope(cmd, ...args) {
+        return this.data_scope.request("core:selection." + cmd, ...args, {
+            anchor: this.data_range[0],
+            focus: this.data_range[1],
+        }).result;
+    }
+
     outof() {
         super.outof();
         this.data_range.unlisten(null);
@@ -121,65 +126,64 @@ export default class extends TTNode {
 
     expand_x() {
         this.data_range.assign([
-            this.data_scope.request("core:selection.side", this.data_range[0], "left").result,
-            this.data_scope.request("core:selection.side", this.data_range[1], "right").result,
+            this.request_scope("side", "left", this.data_range[0]),
+            this.request_scope("side", "right", this.data_range[1]),
         ]);
     }
 
     expand_y() {
         this.data_range.assign([
-            this.data_scope.request("core:selection.side", this.data_range[0], "top").result,
-            this.data_scope.request("core:selection.side", this.data_range[1], "bottom").result,
+            this.request_scope("side", "top", this.data_range[0]),
+            this.request_scope("side", "bottom", this.data_range[1]),
         ]);
     }
 
     slide(dir) {
-        const [anchor, focus] = this.data_range;
-        const opts = {dir, anchor, focus};
-        this.data_range.assign(this.data_scope.request("core:selection.slide", opts).result);
+        const range = this.data_range.map(pos => this.request_scope("move", dir, pos));
+        if (range.every(pos => this.request_scope("varify", pos, range))) {
+            this.data_range.assign(range);
+        }
     }
 
     move_anchor(dir) {
-        const [p_anchor, p_focus] = this.data_range;
-        const opts = {
-            anchor: p_anchor,
-            focus: p_focus,
-        };
-        this.data_range.set(0, this.data_scope.request("core:selection.move", dir, p_anchor, p_focus, opts).result);
+        const pos = this.request_scope("move", dir, this.data_range[0]);
+        if (this.request_scope("varify", pos, [pos, this.data_range[1]])) {
+            this.data_range.set(0, pos);
+        }
     }
 
     move_focus(dir) {
-        const [p_anchor, p_focus] = this.data_range;
-        const opts = {
-            anchor: p_anchor,
-            focus: p_focus,
-        };
-        this.data_range.set(1, this.data_scope.request("core:selection.move", dir, p_focus, p_anchor, opts).result);
+        const pos = this.request_scope("move", dir, this.data_range[1]);
+        if (this.request_scope("varify", pos, [this.data_range[0], pos])) {
+            this.data_range.set(1, pos);
+        }
     }
 
     side_anchor(dir) {
-        this.data_range.set(0, this.data_scope.request("core:selection.side", this.data_range[0], dir).result);
+        const pos = this.request_scope("side", dir, this.data_range[0]);
+        if (this.request_scope("varify", pos, [pos, this.data_range[1]])) {
+            this.data_range.set(0, pos);
+        }
     }
 
     side_focus(dir) {
-        this.data_range.set(1, this.data_scope.request("core:selection.side", this.data_range[0], dir).result);
+        const pos = this.request_scope("side", dir, this.data_range[1]);
+        if (this.request_scope("varify", pos, [this.data_range[0], pos])) {
+            this.data_range.set(1, pos);
+        }
     }
 
     collapse(dir) {
-        const pos = this.data_scope.request("core:selection.collapse", {
-            dir,
-            anchor: this.data_range[0],
-            focus: this.data_range[1],
-        }).result;
-        if (pos !== null && pos !== undefined) {
-            this.data_range.assign([pos, pos]);
+        const range = this.request_scope("collapse", dir);
+        if (range) {
+            this.data_range.assign(range);
             return true;
         }
         return false;
     }
 
-    collapsed() {
-        return this.data_range[0] === this.data_range[1];
+    collapsed(dir) {
+        return this.request_scope("collapsed", dir);
     }
 
     shrink(dir) {
