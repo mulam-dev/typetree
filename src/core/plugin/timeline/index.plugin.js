@@ -33,11 +33,12 @@ export default class extends TTPlugin {
     $core_view_data() {
         return {
             id,
-            melem: div.class(cname("root"), "core-layout-s-scrollbar")(
+            icon: "history",
+            melem: div.class(cname("root"), "s-scrollbar")(
                 div.class(cname("stack"), "f-undos").$inner(
                     this.undos.bmap(entry =>
                         div
-                            .class(cname("entry"))
+                            .class(cname("entry"), "s-item")
                             .$on({
                                 click: () => {
                                     const index = this.undos.indexOf(entry);
@@ -53,13 +54,13 @@ export default class extends TTPlugin {
                                     this.redos.prefix(...stack.reverse());
                                 },
                             })
-                        (`${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
+                        (icon("arrow-back-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
                 )(),
                 div.class(cname("stack"), "f-redos").$inner(
                     this.redos.bmap(entry =>
                         div
-                            .class(cname("entry"))
+                            .class(cname("entry"), "s-item")
                             .$on({
                                 click: () => {
                                     const index = this.redos.indexOf(entry);
@@ -75,7 +76,7 @@ export default class extends TTPlugin {
                                     this.undos.suffix(...stack);
                                 },
                             })
-                        (`${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
+                        (icon("arrow-forward-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
                 )(),
             ),
@@ -93,3 +94,4 @@ export default class extends TTPlugin {
 const {div} = ME;
 const cname = name => "core-timeline-" + name;
 const snake_case_to_name_case = str => str[0].toUpperCase() + str.slice(1).toLowerCase().replace(/(_\w)/g, m => ' ' + m[1].toUpperCase());
+const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());

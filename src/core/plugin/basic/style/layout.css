@@ -151,13 +151,14 @@
 }
 
 .core-layout-views {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * -3%) 0 0);
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 2%) 0 0);
     --gap: 6px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    width: 8em;
-    padding: var(--gap);
-    gap: var(--gap);
+    width: 12em;
+    background: var(--c-bg);
     position: relative;
     min-width: 0;
     z-index: 1;
@@ -169,46 +170,50 @@
 }
 
 .core-layout-vroot {
-    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 2%) 0 0);
-    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 8%) 0 0);
     flex-grow: 1;
     flex-basis: 0;
     display: flex;
     flex-direction: column;
     min-width: 0;
-    background: var(--c-bg);
-    border: 1px solid var(--c-b);
     border-radius: min(var(--gap), var(--border-radius));
     overflow: hidden;
 }
 
+.core-layout-vroot + .core-layout-vroot {
+    border-top: 1px solid var(--c-b);
+}
+
 .core-layout-vhead {
-    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 5%) 0 0);
-    padding: 0.1em 0.5em;
-    text-align: center;
-    font-size: 0.8em;
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
+    padding: 0.2rem 0.5rem;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.7em;
     font-weight: bold;
-    background: var(--c-bg);
+    color: var(--c-fg);
     user-select: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.core-layout-vhead > svg {
+    --size: 1lh;
+    padding: 0.3em;
+    width: var(--size); height: var(--size);
+    margin-right: 0.2em;
+    margin-left: -0.25rem;
 }
 
 .core-layout-vbody {
     flex-grow: 1;
     min-height: 1.4em;
-    border-top: 1px solid var(--c-b);
     display: flex;
     flex-direction: column;
+    border-top: 1px solid var(--c-b);
 }
 
-.core-layout-vhead:hover {
-    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 25%) 0 0);
-    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 8%) 0 0);
-    color: var(--c-fg);
-    background: var(--c-bg);
-}
-
-.core-layout-s-scrollbar {
+.core-layout-vbody .s-scrollbar {
     --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0);
     --c-scrollbar-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0.1);
     transition: scrollbar-color 2000ms ease-in;
@@ -216,8 +221,37 @@
     scrollbar-width: thin;
 }
 
-.core-layout-s-scrollbar:hover {
+.core-layout-vbody .s-scrollbar:hover {
     --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 1);
     transition: scrollbar-color 150ms;
     scrollbar-color: var(--c-scrollbar) var(--c-scrollbar-bg);
+}
+
+.core-layout-vbody .s-item {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
+    color: var(--c-fg);
+    padding: 0.1rem 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 0;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.core-layout-vbody .s-item:hover {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 5%) 0 0);
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0 0);
+    color: var(--c-fg);
+    background: var(--c-bg);
+}
+
+.core-layout-vbody .s-item > svg {
+    --size: 0.8lh;
+    flex-shrink: 0;
+    width: var(--size); height: var(--size);
+    margin-right: 0.25em;
 }

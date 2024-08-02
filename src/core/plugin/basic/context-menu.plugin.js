@@ -35,19 +35,20 @@ export default class extends TTPlugin {
     melem = div.class(cname("root"))(
         div.class(cname("actions")).$inner(this.m_entries.bmap(data =>
             div
-                .class(cname("entry"))
+                .class(cname("entry"), "s-item")
                 .$on({
                     "click"() {
                         data.forEach(([action, node]) => action.call(node));
                     },
                 })
-            (data[0][0].name.get())
+            (icon("automation"), data[0][0].name.get())
         ))()
     )
 
     $core_view_data() {
         return {
             id,
+            icon: "menu-2",
             melem: this.melem,
             name: Names("Context Menu"),
         };
@@ -60,3 +61,4 @@ export default class extends TTPlugin {
 
 const {div} = ME;
 const cname = name => "core-context-menu-" + name;
+const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());

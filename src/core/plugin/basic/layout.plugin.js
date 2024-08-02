@@ -61,7 +61,7 @@ export default class extends TTPlugin {
                 .bmap((view, _, $) => {
                     $(view);
                     return div.class(cname("vroot"))(
-                        div.class(cname("vhead"))(view.name.get()),
+                        div.class(cname("vhead"))(...(view.icon ? [icon(view.icon)] : []), view.name.get()),
                         div.class(cname("vbody"))(view.melem),
                     );
                 })
