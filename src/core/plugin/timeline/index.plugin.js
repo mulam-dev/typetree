@@ -1,15 +1,22 @@
-const id = "core:timeline";
-const provides = ["core:timeline"];
-const requires = [
-    "core:view",
-];
+const id = "core:timeline"
+const provides = ["core:timeline"]
+const requires = {
+}
 
 export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, ...requires);
+        return this.req_must(plugins, requires);
     }
+
+    $core_rule_loader = [
+        "rule",
+    ]
+
+    $core_style_loader = [
+        "style",
+    ]
 
     /* 
         # 撤销栈
@@ -75,14 +82,6 @@ export default class extends TTPlugin {
             name: Names("Timeline"),
         };
     }
-
-    $core_rule_loader_data = {
-        "*": {
-            "handles.core:mod"(p, moder) {
-                this.$require["core:timeline"].push(this, moder);
-            },
-        },
-    };
 
     push(node, moder) {
         this.redos.clear();

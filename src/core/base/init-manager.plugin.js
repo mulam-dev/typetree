@@ -1,6 +1,7 @@
-const id = "core:init-manager";
-const provides = ["core:init-manager"];
-const requires = [];
+const id = "core:init-manager"
+const provides = ["core:init-manager"]
+const requires = {
+}
 
 /* 
     # 为需要使用依赖性初始化的插件提供支持
@@ -10,7 +11,7 @@ export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, ...requires);
+        return this.req_must(plugins, requires);
     }
 
     /* 

@@ -1,12 +1,13 @@
-const id = "core:base";
-const provides = ["core:base"];
-const requires = [];
+const id = "core:base"
+const provides = ["core:base"]
+const requires = {
+}
 
 export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, ...requires);
+        return this.req_must(plugins, requires);
     }
 
     import_type(...types) {

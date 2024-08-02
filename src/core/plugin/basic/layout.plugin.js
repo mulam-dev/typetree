@@ -1,21 +1,22 @@
-const id = "core:basic-layout";
-const provides = ["core:layout"];
-const requires = [
-    "core:view",
-    "core:init-manager",
-];
+const id = "core:basic-layout"
+const provides = ["core:layout"]
+const requires = {
+    view: "core:view",
+    init: "core:init-manager",
+    menu: "core:context-menu",
+}
 
 export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, ...requires);
+        return this.req_must(plugins, requires);
     }
 
     async init() {
-        const {after, all} = this.require["core:init-manager"];
+        const {after, all} = this.require.init;
         after(all(
-            this.require["core:view"].loaded,
+            this.require.view.loaded,
         ), () => this.load());
     }
 
@@ -47,11 +48,11 @@ export default class extends TTPlugin {
                 behavior: "smooth",
             });
         };
-        const views_show = [false];
+        const views_show = [true];
 
 
-        const {finish} = this.require["core:init-manager"];
-        const {views} = this.require["core:view"];
+        const {finish} = this.require.init;
+        const {views} = this.require.view;
         const {div} = ME;
 
         const me_views = div.class(cname("views")).$show(views_show).$inner(
@@ -127,6 +128,7 @@ export default class extends TTPlugin {
                             };
                             const up_handle = e => {
                                 if (e.button === 0) {
+                                    this.require.menu.set(this.selections);
                                     clear();
                                     if (!moved) {
                                         switch (e.detail) {
@@ -188,6 +190,14 @@ export default class extends TTPlugin {
                     jQuery(window).on("mouseup", up_handle);
                     e.stopPropagation();
                     e.preventDefault();
+                }
+            },
+            contextmenu(e) {
+                if (this.root.focused()) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+                    this.selections.forEach(sel => sel.request(`core:shortcut.${shortcut}`, e));
                 }
             },
         })(

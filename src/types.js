@@ -286,14 +286,29 @@ export const Types = new Proxy(() => {}, {
 });
 
 export class TTPlugin {
-    static req_must(plugins, ...traits) {
+    static req_must(plugins, ...traits_set) {
         const res = [];
-        for (const trait of traits) {
-            const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
-            if (plugin) {
-                res.push(plugin);
+        for (const traits of traits_set) {
+            if (traits instanceof Array) {
+                for (const trait of traits) {
+                    const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
+                    if (plugin) {
+                        res.push(plugin);
+                    } else {
+                        throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                    }
+                }
             } else {
-                throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                for (const key in traits) {
+                    const trait = traits[key];
+                    const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
+                    if (plugin) {
+                        res.push(plugin);
+                        res[key] = plugin;
+                    } else {
+                        throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                    }
+                }
             }
         }
         return res;
@@ -302,19 +317,20 @@ export class TTPlugin {
     constructor(editor, plugins) {
         this['#'] = this.constructor.id;
         this.root = editor;
-        this.require = Object.fromEntries(
-            this.constructor.requires(plugins)
-                .flatMap(p => p.constructor.provides.map(t => [t, new Proxy(p, plugin_proxyer)])),
-        );
+        this.require = new Proxy(this.constructor.requires(plugins), _pl_require_proxy);
     }
 }
 
 const get_plugin_class = p => p instanceof TTPlugin ? p.constructor : p;
 
-const plugin_proxyer = {
-    get(tar, p) {
-        const res = Reflect.get(tar, p);
-        return res.bind?.(tar) ?? res;
+const _pl_require_proxy = {
+    get: (requires, key) => new Proxy(requires[key], _pl_plugin_proxy),
+};
+
+const _pl_plugin_proxy = {
+    get: (plugin, prop) => {
+        const res = Reflect.get(plugin, prop);
+        return res.bind?.(plugin) ?? res;
     },
 };
 
@@ -382,11 +398,11 @@ export class TTEditor extends TTNode {
     }
 
     get $type() {
-        return new Proxy(this, type_proxy);
+        return new Proxy(this, _ed_type_proxy);
     }
 
     get $require() {
-        return new Proxy(this, require_proxy);
+        return new Proxy(this, _ed_require_proxy);
     }
 
     get_attr_of(node, parts) {
@@ -422,14 +438,14 @@ export class TTEditor extends TTNode {
     }
 }
 
-const type_proxy = {
+const _ed_type_proxy = {
     get: (ed, query) => (data) => new (ed.types.get(query))(ed, data),
 };
 
-const require_proxy = {
-    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], plugins_proxy),
+const _ed_require_proxy = {
+    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], _ed_plugins_proxy),
 };
 
-const plugins_proxy = {
+const _ed_plugins_proxy = {
     get: (plugins, method) => (...args) => plugins.map(p => p[method](...args)),
 };

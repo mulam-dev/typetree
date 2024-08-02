@@ -1,15 +1,15 @@
-const id = "core:view";
-const provides = ["core:view"];
-const requires = [
-    "core:base",
-    "core:init-manager",
-];
+const id = "core:view"
+const provides = ["core:view"]
+const requires = {
+    base: "core:base",
+    init: "core:init-manager",
+}
 
 export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, ...requires);
+        return this.req_must(plugins, requires);
     }
 
     /* 
@@ -24,8 +24,8 @@ export default class extends TTPlugin {
     loaded = Symbol("loaded");
 
     async load() {
-        const {collect_plugins_prop} = this.require["core:base"];
-        const {finish} = this.require["core:init-manager"];
+        const {collect_plugins_prop} = this.require.base;
+        const {finish} = this.require.init;
         const views = Object.fromEntries(
             (await collect_plugins_prop("$core_view_data"))
                 .map(view_data => [view_data.id, view_data])

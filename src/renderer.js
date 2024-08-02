@@ -1,5 +1,8 @@
 import * as types from "./types.js";
 
+const $dir = p => p.slice(0, p.lastIndexOf('/') + 1);
+const __dir = $dir(new URL(import.meta.url).pathname);
+
 await (async global => {
 
     Object.assign(global, {...types});
@@ -10,9 +13,15 @@ await (async global => {
     */
 
     // 从 plugin.json 文件中读取要加载的插件列表
-    const plugin_list = await (await fetch("./plugins.json")).json();
+    const plugin_list = (await (await fetch("./plugins.cfg")).text()).trim().split('\n');
     const plugins = await Promise.all(plugin_list.map(
-        async path => (await import(`./${path}.js`)).default,
+        async path => {
+            const Plugin = (await import(path)).default;
+            const abs_path = __dir + (path.startsWith("./") ? path.slice(2) : path);
+            Plugin.path = abs_path;
+            Plugin.dir = $dir(abs_path);
+            return Plugin;
+        },
     ));
 
     // 分析插件的依赖关系并重排插件的加载顺序

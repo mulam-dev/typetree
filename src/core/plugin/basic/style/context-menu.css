@@ -1,18 +1,18 @@
-.core-timeline-root {
+.core-context-menu-root {
     display: flex;
-    flex-flow: column-reverse;
+    flex-flow: column;
     font-size: 0.8em;
     user-select: none;
     overflow-y: auto;
     padding-bottom: 8px;
 }
 
-.core-timeline-stack {
+.core-context-menu-actions {
     display: flex;
-    flex-flow: column-reverse;
+    flex-flow: column;
 }
 
-.core-timeline-entry {
+.core-context-menu-entry {
     --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
     --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 8%) 0 0);
     color: var(--c-fg);
@@ -25,11 +25,7 @@
     text-overflow: ellipsis;
 }
 
-.core-timeline-stack.f-redos > .core-timeline-entry {
-    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0 / 50%);
-}
-
-.core-timeline-entry:hover {
+.core-context-menu-entry:hover {
     --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 5%) 0 0);
     background: var(--c-bg);
 }

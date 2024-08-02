@@ -33,7 +33,8 @@
   },
   "scripts": {
     "start": "electron .",
-    "package": "electron-builder"
+    "package": "electron-builder",
+    "index": "cd src && find -name '*.plugin.js' > plugins.cfg"
   },
   "type": "module",
   "devDependencies": {

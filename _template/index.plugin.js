@@ -1,5 +1,5 @@
-const id = "core:filesystem"
-const provides = ["core:filesystem"]
+const id = "core:_template_"
+const provides = ["core:_template_"]
 const requires = {
 }
 
@@ -10,11 +10,13 @@ export default class extends TTPlugin {
         return this.req_must(plugins, requires);
     }
 
-    $core_view_data() {
-        return {
-            id,
-            melem: ME.div(),
-            name: Names("File System"),
-        };
+    // $core_type_loader = []
+
+    // $core_rule_loader = []
+
+    // $core_style_loader = []
+
+    method() {
+        // TODO
     }
 }

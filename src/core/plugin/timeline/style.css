@@ -1,0 +1,35 @@
+.core-timeline-root {
+    display: flex;
+    flex-flow: column;
+    font-size: 0.8em;
+    user-select: none;
+    overflow-y: auto;
+    padding-bottom: 8px;
+}
+
+.core-timeline-stack {
+    display: flex;
+    flex-flow: column;
+}
+
+.core-timeline-entry {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 8%) 0 0);
+    color: var(--c-fg);
+    padding: 0.05em 0.5em;
+    border-bottom: 1px solid var(--c-b);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 0;
+    text-overflow: ellipsis;
+}
+
+.core-timeline-stack.f-redos > .core-timeline-entry {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0 / 50%);
+}
+
+.core-timeline-entry:hover {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 5%) 0 0);
+    background: var(--c-bg);
+}
