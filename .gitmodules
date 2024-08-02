@@ -1,0 +1,3 @@
+[submodule "src/lib/mahadjs"]
+	path = src/lib/mahadjs
+	url = git@github.com:LaneSun/mahad.js.git

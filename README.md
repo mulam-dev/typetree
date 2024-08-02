@@ -1,53 +1,11 @@
-# TypeTree
+# TypeTree v0.1-RF (Gson)
 
-一个用于处理树形结构数据的编辑器
+用图形重新定义你的JSON数据
 
 ## 简介
 
-TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目前支持编辑JSON数据
+TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目前为了优化框架设计和界面，正在重构先前发布的 v0.1.0，代号为 Gson
 
 ## 截图
 
-![启动界面](screenshots/welcome.png)
-
-![文件示例](screenshots/example.png)
-
-## 快捷键
-
-| Command      | Shortcut(s)                       |
-| ------------ | --------------------------------- |
-| Confirm      | Space                             |
-| InsertAfter  | Enter                             |
-| InsertBefore | Shift+Enter                       |
-| InsertTo     | Ctrl+Enter                        |
-| InsertInto   | Insert                            |
-| InsertOutof  | Shift+Insert                      |
-| Delete       | Delete, Backspace                 |
-| Switch       | Tab                               |
-| SwitchNext   | Tab                               |
-| SwitchPrev   | Shift+Tab                         |
-| Into         | Alt+Enter                         |
-| Outof        | Escape                            |
-| Up           | ArrowUp                           |
-| Right        | ArrowRight                        |
-| Down         | ArrowDown                         |
-| Left         | ArrowLeft                         |
-| Next         | ArrowDown, ArrowRight             |
-| Prev         | ArrowUp, ArrowLeft                |
-| SelectUp     | Shift+ArrowUp                     |
-| SelectRight  | Shift+ArrowRight                  |
-| SelectDown   | Shift+ArrowDown                   |
-| SelectLeft   | Shift+ArrowLeft                   |
-| SelectNext   | Shift+ArrowDown, Shift+ArrowRight |
-| SelectPrev   | Shift+ArrowUp, Shift+ArrowLeft    |
-| MoveUp       | Ctrl+ArrowUp                      |
-| MoveRight    | Ctrl+ArrowRight                   |
-| MoveDown     | Ctrl+ArrowDown                    |
-| MoveLeft     | Ctrl+ArrowLeft                    |
-| MoveNext     | Ctrl+ArrowDown, Ctrl+ArrowRight   |
-| MovePrev     | Ctrl+ArrowTop, Ctrl+ArrowLeft     |
-| ZoomIn       | Ctrl+Equal                        |
-| ZoomOut      | Ctrl+Minus                        |
-| Save         | Ctrl+KeyS                         |
-| SaveAs       | Ctrl+Shift+KeyS                   |
-| Open         | Ctrl+KeyO                         |
+![开发中的截图](screenshots/developing.png)

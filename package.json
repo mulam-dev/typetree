@@ -2,15 +2,14 @@
   "name": "typetree",
   "homepage": "https://anlbrain.com/",
   "author": "Lane Sun <lanesun@anlbrain.com> (https://lanesun.neocities.org/)",
-  "version": "1.0.0",
-  "main": "main.js",
+  "version": "0.1-refactored",
+  "main": "src/main.js",
   "build": {
     "productName": "TypeTree",
     "appId": "com.anlbrain.typetree",
-    "icon": "icon.png",
+    "icon": "res/icons/512x512.png",
     "linux": {
       "category": "Utility",
-      "icon": "res/icons",
       "target": "rpm"
     },
     "win": {
@@ -40,8 +39,5 @@
   "devDependencies": {
     "electron": "^31.1.0",
     "electron-builder": "^24.13.3"
-  },
-  "dependencies": {
-    "smooth-scrollbar": "^8.8.4"
   }
 }

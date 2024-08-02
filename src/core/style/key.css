@@ -1,0 +1,21 @@
+.core-key-label {
+    position: sticky;
+    top: 2px;
+    display: flex;
+    flex-grow: 1;
+    align-self: start;
+}
+
+.core-key-label > .core-frame {
+    flex-grow: 1;
+}
+
+.core-key-label > .core-frame > span {
+    padding-right: 1em;
+}
+
+.core-key-hint {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+}

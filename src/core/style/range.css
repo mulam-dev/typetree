@@ -1,0 +1,241 @@
+.core-range-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0.16 240);
+    position: relative;
+    width: 0; height: 0;
+    margin: 0; padding: 0;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+}
+
+@keyframes core-range-blink {
+    0%      {opacity: 1}
+    100%    {opacity: 0}
+}
+
+.tt-editor:focus-within .core-range-root {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240);
+}
+
+.tt-editor:focus .core-range-root:not(:has(:hover, :active)) {
+    animation: .6s cubic-bezier(.65,.05,.36,1) 1.2s infinite alternate core-range-blink;
+}
+
+.core-range-container,
+.core-range-handle-container {
+    position: absolute;
+    left: calc(var(--cont-x) * 1px);
+    top: calc(var(--cont-y) * 1px);
+    width: calc((var(--cont-ex) - var(--cont-x)) * 1px);
+    height: calc((var(--cont-ey) - var(--cont-y)) * 1px);
+    border-radius: var(--border-radius);
+}
+
+.core-range-container {
+    overflow: hidden;
+}
+
+.core-range-root.f-show_container .core-range-handle-container::after {
+    content: " ";
+    position: absolute;
+    inset: 1px;
+    outline: solid 2px var(--c-b);
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+}
+
+.core-range-root.f-show_box .core-range-box {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.16 240 / 40%);
+    position: absolute;
+    left: calc((var(--box-x) - var(--cont-x)) * 1px);
+    top: calc((var(--box-y) - var(--cont-y)) * 1px);
+    width: calc((var(--box-ex) - var(--box-x)) * 1px);
+    height: calc((var(--box-ey) - var(--box-y)) * 1px);
+    background: var(--c-bg);
+}
+
+/* 基本变量 */
+
+.core-range-vector-handle {
+    --outside: 0;
+    --gap: calc(var(--hint-size) * var(--outside));
+    --size: 0.8em;
+    --hint-size: 0.4em;
+    /* --offset: min(50%, calc((1 - var(--outside)) * var(--size) - var(--outside) * var(--size) / 2)); */
+    --offset: min(50%, calc((1 - var(--outside)) * var(--size)));
+    --side-x: 0; --side-y: 0;
+    --flag-x: calc((var(--dir-x) + 1) / 2);
+    --flag-y: calc((var(--dir-y) + 1) / 2);
+    --start-x: calc((1 - var(--flag-x)) * 100%);
+    --start-y: calc((1 - var(--flag-y)) * 100%);
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* 方位变量 */
+
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right {
+    --dir-y: 1;
+}
+
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
+    --dir-y: -1;
+}
+
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-bottom_left {
+    --dir-x: 1;
+}
+
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_right {
+    --dir-x: -1;
+}
+
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
+    --side-y: 1;
+}
+
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
+    --side-x: 1;
+}
+
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right {
+    width: var(--size);
+    height: var(--size);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
+    --border-size: var(--hint-size);
+    --s-size: calc(var(--gap) + var(--offset) - var(--hint-size) / 2);
+    --s-border-radius: calc(var(--border-radius) + var(--hint-size) / 2 + var(--gap));
+    width: var(--size); height: var(--size);
+    transform: translate(-50%, -50%);
+}
+
+.core-range-vector-handle.f-top_left::before,
+.core-range-vector-handle.f-top_right::before,
+.core-range-vector-handle.f-bottom_left::before,
+.core-range-vector-handle.f-bottom_right::before {
+    content: " ";
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(
+        calc((1 - var(--flag-x)) * -100% - var(--dir-x) * var(--border-size) / 2),
+        calc((1 - var(--flag-y)) * -100% - var(--dir-y) * var(--border-size) / 2)
+    );
+    width: var(--s-size); height: var(--s-size);
+    border-style: solid;
+    border-color: var(--c-b);
+    border-width:
+        calc(var(--border-size) * var(--flag-y))
+        calc(var(--border-size) * (1 - var(--flag-x)))
+        calc(var(--border-size) * (1 - var(--flag-y)))
+        calc(var(--border-size) * var(--flag-x));
+    border-radius: 
+        calc(var(--s-border-radius) * var(--flag-y) * var(--flag-x))
+        calc(var(--s-border-radius) * var(--flag-y) * (1 - var(--flag-x)))
+        calc(var(--s-border-radius) * (1 - var(--flag-y)) * (1 - var(--flag-x)))
+        calc(var(--s-border-radius) * (1 - var(--flag-y)) * var(--flag-x));
+    pointer-events: none;
+    opacity: calc(var(--outside) * 0.4);
+}
+
+.core-range-vector-handle:hover::before,
+.core-range-vector-handle:active::before {
+    opacity: calc(var(--outside) * 1);
+}
+
+.core-range-vector-handle.f-top_left::after,
+.core-range-vector-handle.f-top_right::after,
+.core-range-vector-handle.f-bottom_left::after,
+.core-range-vector-handle.f-bottom_right::after {
+    opacity: calc(1 - var(--outside));
+}
+
+.core-range-vector-handle::after {
+    content: " ";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--hint-size);
+    height: var(--hint-size);
+    transform: translate(-50%, -50%);
+    background: var(--c-b);
+    border-radius: 100%;
+}
+
+.core-range-vector-handle:hover::after,
+.core-range-vector-handle:active::after {
+    outline: calc((var(--size) - var(--hint-size)) / 2) solid color-mix(in oklch, var(--c-b) 50%, transparent);
+}
+
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top .core-range-vector-handle.f-top,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom .core-range-vector-handle.f-bottom,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_left .core-range-vector-handle.f-left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_right .core-range-vector-handle.f-right,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top_left .core-range-vector-handle.f-top_left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_top_right .core-range-vector-handle.f-top_right,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom_left .core-range-vector-handle.f-bottom_left,
+.tt-editor:not(.f-selecting) .core-range-root.f-show_handle_bottom_right .core-range-vector-handle.f-bottom_right {
+    transition: opacity 200ms;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.core-range-vector-handle.f-top,
+.core-range-vector-handle.f-bottom,
+.core-range-vector-handle.f-left,
+.core-range-vector-handle.f-right,
+.core-range-vector-handle.f-top_left,
+.core-range-vector-handle.f-top_right,
+.core-range-vector-handle.f-bottom_left,
+.core-range-vector-handle.f-bottom_right {
+    top: calc(
+        var(--start-y) -
+        var(--side-y) *
+            var(--dir-y) *
+            var(--gap) +
+        (1 - var(--side-y)) *
+            var(--dir-y) *
+            var(--offset)
+    );
+    left: calc(
+        var(--start-x) -
+        var(--side-x) *
+            var(--dir-x) *
+            var(--gap) +
+        (1 - var(--side-x)) *
+            var(--dir-x) *
+            var(--offset)
+    );
+}

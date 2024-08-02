@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../icon.svg" type="image/svg+xml">
+    <title>TypeTree</title>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            html {
+                background: #161616;
+                color: #AEAEAE;
+            }
+        }
+        @media (prefers-color-scheme: light) {
+            html {
+                background: #F5F5F5;
+                color: #636363;
+            }
+        }
+        html, body {
+            overflow: hidden;
+            display: flex;
+            padding: 0; margin: 0;
+        }
+        html {
+            width: 100%; height: 100%;
+        }
+        body {
+            flex-grow: 1;
+            min-width: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if (typeof module === 'object') {window.module = module; module = undefined;}
+    </script>
+    <script src="lib/jquery/jquery-3.7.1.min.js"></script>
+    <!-- <script src="lib/mahadjs/dist/mahad.min.js"></script> -->
+    <script src="lib/mahadjs/mahad.js"></script>
+    <script src="lib/mahadjs/mahad-dom.js"></script>
+    <script>
+        if (window.module) module = window.module;
+    </script>
+    <script type="module" src="api.js"></script>
+</head>
+<body>
+    <script type="module" src="renderer.js"></script>
+</body>
+</html>

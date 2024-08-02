@@ -1,8 +1,0 @@
-.core-null {
-    color: var(--rt-color);
-    padding: 0 0.25em;
-}
-
-.core-null::after {
-    content: "null";
-}
