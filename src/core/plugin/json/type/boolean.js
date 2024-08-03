@@ -1,26 +1,20 @@
-const id = "#core:boolean";
+const id = "#core:json:boolean";
 const type = ".json:boolean";
-const name = "Boolean";
+const name = Names("Boolean");
 
 export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {...this.modifiers,
-        "toggle": class extends TTModer.Sym {
-            modify(node) {
-                super.modify(node);
-                node.data.val = !node.data.val;
-            }
-        },
-    }
-    static actions = {...this.actions,
-        "toggle": class extends TTAction {
-            static name = Names("Toggle")
-            static call(node) {
-                node.mod.toggle();
-            }
+    static rule = {
+        "modifiers": {
+            "toggle": class extends TTModer.Sym {
+                modify(node) {
+                    super.modify(node);
+                    node.data.val = !node.data.val;
+                }
+            },
         },
     }
 

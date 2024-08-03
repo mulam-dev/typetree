@@ -1,8 +1,8 @@
-const id = "core:view-manager"
-const provides = ["core:view-manager"]
+const id = "#core:view-manager"
+const provides = [".core:view-manager"]
 const requires = {
-    base: "core:base",
-    init: "core:init-manager",
+    base: ".core:base",
+    init: ".core:init-manager",
 }
 
 export default class extends TTPlugin {

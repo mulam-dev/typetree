@@ -1,7 +1,7 @@
-const id = "core:rule-loader"
-const provides = ["core:rule-loader"]
+const id = "#core:rule-loader"
+const provides = [".core:rule-loader"]
 const requires = {
-    base: "core:base",
+    base: ".core:base",
 }
 
 /* 
@@ -23,22 +23,25 @@ export default class extends TTPlugin {
         const {import_rule, for_plugins_prop} = this.require.base;
 
         import_rule(...(await for_plugins_prop("$core_rule_loader", (plugin, paths) => Promise.all(
-            paths.map(async path => {
-                return Object.entries((await import(plugin.constructor.dir + path + ".js")).default)
-                    .map(([query, overrides]) => {
-                        const rule = new TTRule();
-                        const parts = query.split('>').map(p => p.trim());
-                        if (parts.length === 2) {
-                            if (parts[1] !== '*') rule.self = parts[1];
-                            if (parts[0] !== '*') rule.parent = parts[0];
-                        } else {
-                            if (parts[0] !== '*') rule.self = parts[0];
-                        }
-                        rule.overrides = parse_overrides(overrides);
-                        return rule;
-                    })
-            })
+            paths.map(async path => this.parse_ruleset((await import(plugin.constructor.dir + path + ".js")).default))
         ))).flat(2));
+    }
+
+    parse_rule(query, overrides) {
+        const rule = new TTRule();
+        const parts = query.split('>').map(p => p.trim());
+        if (parts.length === 2) {
+            if (parts[1] !== '*') rule.self = parts[1];
+            if (parts[0] !== '*') rule.parent = parts[0];
+        } else {
+            if (parts[0] !== '*') rule.self = parts[0];
+        }
+        rule.overrides = parse_overrides(overrides);
+        return rule;
+    }
+
+    parse_ruleset(rules) {
+        return Object.entries(rules).map(([query, overrides]) => this.parse_rule(query, overrides));
     }
 }
 

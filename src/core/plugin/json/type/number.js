@@ -1,36 +1,24 @@
-const id = "#core:number";
+const id = "#core:json:number";
 const type = ".json:number";
-const name = "Number";
+const name = Names("Number");
 
 export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {...this.modifiers,
-        "set": class extends TTModer.Map {
-            modify(node, value) {
-                super.modify(node);
-                this.data_src = [node.data.val];
-                node.data.val = value;
-            }
+    static rule = {
+        "modifiers": {
+            "set": class extends TTModer.Map {
+                modify(node, value) {
+                    super.modify(node);
+                    this.data_src = [node.data.val];
+                    node.data.val = value;
+                }
+            },
         },
-    }
-    static actions = {...this.actions,
-        "set": class extends TTAction {
-            static name = Names("Set")
-            static args = [{
-                name: Names("Value"),
-                type: Types.Number,
-            }]
-            static call(node, value) {
-                node.mod.set(value);
-            }
-        },
-    }
-    static handles = {...this.handles,
-        "core:text-field": {
-            "edit"(p, content) {
+        "handles": {
+            "core:text-field.edit"(p, content) {
                 const val = Number.parseFloat(content);
                 if (Number.isNaN(val)) {
                     this.data.val = this.data.val;
@@ -38,9 +26,9 @@ export default class extends TTNode {
                     this.mod.set(val);
                 }
             },
-        },
-        "core:active"(p) {
-            this.node_field.request_pack(p);
+            "core:active"(p) {
+                this.node_field.request_pack(p);
+            },
         },
     }
 

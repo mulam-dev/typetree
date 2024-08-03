@@ -1,5 +1,5 @@
-const id = "core:base"
-const provides = ["core:base"]
+const id = "#core:base"
+const provides = [".core:base"]
 const requires = {
 }
 

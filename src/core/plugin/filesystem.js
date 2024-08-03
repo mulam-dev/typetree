@@ -1,5 +1,5 @@
-const id = "core:filesystem"
-const provides = ["core:filesystem"]
+const id = "#core:filesystem"
+const provides = [".core:filesystem"]
 const requires = {
 }
 

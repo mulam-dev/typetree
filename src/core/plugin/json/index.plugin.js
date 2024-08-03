@@ -1,7 +1,7 @@
-const id = "core:types:json"
-const provides = ["core:types:json"]
+const id = "#core:types:json"
+const provides = [".types:json"]
 const requires = [
-    "core:types:basic",
+    ".core:types:basic",
 ]
 
 export default class extends TTPlugin {

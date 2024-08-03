@@ -1,43 +1,33 @@
-const id = "#core:string";
+const id = "#core:json:string";
 const type = ".json:string";
-const name = "String";
+const name = Names("String");
 
 export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    static modifiers = {...this.modifiers,
-        "set": class extends TTModer.Map {
-            modify(node, value) {
-                super.modify(node);
-                this.data_src = [node.data.val];
-                node.data.val = value;
-            }
-        },
-    }
-    static actions = {...this.actions,
-        "set": class extends TTAction {
-            static name = Names("Set")
-            static args = [{
-                name: Names("Value"),
-                type: Types.String,
-            }]
-            static call(node, value) {
-                node.mod.set(value);
-            }
-        },
-    }
-    static handles = {...this.handles,
-        "core:text-field": {
-            "edit"(p, content) {
-                if (this.data.val !== content) {
-                    this.mod.set(content);
+    static rule = {
+        "modifiers": {
+            "set": class extends TTModer.Map {
+                modify(node, value) {
+                    super.modify(node);
+                    this.data_src = [node.data.val];
+                    node.data.val = value;
                 }
             },
         },
-        "core:active"(p) {
-            this.node_field.request_pack(p);
+        "handles": {
+            "core:text-field": {
+                "edit"(p, content) {
+                    if (this.data.val !== content) {
+                        this.mod.set(content);
+                    }
+                },
+            },
+            "core:active"(p) {
+                this.node_field.request_pack(p);
+            },
         },
     }
 
@@ -61,5 +51,9 @@ export default class extends TTNode {
 
     to_json() {
         return this.data[0];
+    }
+
+    select_all() {
+        this.node_field.select_all();
     }
 }

@@ -12,7 +12,7 @@ const {
     ".json:string": string,
     ".json:number": number,
     ".json:object": object,
-    ".json:key": key,
+    "#core:json:key": key,
     ".json:array": array,
 } = Editor.$type;
 

@@ -1,9 +1,10 @@
-const id = "core:basic-layout"
-const provides = ["core:layout"]
+const id = "#core:basic-layout"
+const provides = [".core:layout"]
 const requires = {
-    view: "core:view-manager",
-    init: "core:init-manager",
-    menu: "core:context-menu",
+    view: ".core:view-manager",
+    init: ".core:init-manager",
+    menu: ".core:context-menu",
+    icon: ".core:icon-loader",
 }
 
 export default class extends TTPlugin {
@@ -25,7 +26,7 @@ export default class extends TTPlugin {
     loaded = Symbol("loaded");
 
     async load() {
-        const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());
+        const icon = this.require.icon.load;
         const cname = name => "core-layout-" + name;
         const fit_size = async (initial = false) => {
             const padding = 24;
@@ -142,7 +143,7 @@ export default class extends TTPlugin {
                                                 break;
                                             case 3:
                                                 if (this.root.focused()) {
-                                                    this.selections.forEach(sel => sel.expand_y());
+                                                    this.selections.forEach(sel => (sel.expand_x(), sel.expand_y()));
                                                 }
                                                 break;
                                         }

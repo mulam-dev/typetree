@@ -2,15 +2,13 @@ const id = "#core:text-field";
 const type = null;
 const name = "Text Field";
 
-import frame from "./frame.js";
-
-export default class extends frame {
+export default class extends Editor.$Type["#core:frame"] {
     static id = id
     static type = type
     static name = name
 
-    static handles = {...this.handles,
-        "core:active"() {
+    static rule = {
+        "handles.core:active"() {
             setTimeout(() => {
                 this.melem_content.focus();
             }, 0);

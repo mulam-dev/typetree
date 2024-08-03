@@ -1,6 +1,6 @@
-const id = "#core:null";
+const id = "#core:json:null";
 const type = ".json:null";
-const name = "Null";
+const name = Names("Null");
 
 export default class extends TTNode {
     static id = id

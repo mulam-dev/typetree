@@ -1,7 +1,7 @@
-const id = "core:style-loader"
-const provides = ["core:style-loader"]
+const id = "#core:style-loader"
+const provides = [".core:style-loader"]
 const requires = {
-    base: "core:base",
+    base: ".core:base",
 }
 
 /* 

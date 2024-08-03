@@ -1,6 +1,6 @@
-const id = "#core:key";
+const id = "#core:json:key";
 const type = ".json:key";
-const name = "Key";
+const name = Names("Key");
 
 import string from "./string.js";
 

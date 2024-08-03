@@ -1,5 +1,5 @@
-const id = "core:init-manager"
-const provides = ["core:init-manager"]
+const id = "#core:init-manager"
+const provides = [".core:init-manager"]
 const requires = {
 }
 

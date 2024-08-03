@@ -1,7 +1,8 @@
-const id = "core:type-loader"
-const provides = ["core:type-loader"]
+const id = "#core:type-loader"
+const provides = [".core:type-loader"]
 const requires = {
-    base: "core:base",
+    base: ".core:base",
+    rule: ".core:rule-loader",
 }
 
 /* 
@@ -20,10 +21,17 @@ export default class extends TTPlugin {
     }
 
     async load() {
-        const {import_type, for_plugins_prop} = this.require.base;
+        const {import_type, import_rule, for_plugins_prop} = this.require.base;
+        const {parse_rule} = this.require.rule;
 
-        (await for_plugins_prop("$core_type_loader", (plugin, paths) => Promise.all(paths.map(
-            async path => (await import(plugin.constructor.dir + path + ".js")).default,
-        )))).forEach(types => import_type(...types));
+        await for_plugins_prop("$core_type_loader", (plugin, paths) => Promise.all(paths.map(
+            async path => {
+                const Node = (await import(plugin.constructor.dir + path + ".js")).default;
+                if (Object.hasOwn(Node, "rule")) {
+                    import_rule(parse_rule(Node.id, Node.rule));
+                }
+                import_type(Node);
+            },
+        )));
     }
 }

@@ -1,5 +1,5 @@
-const id = "core:_template_"
-const provides = ["core:_template_"]
+const id = "#core:_template_"
+const provides = [".core:_template_"]
 const requires = {
 }
 

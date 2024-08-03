@@ -1,5 +1,5 @@
-const id = "core:type-selector"
-const provides = ["core:type-selector"]
+const id = "#core:type-selector"
+const provides = [".core:type-selector"]
 const requires = {
 }
 

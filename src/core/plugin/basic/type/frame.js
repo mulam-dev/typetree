@@ -1,6 +1,6 @@
 const id = "#core:frame";
 const type = null;
-const name = "Frame";
+const name = Names("Frame");
 
 export default class extends TTNode {
     static id = id

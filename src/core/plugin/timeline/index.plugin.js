@@ -1,6 +1,7 @@
-const id = "core:timeline"
-const provides = ["core:timeline"]
+const id = "#core:timeline"
+const provides = [".core:timeline"]
 const requires = {
+    icon: ".core:icon-loader",
 }
 
 export default class extends TTPlugin {
@@ -30,6 +31,8 @@ export default class extends TTPlugin {
     */
     redos = []
 
+    c_icon = this.require.icon.load
+
     $core_view_data() {
         return {
             id,
@@ -54,7 +57,7 @@ export default class extends TTPlugin {
                                     this.redos.prefix(...stack.reverse());
                                 },
                             })
-                        (icon("arrow-back-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
+                        (this.c_icon("arrow-back-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
                 )(),
                 div.class(cname("stack"), "f-redos").$inner(
@@ -76,7 +79,7 @@ export default class extends TTPlugin {
                                     this.undos.suffix(...stack);
                                 },
                             })
-                        (icon("arrow-forward-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
+                        (this.c_icon("arrow-forward-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
                 )(),
             ),
@@ -87,11 +90,10 @@ export default class extends TTPlugin {
     push(node, moder) {
         this.redos.clear();
         const path = node.path;
-        this.undos.suffix([path, moder, {node_name: node.constructor.name}]);
+        this.undos.suffix([path, moder, {node_name: node.constructor.name.get()}]);
     }
 }
 
 const {div} = ME;
 const cname = name => "core-timeline-" + name;
 const snake_case_to_name_case = str => str[0].toUpperCase() + str.slice(1).toLowerCase().replace(/(_\w)/g, m => ' ' + m[1].toUpperCase());
-const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());

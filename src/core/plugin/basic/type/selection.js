@@ -1,14 +1,14 @@
 const id = "#core:selection";
 const type = ".core:selection";
-const name = "Selection";
+const name = Names("Selection");
 
 export default class extends TTNode {
     static id = id
     static type = type
     static name = name
 
-    handles = {...this.handles,
-        "core:active"(p) {
+    static rule = {
+        "handles.core:active"(p) {
             if (this.data_nodes.length === 1) {
                 this.data_nodes.val.request_pack(p);
             }
@@ -129,7 +129,7 @@ export default class extends TTNode {
     }
 
     request_action(act, opts = {}) {
-        return this.data_scope.act[act]({
+        return this.data_scope.act["core:selection.actions." + act]({
             anchor: this.data_range[0],
             focus: this.data_range[1],
             nodes: this.data_nodes,

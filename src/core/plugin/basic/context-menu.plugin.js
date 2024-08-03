@@ -1,6 +1,7 @@
-const id = "core:context-menu"
-const provides = ["core:context-menu"]
+const id = "#core:context-menu"
+const provides = [".core:context-menu"]
 const requires = {
+    icon: ".core:icon-loader",
 }
 
 export default class extends TTPlugin {
@@ -11,6 +12,8 @@ export default class extends TTPlugin {
     }
 
     selections = []
+
+    c_icon = this.require.icon.load;
 
     m_entries = this.selections.btrans([], (sels, $) => {
         const acts = {};
@@ -41,7 +44,7 @@ export default class extends TTPlugin {
                         data.forEach(([action, node]) => action.call(node));
                     },
                 })
-            (icon("automation"), data[0][0].name.get())
+            (this.c_icon("automation"), data[0][0].name.get())
         ))()
     )
 
@@ -61,4 +64,3 @@ export default class extends TTPlugin {
 
 const {div} = ME;
 const cname = name => "core-context-menu-" + name;
-const icon = async name => jQuery(await (await fetch(`res/tabler-icons/${name}.svg`)).text());

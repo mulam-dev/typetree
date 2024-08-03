@@ -48,6 +48,10 @@ export class TTNode {
         return this;
     }
 
+    is(query) {
+        return this.constructor.id === query || this.constructor.type === query;
+    }
+
     attr(path, def = null) {
         const parts = path.split('.');
         return this.get_attr_self(parts) ??
@@ -139,7 +143,7 @@ const mod_proxy = {
 
 const act_proxy = {
     get: (node, path) => async opts => {
-        const Action = node.attr(`actions.${path}`);
+        const Action = node.attr(path);
         if (Action) {
             return await Action.call(node, opts);
         } else throw new Error(`TTNode: Action "${path}" not found`);
@@ -172,7 +176,7 @@ export class TTRule {
         let parent = this.overrides[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(node);
+                if (parent instanceof Function) parent = parent.call(node);
                 parent = parent[part];
             } else {
                 parent = null;
@@ -397,6 +401,10 @@ export class TTEditor extends TTNode {
         return this.melem.focused();
     }
 
+    get $Type() {
+        return new Proxy(this, _ed_class_proxy);
+    }
+
     get $type() {
         return new Proxy(this, _ed_type_proxy);
     }
@@ -438,8 +446,12 @@ export class TTEditor extends TTNode {
     }
 }
 
+const _ed_class_proxy = {
+    get: (ed, query) => ed.types.get(query),
+};
+
 const _ed_type_proxy = {
-    get: (ed, query) => (data) => new (ed.types.get(query))(ed, data),
+    get: (ed, query) => (data) => new ed.$Type[query](ed, data),
 };
 
 const _ed_require_proxy = {
