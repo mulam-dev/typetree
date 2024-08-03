@@ -382,7 +382,7 @@ export class TTEditor extends TTNode {
             # 节点类型存储
             存储编辑器所导入的所有类型节点的类
         */
-        this.types = new Map();
+        this.types = {};
         
         /* 
             # 规则存储
@@ -447,7 +447,15 @@ export class TTEditor extends TTNode {
 }
 
 const _ed_class_proxy = {
-    get: (ed, query) => ed.types.get(query),
+    get: (ed, query) => ed.types[query] ?? new Promise(res => {
+        const s = Symbol("class proxy");
+        ed.types.guard(s, (Type, key) => {
+            if (key === query) {
+                ed.types.unguard(s);
+                res(Type);
+            }
+        });
+    }),
 };
 
 const _ed_type_proxy = {

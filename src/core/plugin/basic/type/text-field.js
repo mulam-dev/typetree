@@ -2,7 +2,7 @@ const id = "#core:text-field";
 const type = null;
 const name = "Text Field";
 
-export default class extends Editor.$Type["#core:frame"] {
+export default class extends (await Editor.$Type["#core:frame"]) {
     static id = id
     static type = type
     static name = name
