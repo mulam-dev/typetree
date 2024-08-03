@@ -13,7 +13,10 @@ await (async global => {
     */
 
     // 从 plugin.json 文件中读取要加载的插件列表
-    const plugin_list = (await (await fetch("./plugins.cfg")).text()).trim().split('\n');
+    const plugin_list = [
+        "./core/base/base.js",
+        ...(await (await fetch("./plugins.cfg")).text()).trim().split('\n'),
+    ];
     const plugins = await Promise.all(plugin_list.map(
         async path => {
             const Plugin = (await import(path)).default;

@@ -226,21 +226,27 @@ export class TTAction {
 }
 
 export class TTName {
-    constructor(raw, trans) {
+    static trans = {};
+
+    constructor(raw) {
         this.raw = raw;
-        this.trans = trans;
     }
 
     get(locale = navigator.language) {
-        return this.trans[locale] ?? this.raw;
+        return this.constructor.trans[this.raw]?.[locale] ?? this.raw;
     }
 }
 
 export const Names = new Proxy(() => {}, {
     apply: (_0, _1, args) => {
         const raw = args[0];
-        const trans = args[1] ?? {};
-        return new TTName(raw, trans);
+        const trans = args[1];
+        if (raw in TTName.trans && trans) {
+            TTName.trans[raw].merge(trans)
+        } else if (trans) {
+            TTName.trans[raw] = trans;
+        }
+        return new TTName(raw);
     },
 });
 
@@ -253,14 +259,14 @@ export const Types = new Proxy(() => {}, {
 });
 
 export class TTPlugin {
-    static req_must(plugins, ...traits_set) {
+    static req_essential(plugins, ...traits_set) {
         const res = [];
         for (const traits of traits_set) {
             if (traits instanceof Array) {
                 for (const trait of traits) {
-                    const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
-                    if (plugin) {
-                        res.push(plugin);
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    if (results.length) {
+                        res.push(...results);
                     } else {
                         throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
                     }
@@ -268,12 +274,33 @@ export class TTPlugin {
             } else {
                 for (const key in traits) {
                     const trait = traits[key];
-                    const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
-                    if (plugin) {
-                        res.push(plugin);
-                        res[key] = plugin;
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    if (results.length) {
+                        res.push(...results);
+                        res[key] = results.val;
                     } else {
                         throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    static req_optional(plugins, ...traits_set) {
+        const res = [];
+        for (const traits of traits_set) {
+            if (traits instanceof Array) {
+                for (const trait of traits) {
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    res.push(...results);
+                }
+            } else {
+                for (const key in traits) {
+                    const trait = traits[key];
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    res.push(...results);
+                    if (results.length) {
+                        res[key] = results.val;
                     }
                 }
             }

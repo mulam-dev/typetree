@@ -1,5 +1,5 @@
-const id = "#core:type-selector"
-const provides = [".core:type-selector"]
+const id = "#trans:core:basic"
+const provides = [".trans:core:basic", ".trans"]
 const requires = {
 }
 
@@ -10,13 +10,9 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    // ".core:type-loader" = []
-
-    // ".core:rule-loader" = []
-
-    // ".core:style-loader" = []
-
-    method() {
-        // TODO
+    init() {
+        Names("Context Menu", {
+            "zh-CN": "功能选单",
+        });
     }
 }

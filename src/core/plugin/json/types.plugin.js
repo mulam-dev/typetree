@@ -1,14 +1,14 @@
-const id = "#core:types:json"
-const provides = [".types:json"]
+const id = "#types:core:json"
+const provides = [".types:json", ".types"]
 const requires = [
-    ".core:types:basic",
+    ".types:core:basic",
 ]
 
 export default class extends TTPlugin {
     static id = id
     static provides = provides
     static requires(plugins) {
-        return this.req_must(plugins, requires);
+        return this.req_essential(plugins, requires);
     }
 
     ".core:type-loader" = [

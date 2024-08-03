@@ -1,5 +1,5 @@
-const id = "#core:type-selector"
-const provides = [".core:type-selector"]
+const id = "#trans:core:_template_"
+const provides = [".trans:core:_template_", ".trans"]
 const requires = {
 }
 
@@ -10,13 +10,7 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    // ".core:type-loader" = []
-
-    // ".core:rule-loader" = []
-
-    // ".core:style-loader" = []
-
-    method() {
-        // TODO
+    init() {
+        Names("_template_", {"_locale_": "_template_"});
     }
 }
