@@ -1,10 +1,13 @@
 const id = "#core:json:object";
-const type = ".json:object";
+const extend = null;
+const provides = [".json:object"];
 const name = Names("Object");
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     static rule = {

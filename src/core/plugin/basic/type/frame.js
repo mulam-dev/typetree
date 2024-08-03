@@ -1,10 +1,13 @@
 const id = "#core:frame";
-const type = null;
+const extend = null;
+const provides = [];
 const name = Names("Frame");
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     init(data) {

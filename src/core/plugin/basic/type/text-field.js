@@ -1,10 +1,13 @@
 const id = "#core:text-field";
-const type = null;
+const extend = "#core:frame";
+const provides = [];
 const name = "Text Field";
 
-export default class extends (await Editor.$Type["#core:frame"]) {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     static rule = {

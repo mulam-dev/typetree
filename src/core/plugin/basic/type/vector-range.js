@@ -1,12 +1,15 @@
 const id = "#core:vector-range";
-const type = ".core:range";
+const extend = null;
+const provides = [".core:range"];
 const name = "Vector Range";
 
 const dirs = ["top", "bottom", "left", "right", "top_left", "top_right", "bottom_left", "bottom_right"];
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     dirs = dirs;

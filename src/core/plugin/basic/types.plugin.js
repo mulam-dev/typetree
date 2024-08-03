@@ -10,7 +10,7 @@ export default class extends TTPlugin {
         return this.req_must(plugins, requires);
     }
 
-    $core_type_loader = [
+    ".core:type-loader" = [
         "type/frame",
         "type/text-field",
         "type/selection",
@@ -18,10 +18,10 @@ export default class extends TTPlugin {
         "type/vector-range",
     ]
 
-    $core_rule_loader = [
+    ".core:rule-loader" = [
     ]
 
-    $core_style_loader = [
+    ".core:style-loader" = [
         "style/context-menu",
         "style/cursor",
         "style/frame",

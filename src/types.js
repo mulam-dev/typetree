@@ -1,20 +1,11 @@
 export class TTNode {
-    static modifiers = {}
-    static actions = {}
-    static handles = {}
+    static id = null
+    static provides = []
+    static uses = []
+    static name = null
 
-    static get_attr(node, parts) {
-        let parent = this[parts[0]];
-        for (const part of parts.slice(1)) {
-            if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(node);
-                parent = parent[part];
-            } else {
-                parent = null;
-                break;
-            }
-        }
-        return parent;
+    static Class(query) {
+        return query ? Editor.$Type[query] : TTNode;
     }
 
     constructor(editor, data) {
@@ -49,45 +40,24 @@ export class TTNode {
     }
 
     is(query) {
-        return this.constructor.id === query || this.constructor.type === query;
+        return this.constructor.id === query || this.constructor.uses.includes(query);
     }
 
     attr(path, def = null) {
         const parts = path.split('.');
-        return this.get_attr_self(parts) ??
-               this.root.get_attr_of(this, parts) ??
-               this.constructor.get_attr(this, parts) ??
-               def;
+        return this.root.get_attr_of(this, parts) ?? def;
     }
 
     attrs(path, def = []) {
         const parts = path.split('.');
         const res = [];
-        const self_res = this.get_attr_self(parts);
-        if (self_res !== null && self_res !== undefined) res.push(self_res);
         res.push(...this.root.get_attrs_of(this, parts));
-        const class_res = this.constructor.get_attr(this, parts);
-        if (class_res !== null && class_res !== undefined) res.push(class_res);
         if (!res.length) res.push(...def);
         return res;
     }
 
     attrs_merged(path, def) {
         return this.attrs(path, def).reduce((p, c) => Object.assign(p, c.call ? c.call(this) : c), {});
-    }
-
-    get_attr_self(parts) {
-        let parent = this[parts[0]];
-        for (const part of parts.slice(1)) {
-            if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(this);
-                parent = parent[part];
-            } else {
-                parent = null;
-                break;
-            }
-        }
-        return parent;
     }
 
     request_pack(pack) {
@@ -156,19 +126,12 @@ export class TTRule {
     overrides = {};
 
     match(node) {
-        const self_class = node.constructor;
-        const parent_class = node.parent?.constructor;
         return ((
             !this.self ||
-            self_class.id === this.self ||
-            self_class.type === this.self
+            node.is(this.self)
         ) && (
-            !this.parent || (
-                parent_class && (
-                    parent_class.id === this.parent ||
-                    parent_class.type === this.parent
-                )
-            )
+            !this.parent ||
+            node.parent?.is(this.parent)
         ));
     }
 

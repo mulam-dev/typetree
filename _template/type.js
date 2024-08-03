@@ -1,13 +1,16 @@
 const id = "#core:_example_";
-const type = "._example_:_example_";
+const extend = null;
+const provides = ["._example_:_example_"];
 const name = Names("_Example_");
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
-    static modifiers = {...this.modifiers,
+    static rule = {
         // TODO
     }
 

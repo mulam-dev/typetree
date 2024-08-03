@@ -13,7 +13,9 @@ export default class extends TTPlugin {
     import_type(...types) {
         for (const type of types) {
             this.root.types.modify(type.id, type);
-            if (type.type) this.root.types.modify(type.type, type);
+            for (const klass of type.provides) {
+                this.root.types.modify(klass, type);
+            }
         }
     }
 

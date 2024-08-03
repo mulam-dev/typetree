@@ -11,7 +11,7 @@ export default class extends TTPlugin {
         return this.req_must(plugins, requires);
     }
 
-    $core_type_loader = [
+    ".core:type-loader" = [
         "type/null",
         "type/boolean",
         "type/string",
@@ -21,13 +21,13 @@ export default class extends TTPlugin {
         "type/array",
     ]
 
-    $core_rule_loader = [
+    ".core:rule-loader" = [
         "rule/action",
         "rule/type",
         "rule/keymap",
     ];
 
-    $core_style_loader = [
+    ".core:style-loader" = [
         "style/array",
         "style/key",
         "style/number",

@@ -1,10 +1,13 @@
 const id = "#core:json:array";
-const type = ".json:array";
+const extend = null;
+const provides = [".json:array"];
 const name = Names("Array");
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     static rule = {
@@ -142,7 +145,7 @@ export default class extends TTNode {
         } = this.$type;
 
         this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
-        this.data_column = [this.data.every(n => n.constructor.type === ".json:number") ? data.length : 1];
+        this.data_column = [this.data.every(n => n.is(".json:number")) ? data.length : 1];
 
         this.struct =
             frame([

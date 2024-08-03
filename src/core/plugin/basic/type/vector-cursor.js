@@ -1,10 +1,13 @@
 const id = "#core:vector-cursor";
-const type = ".core:cursor";
+const extend = null;
+const provides = [".core:cursor"];
 const name = "Vector Cursor";
 
-export default class extends TTNode {
+const Super = await TTNode.Class(extend);
+export default class extends Super {
     static id = id
-    static type = type
+    static provides = provides
+    static uses = [id, ...provides, ...Super.uses]
     static name = name
 
     data_opts = {}

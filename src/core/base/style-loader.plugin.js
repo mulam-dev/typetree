@@ -22,7 +22,7 @@ export default class extends TTPlugin {
     async load() {
         const {for_plugins_prop} = this.require.base;
 
-        (await for_plugins_prop("$core_style_loader", (plugin, paths) => Promise.all(paths.map(
+        (await for_plugins_prop(provides.val, (plugin, paths) => Promise.all(paths.map(
             async path => jQuery(`<link rel="stylesheet" href="${plugin.constructor.dir + path}.css">`),
         )))).forEach(link => jQuery(document.head).append(link));
     }

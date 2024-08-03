@@ -10,11 +10,11 @@ export default class extends TTPlugin {
         return this.req_must(plugins, requires);
     }
 
-    // $core_type_loader = []
+    // ".core:type-loader" = []
 
-    // $core_rule_loader = []
+    // ".core:rule-loader" = []
 
-    // $core_style_loader = []
+    // ".core:style-loader" = []
 
     method() {
         // TODO

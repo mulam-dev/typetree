@@ -24,7 +24,7 @@ export default class extends TTPlugin {
         const {import_type, import_rule, for_plugins_prop} = this.require.base;
         const {parse_rule} = this.require.rule;
 
-        await for_plugins_prop("$core_type_loader", (plugin, paths) => Promise.all(paths.map(
+        await for_plugins_prop(provides.val, (plugin, paths) => Promise.all(paths.map(
             async path => {
                 const Node = (await import(plugin.constructor.dir + path + ".js")).default;
                 if (Object.hasOwn(Node, "rule")) {

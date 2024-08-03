@@ -22,7 +22,7 @@ export default class extends TTPlugin {
     async load() {
         const {import_rule, for_plugins_prop} = this.require.base;
 
-        import_rule(...(await for_plugins_prop("$core_rule_loader", (plugin, paths) => Promise.all(
+        import_rule(...(await for_plugins_prop(provides.val, (plugin, paths) => Promise.all(
             paths.map(async path => this.parse_ruleset((await import(plugin.constructor.dir + path + ".js")).default))
         ))).flat(2));
     }
