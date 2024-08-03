@@ -11,19 +11,65 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    selections = []
+    selections = [].listen(null, () => this.update())
 
     c_icon = this.require.icon.load;
 
-    m_entries = this.selections.btrans([], (sels, $) => {
+    m_entries = []
+
+    melem = div.class(cname("root"))(
+        div.class(cname("actions")).$inner(this.m_entries.bmap(actions => {
+            let enabled, act;
+            const [primary_action, primary_node] = actions.val;
+            if (primary_action.unique) {
+                if (primary_action.enabled(primary_node)) {
+                    enabled = true;
+                    act = () => primary_action.do_call(primary_node);
+                } else {
+                    enabled = false;
+                }
+            } else {
+                actions = actions.filter(([action, node]) => action.enabled(node));
+                if (actions.length) {
+                    enabled = true;
+                    act = () => actions.forEach(([action, node]) => action.do_call(node));
+                } else {
+                    enabled = false;
+                }
+            }
+            return div
+                .class(cname("entry"), "s-item", ...(enabled ? [] : ["f-disabled"]))
+                .$on({
+                    "click": () => {
+                        if (enabled) {
+                            act();
+                            this.update();
+                        }
+                    },
+                })(
+                    this.c_icon(primary_action.icon ?? "automation"),
+                    primary_action.name.get(),
+                )
+        }))()
+    )
+
+    ".core:view"() {
+        return {
+            id,
+            icon: "pointer-plus",
+            melem: this.melem,
+            name: Names("Context Menu"),
+        };
+    }
+
+    update() {
         const acts = {};
-        for (const sel of sels) {
+        for (const sel of this.selections) {
             const sel_acts = sel.attrs_merged("actions");
             for (const path in sel_acts) {
                 acts[path] ??= [];
                 acts[path].push([sel_acts[path], sel]);
             }
-            $(sel.data_nodes);
             for (const node of sel.data_nodes) {
                 const node_acts = node.attrs_merged("actions");
                 for (const path in node_acts) {
@@ -32,29 +78,7 @@ export default class extends TTPlugin {
                 }
             }
         }
-        return Object.values(acts);
-    })
-
-    melem = div.class(cname("root"))(
-        div.class(cname("actions")).$inner(this.m_entries.bmap(data =>
-            div
-                .class(cname("entry"), "s-item")
-                .$on({
-                    "click"() {
-                        data.forEach(([action, node]) => action.call(node));
-                    },
-                })
-            (this.c_icon("automation"), data[0][0].name.get())
-        ))()
-    )
-
-    $core_view_data() {
-        return {
-            id,
-            icon: "pointer-plus",
-            melem: this.melem,
-            name: Names("Context Menu"),
-        };
+        this.m_entries.assign(Object.values(acts));
     }
 
     set(selections) {

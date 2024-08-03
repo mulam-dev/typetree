@@ -54,4 +54,8 @@ export default class extends Super {
         this.melem.attr("data-suffix").val = str;
         return this;
     }
+
+    select_all() {
+        this.melem_content.select();
+    }
 }

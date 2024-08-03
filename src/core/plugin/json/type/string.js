@@ -24,7 +24,7 @@ export default class extends Super {
             "core:text-field": {
                 "edit"(p, content) {
                     if (this.data.val !== content) {
-                        this.mod.set(content);
+                        this.mod("set", content);
                     }
                 },
             },

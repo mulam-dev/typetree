@@ -71,7 +71,7 @@ export default class extends Super {
         },
         "handles.core:selection": {
             "resolve"(p, {anchor: [r1, c1], focus: [r2, c2]}) {
-                [[r1, r2], [c1, c2]] = [[r1, r2].sort(), [c1, c2].sort()];
+                [[r1, r2], [c1, c2]] = [[r1, r2].num_sorted(), [c1, c2].num_sorted()];
                 if (r1 === r2) {
                     if (this.data.length) {
                         const pentry = this.data[r1 - 1];
@@ -133,16 +133,6 @@ export default class extends Super {
                     )
                 );
             },
-        },
-        "core:selection.actions.core:delete": class extends TTAction {
-            static name = Names("Delete")
-            static call(node, {anchor: [r1], focus: [r2], selection}) {
-                if (r1 !== r2) {
-                    const [start, end] = [r1, r2].sort();
-                    node.mod.modify_entries(start, end - start, []);
-                    selection.set([start, 0], [start, 2]);
-                }
-            }
         },
     }
 

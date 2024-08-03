@@ -10,7 +10,7 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    $core_view_data() {
+    ".core:view"() {
         return {
             id,
             melem: ME.div(),

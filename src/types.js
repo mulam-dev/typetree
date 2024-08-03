@@ -81,12 +81,22 @@ export class TTNode {
         return this.request_msgs(msg);
     }
 
-    get mod() {
-        return new Proxy(this, mod_proxy);
+    mod(path, ...args) {
+        const Moder = this.attr(`modifiers.${path}`);
+        if (Moder) {
+            const moder = new Moder(...args);
+            moder.id = path;
+            moder.call(this);
+            this.request("core:mod", moder);
+            return this;
+        } else throw new Error(`TTNode: Modifier "${path}" not found`);
     }
 
-    get act() {
-        return new Proxy(this, act_proxy);
+    async act(path, ...args) {
+        const Action = this.attr("actions." + path);
+        if (Action) {
+            return await Action.do_call(this, ...args);
+        } else throw new Error(`TTNode: Action "${path}" not found`);
     }
 
     get path() {
@@ -97,28 +107,6 @@ export class TTNode {
         return path.length ? this.get(path[0]).ref(path.slice(1)) : this;
     }
 }
-
-const mod_proxy = {
-    get: (node, path) => (...args) => {
-        const Moder = node.attr(`modifiers.${path}`);
-        if (Moder) {
-            const moder = new Moder(...args);
-            moder.id = path;
-            moder.call(node);
-            node.request("core:mod", moder);
-            return node;
-        } else throw new Error(`TTNode: Modifier "${path}" not found`);
-    },
-};
-
-const act_proxy = {
-    get: (node, path) => async opts => {
-        const Action = node.attr(path);
-        if (Action) {
-            return await Action.call(node, opts);
-        } else throw new Error(`TTNode: Action "${path}" not found`);
-    },
-};
 
 export class TTRule {
     self = null;
@@ -223,6 +211,18 @@ export class TTModer {
 
 export class TTAction {
     static args = []
+
+    static enabled(node, ...args) {
+        return "varify" in this ? this.varify(node, ...args) : true;
+    }
+
+    static do_call(node, ...args) {
+        if (this.enabled(node, ...args)) {
+            return this.call(node, ...args);
+        } else {
+            return false;
+        }
+    }
 }
 
 export class TTName {

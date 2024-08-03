@@ -27,7 +27,7 @@ export default class extends TTPlugin {
         const {collect_plugins_prop} = this.require.base;
         const {finish} = this.require.init;
         const views = Object.fromEntries(
-            (await collect_plugins_prop("$core_view_data"))
+            (await collect_plugins_prop(".core:view"))
                 .map(view_data => [view_data.id, view_data])
         );
         this.views.assign(views);

@@ -90,7 +90,7 @@ export default class extends Super {
                         return ["cursor", this, {dir: "x", x: w / 2, y: 0, size: h}];
                     }
                 } else {
-                    return ["range", this.data.slice(...[anchor, focus].sort())];
+                    return ["range", this.data.slice(...[anchor, focus].num_sorted())];
                 }
             },
             "dir"(p) {
@@ -127,16 +127,6 @@ export default class extends Super {
                 return 0 <= pos && pos <= this.data.length;
             },
         },
-        "core:selection.actions.core:delete": class extends TTAction {
-            static name = Names("Delete")
-            static call(node, {anchor, focus, selection}) {
-                if (anchor !== focus) {
-                    const [start, end] = [anchor, focus].sort();
-                    node.mod.modify(start, end - start, []);
-                    selection.set(start, start);
-                }
-            }
-        },
     }
 
     init(data) {
@@ -145,7 +135,7 @@ export default class extends Super {
         } = this.$type;
 
         this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
-        this.data_column = [this.data.every(n => n.is(".json:number")) ? data.length : 1];
+        this.data_column = [this.data.length && this.data.every(n => n.is(".json:number")) ? data.length : 1];
 
         this.struct =
             frame([

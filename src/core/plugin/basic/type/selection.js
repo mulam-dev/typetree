@@ -20,16 +20,13 @@ export default class extends Super {
 
     init(data) {
         const scope = data.scope;
+        this.into(scope);
         this.data_scope = scope;
         this.data_range = [data.anchor, data.focus];
         this.data_nodes = [];
 
         this.node_range = this.$type["#core:vector-range"]();
         this.node_cursor = this.$type["#core:vector-cursor"]();
-    }
-
-    into(parent) {
-        super.into(parent);
 
         const {melem_handles, dirs} = this.node_range;
 
@@ -113,8 +110,8 @@ export default class extends Super {
         udpate();
     }
 
-    outof() {
-        super.outof();
+    free() {
+        this.outof();
         this.data_range.unlisten(null);
         this.node_range.set([]);
         this.node_cursor.set(null);
@@ -129,16 +126,6 @@ export default class extends Super {
             anchor: this.data_range[0],
             focus: this.data_range[1],
         }).result;
-    }
-
-    request_action(act, opts = {}) {
-        return this.data_scope.act["core:selection.actions." + act]({
-            anchor: this.data_range[0],
-            focus: this.data_range[1],
-            nodes: this.data_nodes,
-            selection: this,
-            ...opts,
-        });
     }
 
     expand_x() {

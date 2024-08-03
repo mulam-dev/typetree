@@ -26,7 +26,7 @@ export default class extends Super {
                 if (Number.isNaN(val)) {
                     this.data.val = this.data.val;
                 } else if (this.data.val.toString() !== content) {
-                    this.mod.set(val);
+                    this.mod("set", val);
                 }
             },
             "core:active"(p) {

@@ -11,3 +11,8 @@
     display: flex;
     flex-flow: column;
 }
+
+.core-context-menu-entry.f-disabled {
+    --c-fg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 30%) 0 0) !important;
+    --c-bg: transparent !important;
+}

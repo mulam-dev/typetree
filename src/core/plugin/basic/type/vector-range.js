@@ -40,11 +40,16 @@ export default class extends Super {
     m_boxes = this.data_melems.bmap((melem, _, $) => {
         $(this.data_offset);
         const rect = melem.rect;
-        return {
+        return rect ? {
             "--box-x": rect.x - this.data_offset.x,
             "--box-y": rect.y - this.data_offset.y,
             "--box-ex": rect.right - this.data_offset.x,
             "--box-ey": rect.bottom - this.data_offset.y,
+        } : {
+            "--box-x": Infinity,
+            "--box-y": Infinity,
+            "--box-ex": -Infinity,
+            "--box-ey": -Infinity,
         };
     });
     m_container_box = this.m_boxes.breduce((cont, box) => ({

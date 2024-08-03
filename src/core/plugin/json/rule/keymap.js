@@ -132,46 +132,46 @@ export default {
             */
             "Insert"() {
                 this.collapse("right");
-                this.request_action("core:insert");
+                this.act("core:insert");
             },
             "Shift+Insert"() {
                 this.collapse("left");
-                this.request_action("core:insert");
+                this.act("core:insert");
             },
             "Ctrl+Insert"() {
                 this.collapse("bottom");
-                this.request_action("core:insert");
+                this.act("core:insert");
             },
             "Ctrl+Shift+Insert"() {
                 this.collapse("top");
-                this.request_action("core:insert");
+                this.act("core:insert");
             },
             "Backspace"() {
                 if (this.collapsed("x")) {
                     this.shrink("right");
                 }
-                this.request_action("core:delete");
+                this.act("core:delete");
             },
             "Delete"() {
                 if (this.collapsed("x")) {
                     this.shrink("left");
                 }
-                this.request_action("core:delete");
+                this.act("core:delete");
             },
             "Shift+Backspace"() {
                 if (this.collapsed("y")) {
                     this.shrink("bottom");
                 }
-                this.request_action("core:delete");
+                this.act("core:delete");
             },
             "Shift+Delete"() {
                 if (this.collapsed("y")) {
                     this.shrink("top");
                 }
-                this.request_action("core:delete");
+                this.act("core:delete");
             },
             "Tab"() {
-                this.request_action("core:switch");
+                this.act("core:switch");
             },
         },
     },

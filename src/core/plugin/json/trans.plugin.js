@@ -20,10 +20,12 @@ export default class extends TTPlugin {
         Names("String", {"zh-CN": "字符串"});
         Names("Column Increase", {"zh-CN": "增加列宽"});
         Names("Column Decrease", {"zh-CN": "减少列宽"});
-        Names("Group", {"zh-CN": "分组"});
-        Names("Flatten", {"zh-CN": "扁平化"});
+        Names("Restruct Rows", {"zh-CN": "按行重组"});
+        Names("Extract", {"zh-CN": "提取"});
+        Names("Restruct", {"zh-CN": "重组"});
         Names("Clear", {"zh-CN": "清除"});
         Names("Select All", {"zh-CN": "全选"});
         Names("Toggle", {"zh-CN": "开关"});
+        Names("Delete", {"zh-CN": "删除"});
     }
 }

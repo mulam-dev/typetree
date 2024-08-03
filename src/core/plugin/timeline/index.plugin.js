@@ -33,7 +33,7 @@ export default class extends TTPlugin {
 
     c_icon = this.require.icon.load
 
-    $core_view_data() {
+    ".core:view"() {
         return {
             id,
             icon: "history",

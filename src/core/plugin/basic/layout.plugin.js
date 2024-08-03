@@ -1,5 +1,5 @@
-const id = "#core:basic-layout"
-const provides = [".core:layout"]
+const id = "#layout:core:basic"
+const provides = [".layout:core:basic", ".layout"]
 const requires = {
     view: ".core:view-manager",
     init: ".core:init-manager",
@@ -21,7 +21,7 @@ export default class extends TTPlugin {
         ), () => this.load());
     }
 
-    selections = [].guard(null, sel => sel.into(this.root), sel => sel.outof());
+    selections = [].guard(null, null, sel => sel.free());
 
     loaded = Symbol("loaded");
 
