@@ -1,5 +1,5 @@
-const id = "core:view"
-const provides = ["core:view"]
+const id = "core:view-manager"
+const provides = ["core:view-manager"]
 const requires = {
     base: "core:base",
     init: "core:init-manager",

@@ -1,7 +1,7 @@
 const id = "core:basic-layout"
 const provides = ["core:layout"]
 const requires = {
-    view: "core:view",
+    view: "core:view-manager",
     init: "core:init-manager",
     menu: "core:context-menu",
 }

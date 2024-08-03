@@ -8,4 +8,6 @@ TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目
 
 ## 截图
 
-![开发中的截图](screenshots/developing.png)
+![暗黑主题](screenshots/dark.png)
+
+![明亮主题](screenshots/light.png)
