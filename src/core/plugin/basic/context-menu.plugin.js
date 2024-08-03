@@ -88,7 +88,7 @@ export default class extends TTPlugin {
             return {
                 enabled: enabled_actions.length > 0,
                 act: () => enabled_actions.forEach(([action, node]) => action.do_call(node)),
-                icon: actions[0].icon ?? "automation",
+                icon: actions[0][0].icon ?? "automation",
                 action_name: [...action_names.values()].join('/'),
                 node_name: node_names.size === 1 ? node_names.values().next().value : Names("Multi-nodes").get(),
             }
