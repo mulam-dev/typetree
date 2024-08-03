@@ -3,8 +3,7 @@
     flex-flow: column;
     font-size: 0.8em;
     user-select: none;
-    overflow-y: auto;
-    padding-bottom: 8px;
+    padding: 0.4em 0;
 }
 
 .core-context-menu-actions {
@@ -13,6 +12,7 @@
 }
 
 .core-context-menu-entry.f-disabled {
-    --c-fg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 30%) 0 0) !important;
+    --c-fg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0 0) !important;
     --c-bg: transparent !important;
+    cursor: default !important;
 }

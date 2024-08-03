@@ -255,3 +255,48 @@
     width: var(--size); height: var(--size);
     margin-right: 0.25em;
 }
+
+.core-layout-menu {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * -3%) 0 0);
+    position: fixed;
+    left: calc(var(--x) * 1px); top: calc(var(--y) * 1px);
+    background: var(--c-bg);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px 1px #0002;
+    z-index: 999;
+    display: flex;
+}
+
+.core-layout-menu.f-hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.core-layout-menu .s-item {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 0%) 0 0);
+    color: var(--c-fg);
+    padding: 0.1rem 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 0;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.core-layout-menu .s-item:hover {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 20%) 0 0);
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0 0);
+    color: var(--c-fg);
+    background: var(--c-bg);
+}
+
+.core-layout-menu .s-item > svg {
+    --size: 0.8lh;
+    flex-shrink: 0;
+    width: var(--size); height: var(--size);
+    margin-right: 0.25em;
+}

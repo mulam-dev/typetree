@@ -38,15 +38,6 @@ export default class extends TTPlugin {
         }))()
     )
 
-    ".core:view"() {
-        return {
-            id,
-            icon: "pointer-plus",
-            melem: this.melem,
-            name: Names("Context Menu"),
-        };
-    }
-
     update() {
         const selections = this.selections;
         const acts = {};

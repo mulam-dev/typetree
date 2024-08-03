@@ -49,8 +49,7 @@ export default class extends TTPlugin {
                 behavior: "smooth",
             });
         };
-        const views_show = [true];
-
+        const views_show = [false];
 
         const {finish} = this.require.init;
         const {views} = this.require.view;
@@ -156,13 +155,21 @@ export default class extends TTPlugin {
                             jQuery(target).on("mouseenter", enter_handle);
                             const root_class = this.root.melem.attr("class");
                             if (!root_class.includes("f-selecting")) root_class.suffix("f-selecting");
+                        } else {
+                            this.selections.clear();
                         }
+                    } else {
+                        this.selections.clear();
                     }
                 }
             },
         })();
+
+        const m_s_cursor = {};
+        const m_show_menu = [false];
+
         const me_viewport = div.class(cname("viewport")).on({
-            mousedown(e) {
+            "mousedown"(e) {
                 if (e.button === 1) {
                     const start_x = e.clientX;
                     const start_y = e.clientY;
@@ -193,12 +200,23 @@ export default class extends TTPlugin {
                     e.preventDefault();
                 }
             },
-            contextmenu(e) {
-                if (this.root.focused()) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-                    this.selections.forEach(sel => sel.request(`core:shortcut.${shortcut}`, e));
+            "contextmenu": (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const rect = me_context_menu.rect;
+                m_s_cursor.assign({
+                    "--x": Math.min(e.clientX, window.innerWidth - rect.width),
+                    "--y": Math.min(e.clientY, window.innerHeight - rect.height),
+                });
+                if (this.selections.length) {
+                    m_show_menu.val = true;
+                    const hide_handle = e => {
+                        if (e.button === 0) {
+                            jQuery(me_viewport.elem).off("mousedown", hide_handle);
+                            m_show_menu.val = false;
+                        }
+                    };
+                    jQuery(me_viewport.elem).on("mousedown", hide_handle);
                 }
             },
         })(
@@ -206,6 +224,24 @@ export default class extends TTPlugin {
                 me_inner,
             ),
         );
+
+        const me_context_menu = div
+            .class(cname("menu"))
+            .$style(m_s_cursor)
+            .$show(m_show_menu)
+            .$on({
+                "click": e => {
+                    if (m_show_menu.val) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        m_show_menu.val = false;
+                    }
+                },
+            })
+        (
+            this.require.menu.melem,
+        );
+
         div.class(cname("root"))(
             me_views,
             div.class(cname("main"))(
@@ -223,6 +259,7 @@ export default class extends TTPlugin {
                 ),
                 me_viewport,
             ),
+            me_context_menu,
         ).attach(this.root.melem);
         this.root.melem.attr("on", {}).modify("keydown", e => {
             if (this.root.focused()) {
