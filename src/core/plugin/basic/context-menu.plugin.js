@@ -11,7 +11,10 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    selections = [].listen(null, () => this.update())
+    selections = [].guard(null,
+        sel => sel.data_nodes.listen(this, () => this.update()),
+        sel => sel.data_nodes.unlisten(this),
+    ).listen("listen", () => this.update())
 
     c_icon = this.require.icon.load;
 

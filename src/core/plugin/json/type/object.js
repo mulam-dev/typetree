@@ -97,11 +97,11 @@ export default class extends Super {
                 return {top: true, bottom: true};
             },
             "collapse"(p, dir, {anchor: [c1], focus: [c2]}) {
-                if (["top", "left"].includes(dir)) {
-                    return (c => [[c, 0], [c, 2]])(Math.min(c1, c2));
-                }
-                if (["bottom", "right"].includes(dir)) {
-                    return (c => [[c, 0], [c, 2]])(Math.max(c1, c2));
+                switch (dir) {
+                    case "top": return (c => [[c, 0], [c, 2]])(Math.min(c1, c2));
+                    case "bottom": return (c => [[c, 0], [c, 2]])(Math.max(c1, c2));
+                    case "left": return (c => [[c, 0], [c + 1, 1]])(Math.min(c1, c2));
+                    case "right": return (c => [[c - 1, 1], [c, 2]])(Math.max(c1, c2));
                 }
             },
             "collapsed"(p, dir, {anchor, focus}) {

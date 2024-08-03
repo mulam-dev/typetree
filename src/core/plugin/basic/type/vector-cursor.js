@@ -37,11 +37,16 @@ export default class extends Super {
     m_box = this.data_anchor.bmap((melem, _, $) => {
         $(this.data_offset);
         const rect = melem.rect;
-        return {
+        return rect ? {
             "--x": rect.x - this.data_offset.x,
             "--y": rect.y - this.data_offset.y,
             "--width": rect.width,
             "--height": rect.height,
+        } : {
+            "--x": 0,
+            "--y": 0,
+            "--width": 0,
+            "--height": 0,
         };
     });
 
