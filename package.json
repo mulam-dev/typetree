@@ -33,6 +33,8 @@
   },
   "scripts": {
     "start": "electron .",
+    "start-en": "LANG=en_US.UTF-8 electron .",
+    "start-zh": "LANG=zh_CN.UTF-8 electron .",
     "package": "electron-builder",
     "index": "cd src && find -name '*.plugin.js' > plugins.cfg"
   },
