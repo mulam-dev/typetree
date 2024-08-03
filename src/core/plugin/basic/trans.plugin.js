@@ -11,8 +11,8 @@ export default class extends TTPlugin {
     }
 
     init() {
-        Names("Context Menu", {
-            "zh-CN": "功能选单",
-        });
+        Names("Context Menu", {"zh-CN": "功能选单"});
+        Names("Selection", {"zh-CN": "选区"});
+        Names("Multi-nodes", {"zh-CN": "多个节点"});
     }
 }

@@ -24,19 +24,6 @@ export default {
         },
     },
 
-    ".json:key": {
-        "actions": {
-            "core:select-all": class extends TTAction {
-                static name = Names("Select All")
-                static icon = "select-all"
-                static unique = true
-                static call(node) {
-                    node.select_all();
-                }
-            },
-        },
-    },
-
     ".json:number": {
         "actions": {
         },

@@ -18,25 +18,7 @@ export default class extends TTPlugin {
     m_entries = []
 
     melem = div.class(cname("root"))(
-        div.class(cname("actions")).$inner(this.m_entries.bmap(actions => {
-            let enabled, act;
-            const [primary_action, primary_node] = actions.val;
-            if (primary_action.unique) {
-                if (primary_action.enabled(primary_node)) {
-                    enabled = true;
-                    act = () => primary_action.do_call(primary_node);
-                } else {
-                    enabled = false;
-                }
-            } else {
-                actions = actions.filter(([action, node]) => action.enabled(node));
-                if (actions.length) {
-                    enabled = true;
-                    act = () => actions.forEach(([action, node]) => action.do_call(node));
-                } else {
-                    enabled = false;
-                }
-            }
+        div.class(cname("actions")).$inner(this.m_entries.bmap(({enabled, act, node_name, action_name, icon}) => {
             return div
                 .class(cname("entry"), "s-item", ...(enabled ? [] : ["f-disabled"]))
                 .$on({
@@ -47,8 +29,8 @@ export default class extends TTPlugin {
                         }
                     },
                 })(
-                    this.c_icon(primary_action.icon ?? "automation"),
-                    primary_action.name.get(),
+                    this.c_icon(icon),
+                    `${node_name}: ${action_name}`,
                 )
         }))()
     )
@@ -63,22 +45,55 @@ export default class extends TTPlugin {
     }
 
     update() {
+        const selections = this.selections;
         const acts = {};
-        for (const sel of this.selections) {
+        const unique_acts = [];
+        for (const sel of selections) {
             const sel_acts = sel.attrs_merged("actions");
             for (const path in sel_acts) {
-                acts[path] ??= [];
-                acts[path].push([sel_acts[path], sel]);
+                const action = sel_acts[path];
+                if (action.unique) {
+                    if (selections.length === 1) {
+                        unique_acts.push([[action, sel]]);
+                    }
+                } else {
+                    acts[path] ??= [];
+                    acts[path].push([action, sel]);
+                }
             }
-            for (const node of sel.data_nodes) {
+            const nodes = sel.data_nodes;
+            for (const node of nodes) {
                 const node_acts = node.attrs_merged("actions");
                 for (const path in node_acts) {
-                    acts[path] ??= [];
-                    acts[path].push([node_acts[path], node]);
+                    const action = node_acts[path];
+                    if (action.unique) {
+                        if (selections.length === 1 && nodes.length === 1) {
+                            unique_acts.push([[action, node]]);
+                        }
+                    } else {
+                        acts[path] ??= [];
+                        acts[path].push([action, node]);
+                    }
                 }
             }
         }
-        this.m_entries.assign(Object.values(acts));
+        const acts_set = [].concat(unique_acts, Object.values(acts));
+        const entries = acts_set.map(actions => {
+            const action_names = new Set(), node_names = new Set();
+            for (const [action, node] of actions) {
+                action_names.add(action.name.get());
+                node_names.add(node.constructor.name.get());
+            }
+            const enabled_actions = actions.filter(([action, node]) => action.enabled(node));
+            return {
+                enabled: enabled_actions.length > 0,
+                act: () => enabled_actions.forEach(([action, node]) => action.do_call(node)),
+                icon: actions[0].icon ?? "automation",
+                action_name: [...action_names.values()].join('/'),
+                node_name: node_names.size === 1 ? node_names.values().next().value : Names("Multi-nodes").get(),
+            }
+        });
+        this.m_entries.assign(entries);
     }
 
     set(selections) {
