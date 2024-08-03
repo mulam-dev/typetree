@@ -14,4 +14,4 @@ TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目
 
 ## 网页版
 
-[试用网页版](src/app.html)
+[试用网页版](https://mulam-dev.github.io/typetree/src/app.html)
