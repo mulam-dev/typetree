@@ -1,0 +1,69 @@
+.core-popup-root {
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    display: flex;
+    user-select: none;
+}
+
+.core-popup-root.f-hide {
+    pointer-events: none;
+    opacity: 0;
+}
+
+.core-popup-mask {
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0 0);
+    background: var(--c-bg);
+    position: absolute;
+    inset: 0;
+    opacity: var(--opacity);
+}
+
+.core-popup-frame {
+    position: absolute;
+    left: calc(var(--x) * 1px); top: calc(var(--y) * 1px);
+    display: flex;
+    flex-direction: column;
+}
+
+.core-popup-frame .s-frame {
+    --c-b: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 12%) 0 0);
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0 0);
+    padding: 0.24em;
+    background: var(--c-bg);
+    outline: 1px solid var(--c-b);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px 1px #0002;
+    display: flex;
+}
+
+.core-popup-frame .s-item {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 4%) 0 0);
+    color: var(--c-fg);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 0;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.core-popup-frame .s-item:hover {
+    --c-fg: oklch(calc(var(--c-l-fbase) + var(--c-l-fdir) * 28%) 0 0);
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 8%) 0 0);
+    color: var(--c-fg);
+    background: var(--c-bg);
+}
+
+.core-popup-frame .s-item > svg {
+    --size: 0.8lh;
+    flex-shrink: 0;
+    width: var(--size); height: var(--size);
+    margin-right: 0.25em;
+    margin-left: -0.25em;
+}

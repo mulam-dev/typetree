@@ -453,9 +453,12 @@ const _ed_type_proxy = {
 };
 
 const _ed_require_proxy = {
-    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], _ed_plugins_proxy),
+    get: (ed, query) => new Proxy(ed.provides.get(query).val, _ed_plugin_proxy),
 };
 
-const _ed_plugins_proxy = {
-    get: (plugins, method) => (...args) => plugins.map(p => p[method](...args)),
+const _ed_plugin_proxy = {
+    get: (plugin, prop) => {
+        const res = Reflect.get(plugin, prop);
+        return res.bind?.(plugin) ?? res;
+    },
 };

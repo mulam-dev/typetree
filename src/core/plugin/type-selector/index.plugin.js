@@ -10,13 +10,14 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    // ".core:type-loader" = []
-
-    // ".core:rule-loader" = []
-
     // ".core:style-loader" = []
 
-    method() {
-        // TODO
-    }
+    melem = div
+        .class(cname("root"))
+    ()
+
+    // request()
 }
+
+const {div} = ME;
+const cname = name => "core-type-selector-" + name;

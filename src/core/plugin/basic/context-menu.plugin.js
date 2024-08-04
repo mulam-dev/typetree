@@ -2,6 +2,7 @@ const id = "#core:context-menu"
 const provides = [".core:context-menu"]
 const requires = {
     icon: ".core:icon-loader",
+    popup: ".core:popup",
 }
 
 export default class extends TTPlugin {
@@ -20,16 +21,14 @@ export default class extends TTPlugin {
 
     m_entries = []
 
-    melem = div.class(cname("root"))(
+    melem = div.class(cname("root"), "s-frame")(
         div.class(cname("actions")).$inner(this.m_entries.bmap(({enabled, act, node_name, action_name, icon}) => {
             return div
                 .class(cname("entry"), "s-item", ...(enabled ? [] : ["f-disabled"]))
                 .$on({
                     "click": () => {
-                        if (enabled) {
-                            act();
-                            this.update();
-                        }
+                        this.data_popup.clear();
+                        act();
                     },
                 })(
                     this.c_icon(icon),
@@ -37,6 +36,8 @@ export default class extends TTPlugin {
                 )
         }))()
     )
+
+    data_popup = [].guard(null, null, popup => popup.free())
 
     update() {
         const selections = this.selections;
@@ -90,8 +91,18 @@ export default class extends TTPlugin {
         this.m_entries.assign(entries);
     }
 
-    set(selections) {
+    async popup(x, y, selections) {
+        const {popup: Popup} = this.require.popup;
+
         this.selections.assign(selections);
+
+        const popup = Popup(document.body, this.melem, {
+            offset_x: x,
+            offset_y: y,
+        });
+        this.data_popup.val = popup;
+        await popup.wait_free();
+        this.data_popup.clear();
     }
 }
 

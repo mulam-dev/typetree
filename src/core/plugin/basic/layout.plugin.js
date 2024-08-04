@@ -165,9 +165,6 @@ export default class extends TTPlugin {
             },
         })();
 
-        const m_s_cursor = {};
-        const m_show_menu = [false];
-
         const me_viewport = div.class(cname("viewport")).on({
             "mousedown"(e) {
                 if (e.button === 1) {
@@ -203,20 +200,8 @@ export default class extends TTPlugin {
             "contextmenu": (e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                const rect = me_context_menu.rect;
-                m_s_cursor.assign({
-                    "--x": Math.min(e.clientX, window.innerWidth - rect.width),
-                    "--y": Math.min(e.clientY, window.innerHeight - rect.height),
-                });
                 if (this.selections.length) {
-                    m_show_menu.val = true;
-                    const hide_handle = e => {
-                        if (e.button === 0) {
-                            jQuery(me_viewport.elem).off("mousedown", hide_handle);
-                            m_show_menu.val = false;
-                        }
-                    };
-                    jQuery(me_viewport.elem).on("mousedown", hide_handle);
+                    this.require.menu.popup(e.clientX, e.clientY, this.selections);
                 }
             },
         })(
@@ -225,24 +210,7 @@ export default class extends TTPlugin {
             ),
         );
 
-        const me_context_menu = div
-            .class(cname("menu"))
-            .$style(m_s_cursor)
-            .$show(m_show_menu)
-            .$on({
-                "click": e => {
-                    if (m_show_menu.val) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        m_show_menu.val = false;
-                    }
-                },
-            })
-        (
-            this.require.menu.melem,
-        );
-
-        div.class(cname("root"))(
+        this.melem = div.class(cname("root"))(
             me_views,
             div.class(cname("main"))(
                 div.class(cname("head"))(
@@ -259,7 +227,6 @@ export default class extends TTPlugin {
                 ),
                 me_viewport,
             ),
-            me_context_menu,
         ).attach(this.root.melem);
         this.root.melem.attr("on", {}).modify("keydown", e => {
             if (this.root.focused()) {
