@@ -8,6 +8,18 @@ export class TTNode {
         return query ? Editor.$Type[query] : TTNode;
     }
 
+    static is(query) {
+        return this.id === query || this.provides.includes(query);
+    }
+
+    static use(query) {
+        return this.uses.includes(query);
+    }
+
+    static in(query) {
+        return this.id.startsWith(query) || this.provides.some(id => id.startsWith(query));
+    }
+
     constructor(editor, data) {
         this['#'] = this.constructor.id;
         this.root = editor;
@@ -40,7 +52,19 @@ export class TTNode {
     }
 
     is(query) {
-        return this.constructor.id === query || this.constructor.uses.includes(query);
+        return this.constructor.is(query);
+    }
+
+    use(query) {
+        return this.constructor.use(query);
+    }
+
+    in(query) {
+        return this.constructor.in(query);
+    }
+
+    has(node) {
+        return false;
     }
 
     attr(path, def = null) {
@@ -116,10 +140,10 @@ export class TTRule {
     match(node) {
         return ((
             !this.self ||
-            node.is(this.self)
+            node.use(this.self)
         ) && (
             !this.parent ||
-            node.parent?.is(this.parent)
+            node.parent?.use(this.parent)
         ));
     }
 
@@ -250,14 +274,6 @@ export const Names = new Proxy(() => {}, {
     },
 });
 
-export class TTType {}
-
-export const Types = new Proxy(() => {}, {
-    apply: (_0, _1, args) => {
-        //
-    },
-});
-
 export class TTPlugin {
     static req_essential(plugins, ...traits_set) {
         const res = [];
@@ -268,7 +284,7 @@ export class TTPlugin {
                     if (results.length) {
                         res.push(...results);
                     } else {
-                        throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                        throw new Error(`TTPlugin: Unsatisfied requirements: trait "${trait}" not found`);
                     }
                 }
             } else {
@@ -279,7 +295,7 @@ export class TTPlugin {
                         res.push(...results);
                         res[key] = results.val;
                     } else {
-                        throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                        throw new Error(`TTPlugin: Unsatisfied requirements: trait "${trait}" not found`);
                     }
                 }
             }
@@ -324,7 +340,11 @@ const _pl_require_proxy = {
 const _pl_plugin_proxy = {
     get: (plugin, prop) => {
         const res = Reflect.get(plugin, prop);
-        return res.bind?.(plugin) ?? res;
+        if (res) {
+            return res.bind?.(plugin) ?? res;
+        } else {
+            throw new Error(`TTPlugin: Property "${prop}" not found for plugin: ${plugin.constructor.id}`);
+        }
     },
 };
 
@@ -372,7 +392,8 @@ export class TTEditor extends TTNode {
             # 节点类型存储
             存储编辑器所导入的所有类型节点的类
         */
-        this.types = {};
+        this.types = [];
+        this.type_map = {};
         
         /* 
             # 规则存储
@@ -437,11 +458,11 @@ export class TTEditor extends TTNode {
 }
 
 const _ed_class_proxy = {
-    get: (ed, query) => ed.types[query] ?? new Promise(res => {
+    get: (ed, query) => ed.type_map[query] ?? new Promise(res => {
         const s = Symbol("class proxy");
-        ed.types.guard(s, (Type, key) => {
+        ed.type_map.guard(s, (Type, key) => {
             if (key === query) {
-                ed.types.unguard(s);
+                ed.type_map.unguard(s);
                 res(Type);
             }
         });

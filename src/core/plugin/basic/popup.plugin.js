@@ -56,7 +56,9 @@ class Popup {
                     "--opacity": this.opts.mask_opacity,
                 })
                 .$on({
-                    "mousedown": () => {
+                    "mousedown": e => {
+                        e.stopPropagation();
+                        e.preventDefault();
                         this.free();
                     },
                 })
@@ -95,6 +97,7 @@ class Popup {
         this.inner.remove();
         this.melem.remove();
         this.wait_stack.forEach(res => res());
+        this.wait_stack.clear();
     }
 
     wait_free() {

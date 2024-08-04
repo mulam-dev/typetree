@@ -1,7 +1,7 @@
 const id = "#core:vector-range";
 const extend = null;
 const provides = [".core:range"];
-const name = "Vector Range";
+const name = Names("Vector Range");
 
 const dirs = ["top", "bottom", "left", "right", "top_left", "top_right", "bottom_left", "bottom_right"];
 
@@ -17,19 +17,19 @@ export default class extends Super {
     data_opts = {}
     data_viewport = [].guard(null,
         elem => {
-            this.melem.attach(elem);
+            this.melem_root.attach(elem);
             this.data_offset_observer.observe(elem);
-            const rect = this.melem.rect;
+            const rect = this.melem_root.rect;
             if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
         },
         elem => {
-            this.melem.remove();
+            this.melem_root.remove();
             this.data_offset_observer.unobserve(elem);
         },
     )
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
-        const rect = this.melem.rect;
+        const rect = this.melem_root.rect;
         if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
     })
     data_melems = [].guard(null,
@@ -64,7 +64,7 @@ export default class extends Super {
         "--cont-ey": -Infinity,
     })
 
-    melem_container =
+    melem =
         div
             .class(cname("container"))
             .$style(this.m_container_box)
@@ -83,7 +83,7 @@ export default class extends Super {
             .class(cname("handle-container"))
             .$style(this.m_container_box)
             .$inner(Object.values(this.melem_handles))()
-    melem =
+    melem_root =
         div
             .$class([
                 [cname("root")],
@@ -93,7 +93,7 @@ export default class extends Super {
                     .bmap(k => "f-" + k),
             ].bflat())
         (
-            this.melem_container,
+            this.melem,
             this.melem_handle_container,
         )
 

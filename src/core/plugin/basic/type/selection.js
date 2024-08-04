@@ -19,9 +19,7 @@ export default class extends Super {
     }
 
     init(data) {
-        const scope = data.scope;
-        this.into(scope);
-        this.data_scope = scope;
+        this.data_scope = [data.scope].guard(null, scope => this.into(scope));
         this.data_range = [data.anchor, data.focus];
         this.data_nodes = [];
 
@@ -36,6 +34,7 @@ export default class extends Super {
                 const [type, ...args] = res;
                 if (type === "range") {
                     this.node_cursor.set(null);
+                    this.struct = this.node_range;
                     const [nodes] = args;
                     this.data_nodes.assign(nodes);
                     const opts = {};
@@ -61,6 +60,7 @@ export default class extends Super {
                     this.data_nodes.clear();
                     this.node_range.set([]);
                     const [anchor, opts] = args;
+                    this.struct = this.node_cursor;
                     this.node_cursor.set(anchor, opts);
                 }
             }
@@ -122,7 +122,7 @@ export default class extends Super {
     }
 
     request_scope(cmd, ...args) {
-        return this.data_scope.request("core:selection." + cmd, ...args, {
+        return this.data_scope.val.request("core:selection." + cmd, ...args, {
             anchor: this.data_range[0],
             focus: this.data_range[1],
         }).result;
@@ -179,7 +179,7 @@ export default class extends Super {
 
     collapse(dir) {
         const range = this.request_scope("collapse", dir);
-        if (range) {
+        if (range && range.every(pos => this.request_scope("varify", pos, range))) {
             this.data_range.assign(range);
             return true;
         }

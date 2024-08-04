@@ -35,10 +35,12 @@
     width: 0; height: 0;
 }
 
+.core-cursor-root.f-dir_x .core-cursor-container,
 .core-cursor-root.f-dir_x .core-cursor-container::after {
     height: calc(var(--cursor-size) * 1px);
 }
 
+.core-cursor-root.f-dir_y .core-cursor-container,
 .core-cursor-root.f-dir_y .core-cursor-container::after {
     width: calc(var(--cursor-size) * 1px);
 }

@@ -15,9 +15,10 @@ export default class extends TTPlugin {
 
     import_type(...types) {
         for (const type of types) {
-            this.root.types.modify(type.id, type);
+            this.root.types.suffix(type);
+            this.root.type_map.modify(type.id, type);
             for (const klass of type.provides) {
-                this.root.types.modify(klass, type);
+                this.root.type_map.modify(klass, type);
             }
         }
     }

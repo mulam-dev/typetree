@@ -81,7 +81,7 @@ export default class extends TTPlugin {
                     while (telem !== e_inner && !telem.node) telem = telem.parentNode;
                     const start_node = telem.node;
                     if (start_node) {
-                        const anchor_scopes = ancestors(start_node, (node, child) => node.attr("able.core:layout.select") && node.request("core:layout.has-node", child).result);
+                        const anchor_scopes = ancestors(start_node, (node, child) => node.attr("able.core:layout.select") && node.has(child));
                         if (anchor_scopes.length) {
                             const scope = anchor_scopes.at(-1);
                             const anchor_node = closest(start_node, n => n.parent === scope);
@@ -113,7 +113,7 @@ export default class extends TTPlugin {
                                 prev_focus = telem;
                                 const end_node = telem.node;
                                 if (end_node) {
-                                    const focus_scopes = ancestors(end_node, (node, child) => node.attr("able.core:layout.select") && node.request("core:layout.has-node", child).result);
+                                    const focus_scopes = ancestors(end_node, (node, child) => node.attr("able.core:layout.select") && node.has(child));
                                     if (focus_scopes.length) {
                                         let scope_idx = -1;
                                         while (scope_idx + 1 < anchor_scopes.length && anchor_scopes[scope_idx + 1] === focus_scopes[scope_idx + 1]) scope_idx++;

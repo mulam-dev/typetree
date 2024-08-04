@@ -19,6 +19,11 @@ export default class extends Super {
                 }
             },
         },
+        "handles": {
+            "core:enter"(p) {
+                this.mod("toggle");
+            },
+        }
     }
 
     init(data) {

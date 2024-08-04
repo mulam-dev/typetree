@@ -124,6 +124,18 @@ export default {
                 this.expand_x();
                 this.expand_y();
             },
+            "Enter"() {
+                if (this.data_nodes.length === 1) {
+                    this.data_nodes.val.request("core:enter", this);
+                }
+            },
+            "Escape"() {
+                const scope = this.data_scope.val;
+                const parent = scope.parent;
+                if (parent && parent.has(scope)) {
+                    parent.request("core:escape", this, scope);
+                }
+            },
 
 
 

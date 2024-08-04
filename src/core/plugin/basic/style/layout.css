@@ -36,6 +36,20 @@
     font-size: 1em;
 }
 
+.core-layout-root .s-scrollbar {
+    --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0);
+    --c-scrollbar-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0.1);
+    transition: scrollbar-color 2000ms ease-in;
+    scrollbar-color: var(--c-scrollbar) var(--c-scrollbar-bg);
+    scrollbar-width: thin;
+}
+
+.core-layout-root .s-scrollbar:hover {
+    --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 1);
+    transition: scrollbar-color 150ms;
+    scrollbar-color: var(--c-scrollbar) var(--c-scrollbar-bg);
+}
+
 .core-layout-main {
     flex-grow: 1;
     flex-shrink: 2;
@@ -211,20 +225,6 @@
     display: flex;
     flex-direction: column;
     border-top: 1px solid var(--c-b);
-}
-
-.core-layout-vbody .s-scrollbar {
-    --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0);
-    --c-scrollbar-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 0.1);
-    transition: scrollbar-color 2000ms ease-in;
-    scrollbar-color: var(--c-scrollbar) var(--c-scrollbar-bg);
-    scrollbar-width: thin;
-}
-
-.core-layout-vbody .s-scrollbar:hover {
-    --c-scrollbar: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 10%) 0 0 / 1);
-    transition: scrollbar-color 150ms;
-    scrollbar-color: var(--c-scrollbar) var(--c-scrollbar-bg);
 }
 
 .core-layout-vbody .s-item {

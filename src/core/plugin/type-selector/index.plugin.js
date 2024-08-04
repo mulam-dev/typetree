@@ -1,6 +1,7 @@
 const id = "#core:type-selector"
 const provides = [".core:type-selector"]
 const requires = {
+    commander: ".core:commander",
 }
 
 export default class extends TTPlugin {
@@ -10,14 +11,25 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    // ".core:style-loader" = []
-
-    melem = div
-        .class(cname("root"))
-    ()
-
-    // request()
+    async request(anchor, filter, opts) {
+        const types = this.root.types.filter(filter);
+        const res = await this.require.commander.request(
+            to_melem(anchor),
+            types.map(Type => ({
+                id: Type.id,
+                label: Type.name.get(),
+                detail: Type.id,
+                path: Type.id + Type.provides.join(''),
+            })),
+            {
+                anchor_x: 1,
+                anchor_y: 0,
+                ...opts,
+            },
+        );
+        this.root.focus();
+        return res ? res.id : null;
+    }
 }
 
-const {div} = ME;
-const cname = name => "core-type-selector-" + name;
+const to_melem = node => node instanceof TTNode ? node.melem : node;

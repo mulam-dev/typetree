@@ -34,11 +34,18 @@ export default class extends Super {
                 }
             },
         },
+        "handles.core:enter"(p, sel) {
+            sel.data_scope.val = this;
+            sel.set([0, 0], this.data.length === 0 ? [0, 2] : [1, 1]);
+        },
+        "handles.core:escape"(p, sel, node) {
+            sel.data_scope.val = this;
+            const row = this.data.findIndex(entry => entry.includes(node));
+            const column = this.data[row].indexOf(node);
+            sel.set([row, column], [row + 1, column + 1]);
+        },
         "able.core:layout.select": true,
         "handles.core:layout": {
-            "has-node"(p, node) {
-                return this.data.some(entry => entry.includes(node));
-            },
             "get-selection"(p, anchor_node, focus_node) {
                 let anchor_entry_idx = this.data.findIndex(entry => entry.includes(anchor_node));
                 let focus_entry_idx = this.data.findIndex(entry => entry.includes(focus_node));
@@ -141,7 +148,10 @@ export default class extends Super {
             "#core:frame": frame,
         } = this.$type;
 
-        this.data = (data ?? []).guard(null, entry => entry.forEach(n => n.into(this)), entry => entry.forEach(n => n.outof()));
+        this.data = (data ?? []).guard(null,
+            entry => entry.guard(null, n => n.into(this), n => n.outof()),
+            entry => (entry.unguard(null), entry.forEach(n => n.outof())),
+        );
 
         this.struct =
             frame([
@@ -164,5 +174,9 @@ export default class extends Super {
     index(node) {
         const row = this.data.findIndex(entry => entry.includes(node));
         return [row, this.data[row].indexOf(node)];
+    }
+
+    has(node) {
+        return this.data.some(entry => entry.includes(node));
     }
 }

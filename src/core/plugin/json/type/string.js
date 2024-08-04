@@ -31,6 +31,9 @@ export default class extends Super {
             "core:active"(p) {
                 this.node_field.request_pack(p);
             },
+            "core:enter"(p) {
+                this.node_field.focus();
+            },
         },
     }
 

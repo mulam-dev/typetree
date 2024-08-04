@@ -1,7 +1,7 @@
 const id = "#core:vector-cursor";
 const extend = null;
 const provides = [".core:cursor"];
-const name = "Vector Cursor";
+const name = Names("Vector Cursor");
 
 const Super = await TTNode.Class(extend);
 export default class extends Super {
@@ -13,19 +13,19 @@ export default class extends Super {
     data_opts = {}
     data_viewport = [].guard(null,
         elem => {
-            this.melem.attach(elem);
+            this.melem_root.attach(elem);
             this.data_offset_observer.observe(elem);
-            const rect = this.melem.rect;
+            const rect = this.melem_root.rect;
             if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
         },
         elem => {
-            this.melem.remove();
+            this.melem_root.remove();
             this.data_offset_observer.unobserve(elem);
         },
     )
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
-        const rect = this.melem.rect;
+        const rect = this.melem_root.rect;
         if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
     })
     data_anchor = [].guard(null,
@@ -50,11 +50,11 @@ export default class extends Super {
         };
     });
 
-    melem_container =
+    melem =
         div
             .class(cname("container"))
             .$style(this.m_box)()
-    melem =
+    melem_root =
         div
             .$class([
                 [cname("root")],
@@ -65,7 +65,7 @@ export default class extends Super {
             ].bflat())
             .$style(this.data_cursor_offset)
         (
-            this.melem_container,
+            this.melem,
         )
 
     set(anchor, opts = {}) {

@@ -36,6 +36,20 @@ export default {
 
     ".json:array": {
         "actions": {
+            "core:insert-into": class extends TTAction {
+                static name = Names("Insert Into")
+                static icon = "plus"
+                static unique = true
+                static async call(node) {
+                    const id = await node.$require[".core:type-selector"].request(node, n => n.in(".json:"));
+                    if (id) {
+                        const Node = node.$type[id];
+                        const nnode = Node();
+                        const offset = node.data.length;
+                        node.mod("modify", offset, 0, [nnode]);
+                    }
+                }
+            },
             "core:column-increase": class extends TTAction {
                 static name = Names("Column Increase")
                 static icon = "viewport-wide"
@@ -95,17 +109,42 @@ export default {
 
     ".json:array > .core:selection": {
         "actions": {
-            "core:delete": class extends TTAction {
-                static name = Names("Delete")
-                static icon = "trash"
+            "core:insert": class extends TTAction {
+                static name = Names("Insert")
+                static icon = "plus"
+                static unique = true
                 static varify(sel) {
-                    return !sel.collapsed();
+                    return sel.collapsed();
                 }
-                static call(sel) {
+                static async call(sel) {
                     const node = sel.parent;
-                    const [start, end] = sel.data_range.num_sorted();
-                    node.mod("modify", start, end - start, []);
-                    sel.set(start, start);
+                    const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
+                    if (id) {
+                        const Node = node.$type[id];
+                        const nnode = Node();
+                        const [offset] = sel.data_range;
+                        node.mod("modify", offset, 0, [nnode]);
+                        sel.set(offset, offset + 1);
+                    }
+                }
+            },
+            "core:switch": class extends TTAction {
+                static name = Names("Switch")
+                static icon = "switch"
+                static unique = true
+                static varify(sel) {
+                    return sel.data_nodes.length === 1;
+                }
+                static async call(sel) {
+                    const node = sel.parent;
+                    const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
+                    if (id) {
+                        const Node = node.$type[id];
+                        const nnode = Node();
+                        const [offset] = sel.data_range;
+                        node.mod("modify", offset, 1, [nnode]);
+                        sel.set(offset, offset + 1);
+                    }
                 }
             },
             "core:select-all": class extends TTAction {
@@ -115,6 +154,24 @@ export default {
                 static call(sel) {
                     const node = sel.parent;
                     sel.set(0, node.data.length);
+                }
+            },
+            "core:restruct": class extends TTAction {
+                static name = Names("Restruct")
+                static icon = "brackets-contain"
+                static varify(sel) {
+                    return !sel.collapsed();
+                }
+                static call(sel) {
+                    const node = sel.parent;
+                    const Array = node.$type[".json:array"];
+                    const [start, end] = sel.data_range.num_sorted();
+                    const data = node.data.slice(start, end);
+                    node.mod("modify", start, end - start, []);
+                    const nnode = Array([]);
+                    node.mod("modify", start, 0, [nnode]);
+                    nnode.mod("modify", 0, 0, data);
+                    sel.set(start, start + 1);
                 }
             },
             "core:extract": class extends TTAction {
@@ -142,22 +199,17 @@ export default {
                     sel.set(start, start + data.length);
                 }
             },
-            "core:restruct": class extends TTAction {
-                static name = Names("Restruct")
-                static icon = "brackets-contain"
+            "core:delete": class extends TTAction {
+                static name = Names("Delete")
+                static icon = "trash"
                 static varify(sel) {
                     return !sel.collapsed();
                 }
                 static call(sel) {
                     const node = sel.parent;
-                    const Array = node.$type[".json:array"];
                     const [start, end] = sel.data_range.num_sorted();
-                    const data = node.data.slice(start, end);
                     node.mod("modify", start, end - start, []);
-                    const nnode = Array([]);
-                    node.mod("modify", start, 0, [nnode]);
-                    nnode.mod("modify", 0, 0, data);
-                    sel.set(start, start + 1);
+                    sel.set(start, start);
                 }
             },
         },
@@ -165,6 +217,21 @@ export default {
 
     ".json:object": {
         "actions": {
+            "core:insert-into": class extends TTAction {
+                static name = Names("Insert Into")
+                static icon = "plus"
+                static unique = true
+                static async call(node) {
+                    const {
+                        ".json:key": Key,
+                        ".json:null": Null,
+                    } = node.$type;
+                    const offset = node.data.length;
+                    const key = Key();
+                    node.mod("modify_entries", offset, 0, [[key, Null()]]);
+                    key.request("core:active");
+                }
+            },
             "core:clear": class extends TTAction {
                 static name = Names("Clear")
                 static icon = "eraser"
@@ -180,6 +247,51 @@ export default {
 
     ".json:object > .core:selection": {
         "actions": {
+            "core:insert": class extends TTAction {
+                static name = Names("Insert")
+                static icon = "plus"
+                static unique = true
+                static varify(sel) {
+                    return sel.collapsed();
+                }
+                static async call(sel) {
+                    const node = sel.parent;
+                    const {
+                        ".json:key": Key,
+                        ".json:null": Null,
+                    } = node.$type;
+                    const [[offset]] = sel.data_range;
+                    const key = Key();
+                    node.mod("modify_entries", offset, 0, [[key, Null()]]);
+                    sel.set([offset, 0], [offset + 1, 1]);
+                    key.request("core:active");
+                }
+            },
+            "core:switch": class extends TTAction {
+                static name = Names("Switch")
+                static icon = "switch"
+                static unique = true
+                static varify(sel) {
+                    return sel.data_nodes.length === 1;
+                }
+                static async call(sel) {
+                    const node = sel.parent;
+                    const target = sel.data_nodes.val;
+                    const [[r1], [r2]] = sel.data_range;
+                    const [start, end] = [r1, r2].num_sorted();
+                    if (target.is(".json:key")) {
+                        sel.set([start, 1], [end, 2]);
+                    } else {
+                        const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
+                        if (id) {
+                            const Node = node.$type[id];
+                            const nnode = Node();
+                            node.mod("modify_value", start, nnode);
+                            sel.set([start, 1], [end, 2]);
+                        }
+                    }
+                }
+            },
             "core:delete": class extends TTAction {
                 static name = Names("Delete")
                 static icon = "trash"

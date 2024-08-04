@@ -26,6 +26,9 @@ export default class extends TTPlugin {
         Names("Clear", {"zh-CN": "清除"});
         Names("Select All", {"zh-CN": "全选"});
         Names("Toggle", {"zh-CN": "开关"});
+        Names("Insert", {"zh-CN": "插入"});
+        Names("Insert Into", {"zh-CN": "插入内部"});
+        Names("Switch", {"zh-CN": "切换"});
         Names("Delete", {"zh-CN": "删除"});
     }
 }

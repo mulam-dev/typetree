@@ -1,7 +1,7 @@
 const id = "#core:text-field";
 const extend = "#core:frame";
 const provides = [];
-const name = "Text Field";
+const name = Names("Text Field");
 
 const Super = await TTNode.Class(extend);
 export default class extends Super {
@@ -19,7 +19,7 @@ export default class extends Super {
     }
 
     init(data) {
-        this.data = data ?? [];
+        this.data = data ?? [''];
         this.data_name = [null];
         this.data_color = {};
         this.data_styles = [];
@@ -57,5 +57,9 @@ export default class extends Super {
 
     select_all() {
         this.melem_content.select();
+    }
+
+    focus() {
+        this.melem_content.focus();
     }
 }

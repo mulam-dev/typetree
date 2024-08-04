@@ -27,6 +27,15 @@ export default class extends Super {
                 }
             },
         },
+        "handles.core:enter"(p, sel) {
+            sel.data_scope.val = this;
+            sel.set(0, Math.min(this.data.length, 1));
+        },
+        "handles.core:escape"(p, sel, node) {
+            sel.data_scope.val = this;
+            const offset = this.data.indexOf(node);
+            sel.set(offset, offset + 1);
+        },
         "able.core:scale.right": true,
         "handles.core:scale.right.move"(p, {move_x, delta_x, start_rect, current_rect}) {
             if (this.data.length) {
@@ -51,9 +60,6 @@ export default class extends Super {
         },
         "able.core:layout.select": true,
         "handles.core:layout": {
-            "has-node"(p, node) {
-                return this.data.includes(node);
-            },
             "get-selection"(p, anchor_node, focus_node) {
                 let anchor = this.data.indexOf(anchor_node);
                 let focus = this.data.indexOf(focus_node);
@@ -160,5 +166,9 @@ export default class extends Super {
     
     index(node) {
         return this.data.indexOf(node);
+    }
+
+    has(node) {
+        return this.data.includes(node);
     }
 }
