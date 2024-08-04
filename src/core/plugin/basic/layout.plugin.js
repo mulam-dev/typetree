@@ -128,7 +128,6 @@ export default class extends TTPlugin {
                             };
                             const up_handle = e => {
                                 if (e.button === 0) {
-                                    this.require.menu.set(this.selections);
                                     clear();
                                     if (!moved) {
                                         switch (e.detail) {
