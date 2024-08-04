@@ -56,7 +56,7 @@ class Popup {
                     "--opacity": this.opts.mask_opacity,
                 })
                 .$on({
-                    "click": () => {
+                    "mousedown": () => {
                         this.free();
                     },
                 })
