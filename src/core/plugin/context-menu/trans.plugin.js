@@ -1,5 +1,5 @@
-const id = "#core:filesystem"
-const provides = [".core:filesystem"]
+const id = "#trans:core:context-menu"
+const provides = [".trans:core:context-menu", ".trans"]
 const requires = {
 }
 
@@ -10,11 +10,7 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    ".core:view"() {
-        return {
-            id,
-            melem: ME.div(),
-            name: Names("File System"),
-        };
+    init() {
+        Names("Multi-nodes", {"zh-CN": "多个节点"});
     }
 }

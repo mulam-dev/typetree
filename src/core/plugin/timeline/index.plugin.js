@@ -28,6 +28,10 @@ export default class extends TTPlugin {
         },
     }
 
+    init() {
+        Names("Timeline", {"zh-CN": "时间线"});
+    }
+
     /* 
         # 撤销栈
         用来记录所有节点的修改记录，新记录添加在尾端
@@ -45,8 +49,10 @@ export default class extends TTPlugin {
     ".core:view"() {
         return {
             id,
+            name: Names("Timeline"),
             icon: "history",
-            melem: div.class(cname("root"), "s-scrollbar")(
+            grow: true,
+            melem: div.class(cname("root"), "s-scrollbar", "s-frame")(
                 div.class(cname("stack"), "f-undos").$inner(
                     this.data_undos.bmap(entry =>
                         div
@@ -68,7 +74,6 @@ export default class extends TTPlugin {
                     ),
                 )(),
             ),
-            name: Names("Timeline"),
         };
     }
 
@@ -96,6 +101,11 @@ export default class extends TTPlugin {
             imoder.call(this.root.ref(path));
             return [path, imoder, opts];
         }));
+    }
+
+    clear() {
+        this.data_redos.clear();
+        this.data_undos.clear();
     }
 }
 

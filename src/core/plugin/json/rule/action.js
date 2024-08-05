@@ -358,4 +358,22 @@ export default plugin => ({
             },
         },
     },
+    ".core:editor > .core:selection": {
+        "actions": {
+            "core:switch": class extends TTAction {
+                static name = Names("Switch")
+                static icon = "switch"
+                static unique = true
+                static async call(sel) {
+                    const node = sel.parent;
+                    const nnode = await plugin.request_insert(sel);
+                    if (nnode) {
+                        const [offset] = sel.data_range;
+                        node.mod("modify", offset, 1, [nnode]);
+                        sel.set(offset, offset + 1);
+                    }
+                }
+            },
+        }
+    },
 })

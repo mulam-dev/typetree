@@ -459,11 +459,6 @@ export class TTEditor extends TTNode {
         return res;
     }
 
-    set_tree(tree) {
-        this.inner.val = tree;
-        return this;
-    }
-
     index(node) {
         return this.inner.indexOf(node);
     }

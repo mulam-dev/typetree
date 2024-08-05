@@ -51,6 +51,14 @@ export default class extends Super {
                                 break;
                         };
                     },
+                    "dragover": e => {
+                        e.preventDefault();
+                        return false;
+                    },
+                    "drop": e => {
+                        e.preventDefault();
+                        return false;
+                    },
                 })
                 .$text(this.data)();
         this.melem =

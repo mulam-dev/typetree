@@ -15,11 +15,7 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
-    init() {
-        return () => this.load();
-    }
-
-    async load() {
+    async init() {
         const {import_rule, for_plugins_prop} = this.require.base;
 
         import_rule(...(await for_plugins_prop(provides.val, (plugin, paths) => Promise.all(

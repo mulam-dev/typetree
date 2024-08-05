@@ -39,6 +39,10 @@ export default class extends TTPlugin {
         });
     }
 
+    on(token, handle) {
+        this.pendings.push(new InitRule("on", {handle}, [token]))
+    }
+
     finish(token) {
         const handles = [];
         const push_handle = handle => handles.push(handle);
@@ -72,6 +76,11 @@ export default class extends TTPlugin {
                         rule.rules[0] = res;
                         return rule;
                     }
+                case "on":
+                    if (rule.rules.includes(token)) {
+                        push_handle(rule.opts.handle);
+                    }
+                    return rule;
             }
         } else {
             return rule === token ? s_finished : rule;

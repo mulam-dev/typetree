@@ -24,6 +24,6 @@ export default class extends Super {
     }
 
     to_json() {
-        return this.data[0];
+        return null;
     }
 }

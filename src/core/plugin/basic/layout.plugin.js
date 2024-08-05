@@ -55,7 +55,10 @@ export default class extends TTPlugin {
                 });
             } catch (_) {}
         };
-        const views_show = [false];
+        this.fit_size = fit_size;
+
+        const views_show = [true];
+        this.views_show = views_show;
 
         const {finish} = this.require.init;
         const {views} = this.require.view;
@@ -66,12 +69,13 @@ export default class extends TTPlugin {
                 .bvalues()
                 .bmap((view, _, $) => {
                     $(view);
-                    return div.class(cname("vroot"))(
+                    return div.class(cname("vroot"), ...(view.grow ? ["f-grow"] : []))(
                         div.class(cname("vhead"))(...(view.icon ? [icon(view.icon)] : []), view.name.get()),
                         div.class(cname("vbody"))(view.melem),
                     );
                 })
         )();
+        this.me_views = me_views;
 
         const me_inner = div.class(cname("inner")).$inner(
             this.root.inner
@@ -165,6 +169,7 @@ export default class extends TTPlugin {
                 }
             },
         })();
+        this.me_inner = me_inner;
 
         const me_viewport = div.class(cname("viewport")).on({
             "mousedown"(e) {
@@ -198,18 +203,23 @@ export default class extends TTPlugin {
                     e.preventDefault();
                 }
             },
-            "contextmenu": (e) => {
+            "contextmenu": e => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.selections.length) {
                     this.require.menu.popup(e.clientX, e.clientY, this.selections);
                 }
             },
+            "dragstart": e => {
+                e.stopPropagation();
+                e.preventDefault();
+            },
         })(
             div.class(cname("content"))(
                 me_inner,
             ),
         );
+        this.me_viewport = me_viewport;
 
         this.melem = div.class(cname("root"))(
             me_views,
@@ -229,13 +239,10 @@ export default class extends TTPlugin {
                 me_viewport,
             ),
         ).attach(this.root.melem);
-        await timeout(100);
-        await fit_size(true);
         finish(this.loaded);
     }
 }
 
-const timeout = timeout => new Promise(res => setTimeout(res, timeout));
 const frame = () => new Promise(res => requestAnimationFrame(res));
 const closest = (node, fn, prev = null) => node ? fn(node, prev) ? node : closest(node.parent, fn, node) : null;
 const ancestors = (node, fn) => {

@@ -85,5 +85,5 @@ await (async global => {
 })(globalThis);
 
 if (native) native.app.show_window();
-// else
+else
 import("./test.js");

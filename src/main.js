@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import { join, dirname } from "path";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import fs from "fs";
+import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,18 +26,10 @@ const App = new (class {
             show: false,
             frame: false,
         });
-        // this.window.loadFile(join(__dirname, "app.html"));
-        this.window.loadURL("http://127.0.0.1:5500/src/app.html");
+        this.window.loadFile(join(__dirname, "app.html"));
+        // this.window.loadURL("http://127.0.0.1:5500/src/app.html");
         this.window.setMenuBarVisibility(false);
 
-        ipcMain.handle("get_arg", () => {
-            const argv = process.argv;
-            if (argv[1] === '.') {
-                return argv[2] ?? null;
-            } else {
-                return argv[1] ?? null;
-            }
-        });
         ipcMain.handle("show_window", () => this.window.show());
         ipcMain.handle("minimize_window", () => this.window.minimize());
         ipcMain.handle("toggle_maximize_window", () => this.window.isMaximized() ? this.window.unmaximize() : this.window.maximize());
@@ -51,6 +44,41 @@ const App = new (class {
             }
         });
         ipcMain.handle("exit", () => app.exit());
+
+        ipcMain.handle("get_arg", () => {
+            const argv = process.argv;
+            const finish = path => path ? resolve(path) : path ?? null;
+            return argv[1] === '.' ? finish(argv[2]) : finish(argv[1]);
+        });
+        ipcMain.handle("open_file", async (_, file_path) => {
+            const data = fs.readFileSync(file_path, 'utf-8');
+            return { file_path, data };
+        });
+        ipcMain.handle("open_file_dialog", async (_, current_file_path) => {
+            const { canceled, filePaths } = await dialog.showOpenDialog(this.window, {
+                defaultPath: current_file_path ? dirname(current_file_path) : undefined,
+                properties: ['openFile']
+            });
+            if (!canceled && filePaths.length > 0) {
+                const file_path = filePaths[0];
+                const data = fs.readFileSync(file_path, 'utf-8');
+                return { file_path, data };
+            }
+            return null;
+        });
+        ipcMain.handle("save_file", async (_, file_path, data) => {
+            fs.writeFileSync(file_path, data);
+        });
+        ipcMain.handle("save_file_as", async (_, file_path, data) => {
+            const { canceled, filePath: save_path } = await dialog.showSaveDialog(this.window, {
+                defaultPath: file_path ? file_path : undefined
+            });
+            if (!canceled && save_path) {
+                fs.writeFileSync(save_path, data);
+                return save_path;
+            }
+            return null;
+        });
     }
 })();
 

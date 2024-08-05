@@ -164,7 +164,7 @@ export default class extends Super {
     }
 
     to_json() {
-        Object.fromEntries(this.data.map(([k, v]) => [k.to_json(), v.to_json()]));
+        return Object.fromEntries(this.data.map(([k, v]) => [k.to_json(), v.to_json()]));
     }
 
     get(index) {

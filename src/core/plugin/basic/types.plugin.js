@@ -19,6 +19,7 @@ export default class extends TTPlugin {
     ]
 
     ".core:rule-loader" = [
+        "rule/editor",
     ]
 
     ".core:style-loader" = [

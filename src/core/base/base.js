@@ -9,7 +9,7 @@ export default class extends TTPlugin {
     static requires(plugins) {
         return [
             ...this.req_essential(plugins, requires),
-            ...this.req_optional(plugins, [".trans"]),
+            ...this.req_optional(plugins, [".trans", ".types"]),
         ];
     }
 
