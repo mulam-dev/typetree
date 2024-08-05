@@ -52,7 +52,7 @@ export default class extends Super {
                 .into(this)
                 .name(name)
                 .prefix('"').suffix('"')
-                .color(60, 0.5, 1.1)
+                .color(60, 0.5, 1.2)
                 .style_on("inline", "code");
 
         this.struct = this.node_field;

@@ -9,14 +9,12 @@
 
 .core-frame.f-editable > span::selection {
     --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 40%) 0.32 240 / 40%);
-    background: var(--fc-fg);
-    color: var(--c-b);
+    background: color-mix(in oklch, var(--fc-fg) 30%, transparent);
 }
 
 .tt-editor.f-selecting .core-frame.f-editable > span:not(:hover)::selection,
 .tt-editor:not(.f-selecting) .core-frame.f-editable > span:not(:focus)::selection {
     background: transparent;
-    color: var(--fc-fg);
 }
 
 .core-frame.f-editable::before {

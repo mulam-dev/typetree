@@ -18,7 +18,7 @@ export default class extends TTPlugin {
         "rule/layout"
     ]
 
-    async init() {
+    init() {
         const {after, all} = this.require.init;
         after(all(
             this.require.view.loaded,
@@ -227,18 +227,6 @@ export default class extends TTPlugin {
                 me_viewport,
             ),
         ).attach(this.root.melem);
-        this.root.melem.attr("on", {}).modify("keydown", e => {
-            if (this.root.focused()) {
-                e.stopPropagation();
-                e.preventDefault();
-                const shortcut_code = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-                const shortcut_key = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.key}`;
-                this.selections.forEach(sel => (
-                    sel.request(`core:shortcut.code.${shortcut_code}`, e).results.length ||
-                    sel.request(`core:shortcut.key.${shortcut_key}`, e).results.length
-                ));
-            }
-        });
         await timeout(100);
         await fit_size(true);
         finish(this.loaded);

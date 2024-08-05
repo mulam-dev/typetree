@@ -19,17 +19,26 @@ export default class extends TTPlugin {
         "style",
     ]
 
+    ".core:shortcut:code" = {
+        "Ctrl+KeyZ"() {
+            this.undo(1);
+        },
+        "Ctrl+Shift+KeyZ"() {
+            this.redo(1);
+        },
+    }
+
     /* 
         # 撤销栈
         用来记录所有节点的修改记录，新记录添加在尾端
     */
-    undos = []
+    data_undos = []
 
     /* 
         # 恢复栈
         撤销的记录被放置到这里，新记录添加在首端
     */
-    redos = []
+    data_redos = []
 
     c_icon = this.require.icon.load
 
@@ -39,45 +48,21 @@ export default class extends TTPlugin {
             icon: "history",
             melem: div.class(cname("root"), "s-scrollbar")(
                 div.class(cname("stack"), "f-undos").$inner(
-                    this.undos.bmap(entry =>
+                    this.data_undos.bmap(entry =>
                         div
                             .class(cname("entry"), "s-item")
                             .$on({
-                                click: () => {
-                                    const index = this.undos.indexOf(entry);
-                                    const stack = [];
-                                    for (let i = this.undos.length - 1; i >= index; i--) {
-                                        const [path, moder, opts] = this.undos[i];
-                                        const imoder = moder.inverse();
-                                        imoder.id = moder.id;
-                                        imoder.call(this.root.ref(path));
-                                        stack.push([path, imoder, opts]);
-                                    }
-                                    this.undos.delete(index, this.undos.length - index);
-                                    this.redos.prefix(...stack.reverse());
-                                },
+                                click: () => this.undo(this.data_undos.length - this.data_undos.indexOf(entry)),
                             })
                         (this.c_icon("arrow-back-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
                 )(),
                 div.class(cname("stack"), "f-redos").$inner(
-                    this.redos.bmap(entry =>
+                    this.data_redos.bmap(entry =>
                         div
                             .class(cname("entry"), "s-item")
                             .$on({
-                                click: () => {
-                                    const index = this.redos.indexOf(entry);
-                                    const stack = [];
-                                    for (let i = 0; i <= index; i++) {
-                                        const [path, moder, opts] = this.redos[i];
-                                        const imoder = moder.inverse();
-                                        imoder.id = moder.id;
-                                        imoder.call(this.root.ref(path));
-                                        stack.push([path, imoder, opts]);
-                                    }
-                                    this.redos.delete(0, index + 1);
-                                    this.undos.suffix(...stack);
-                                },
+                                click: () => this.redo(this.data_redos.indexOf(entry) + 1),
                             })
                         (this.c_icon("arrow-forward-up"), `${entry[2].node_name}: ${snake_case_to_name_case(entry[1].id)}`)
                     ),
@@ -88,9 +73,29 @@ export default class extends TTPlugin {
     }
 
     push(node, moder) {
-        this.redos.clear();
+        this.data_redos.clear();
         const path = node.path;
-        this.undos.suffix([path, moder, {node_name: node.constructor.name.get()}]);
+        this.data_undos.suffix([path, moder, {node_name: node.constructor.name.get()}]);
+    }
+
+    undo(step) {
+        const undos = this.data_undos.delete(this.data_undos.length - step, step).reverse();
+        this.data_redos.prefix(...undos.map(([path, moder, opts]) => {
+            const imoder = moder.inverse();
+            imoder.id = moder.id;
+            imoder.call(this.root.ref(path));
+            return [path, imoder, opts];
+        }).reverse());
+    }
+
+    redo(step) {
+        const redos = this.data_redos.delete(0, step);
+        this.data_undos.suffix(...redos.map(([path, moder, opts]) => {
+            const imoder = moder.inverse();
+            imoder.id = moder.id;
+            imoder.call(this.root.ref(path));
+            return [path, imoder, opts];
+        }));
     }
 }
 

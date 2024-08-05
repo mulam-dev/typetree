@@ -91,6 +91,7 @@ export class TTNode {
                     if (pack.closed.val) return pack;
                     const res = handle.call(this, pack, ...data);
                     if (res !== null && res !== undefined) pack.push_result(res);
+                    pack.add_count();
                 }
             }
         }
@@ -171,6 +172,7 @@ export class TTPack {
         this.closed = [false];
         this.data_msgs = msgs;
         this.data_results = [];
+        this.data_count = 0;
     }
     close() {
         this.closed.val = true;
@@ -180,6 +182,9 @@ export class TTPack {
     }
     push_result(res) {
         this.data_results.push(res);
+    }
+    add_count() {
+        this.data_count += 1;
     }
     * get_msgs() {
         yield* this.data_msgs.values();
@@ -197,6 +202,12 @@ export class TTPack {
     }
     get result() {
         return this.get_results().next().value;
+    }
+    get count() {
+        return this.data_count;
+    }
+    get called() {
+        return this.data_count > 0;
     }
 }
 
