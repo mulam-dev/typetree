@@ -33,25 +33,27 @@ export default class extends TTPlugin {
         const icon = this.require.icon.load;
         const cname = name => "core-layout-" + name;
         const fit_size = async (initial = false) => {
-            const padding = 24;
-            let rviewport = me_viewport.rect;
-            let rinner = me_inner.rect;
-            if (!initial) {
-                const delta_w = Math.ceil(rinner.width - rviewport.width + padding * 2);
-                const delta_h = Math.ceil(rinner.height - rviewport.height + padding * 2);
-                native.app.resize_window_by(delta_w, delta_h, initial);
-                await frame();
-                await frame();
-                rviewport = me_viewport.rect;
-                rinner = me_inner.rect;
-            }
-            const delta_x = Math.round(rinner.left - rviewport.left - padding);
-            const delta_y = Math.round(rinner.top - rviewport.top - padding);
-            me_viewport.elem.scrollBy({
-                top: delta_y,
-                left: delta_x,
-                behavior: "smooth",
-            });
+            try {
+                const padding = 24;
+                let rviewport = me_viewport.rect;
+                let rinner = me_inner.rect;
+                if (!initial) {
+                    const delta_w = Math.ceil(rinner.width - rviewport.width + padding * 2);
+                    const delta_h = Math.ceil(rinner.height - rviewport.height + padding * 2);
+                    native.app.resize_window_by(delta_w, delta_h, initial);
+                    await frame();
+                    await frame();
+                    rviewport = me_viewport.rect;
+                    rinner = me_inner.rect;
+                }
+                const delta_x = Math.round(rinner.left - rviewport.left - padding);
+                const delta_y = Math.round(rinner.top - rviewport.top - padding);
+                me_viewport.elem.scrollBy({
+                    top: delta_y,
+                    left: delta_x,
+                    behavior: "smooth",
+                });
+            } catch (_) {}
         };
         const views_show = [false];
 

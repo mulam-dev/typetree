@@ -58,16 +58,24 @@ await (async global => {
     // 初始化插件
     let loaders = [];
     await Promise.all(plugin_instances.map(async instance => {
-        const next_loader = await instance.init?.();
-        if (next_loader) loaders.push(next_loader);
+        try {
+            const next_loader = await instance.init?.();
+            if (next_loader) loaders.push(next_loader);
+        } catch (e) {
+            throw new Error("[MAIN] Plugin init error", {cause: e});
+        }
     }));
 
     // 多阶段执行插件请求的初始化回调
     while (loaders.length) {
         const next_loaders = [];
         await Promise.all(loaders.map(async loader => {
-            const next_loader = await loader();
-            if (next_loader) next_loaders.push(next_loader);
+            try {
+                const next_loader = await loader();
+                if (next_loader) next_loaders.push(next_loader);
+            } catch (e) {
+                throw new Error("[MAIN] Plugin load error", {cause: e});
+            }
         }));
         loaders = next_loaders;
     }
