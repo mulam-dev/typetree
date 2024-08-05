@@ -1,8 +1,8 @@
 const id = "#types:core:json"
 const provides = [".types:json", ".types"]
-const requires = [
-    ".types:core:basic",
-]
+const requires = {
+    0: ".types:core:basic",
+}
 
 export default class extends TTPlugin {
     static id = id
@@ -33,4 +33,15 @@ export default class extends TTPlugin {
         "style/number",
         "style/object",
     ];
+
+    async request_insert(anchor) {
+        const id = await this.root.$require[".core:type-selector"].request(anchor, n => n.in(".json:") && !n.is(".json:key"));
+        if (id) {
+            const Node = this.root.$type[id];
+            const nnode = Node();
+            return nnode;
+        } else {
+            return null;
+        }
+    }
 }

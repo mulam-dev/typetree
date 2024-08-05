@@ -1,4 +1,4 @@
-export default {
+export default plugin => ({
     ".json:boolean": {
         "actions": {
             "core:toggle": class extends TTAction {
@@ -41,10 +41,8 @@ export default {
                 static icon = "plus"
                 static unique = true
                 static async call(node) {
-                    const id = await node.$require[".core:type-selector"].request(node, n => n.in(".json:"));
-                    if (id) {
-                        const Node = node.$type[id];
-                        const nnode = Node();
+                    const nnode = await plugin.request_insert(node);
+                    if (nnode) {
                         const offset = node.data.length;
                         node.mod("modify", offset, 0, [nnode]);
                     }
@@ -118,10 +116,8 @@ export default {
                 }
                 static async call(sel) {
                     const node = sel.parent;
-                    const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
-                    if (id) {
-                        const Node = node.$type[id];
-                        const nnode = Node();
+                    const nnode = await plugin.request_insert(sel);
+                    if (nnode) {
                         const [offset] = sel.data_range;
                         node.mod("modify", offset, 0, [nnode]);
                         sel.set(offset, offset + 1);
@@ -137,10 +133,8 @@ export default {
                 }
                 static async call(sel) {
                     const node = sel.parent;
-                    const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
-                    if (id) {
-                        const Node = node.$type[id];
-                        const nnode = Node();
+                    const nnode = await plugin.request_insert(sel);
+                    if (nnode) {
                         const [offset] = sel.data_range;
                         node.mod("modify", offset, 1, [nnode]);
                         sel.set(offset, offset + 1);
@@ -282,10 +276,8 @@ export default {
                     if (target.is(".json:key")) {
                         sel.set([start, 1], [end, 2]);
                     } else {
-                        const id = await node.$require[".core:type-selector"].request(sel, n => n.in(".json:"));
-                        if (id) {
-                            const Node = node.$type[id];
-                            const nnode = Node();
+                        const nnode = await plugin.request_insert(sel);
+                        if (nnode) {
                             node.mod("modify_value", start, nnode);
                             sel.set([start, 1], [end, 2]);
                         }
@@ -366,4 +358,4 @@ export default {
             },
         },
     },
-}
+})

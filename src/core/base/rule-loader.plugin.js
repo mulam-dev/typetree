@@ -23,7 +23,14 @@ export default class extends TTPlugin {
         const {import_rule, for_plugins_prop} = this.require.base;
 
         import_rule(...(await for_plugins_prop(provides.val, (plugin, paths) => Promise.all(
-            paths.map(async path => this.parse_ruleset((await import(plugin.constructor.dir + path + ".js")).default))
+            paths.map(async path => {
+                const ruleset = (await import(plugin.constructor.dir + path + ".js")).default;
+                if (ruleset instanceof Function) {
+                    return this.parse_ruleset(ruleset(plugin));
+                } else {
+                    return this.parse_ruleset(ruleset);
+                }
+            }),
         ))).flat(2));
     }
 
