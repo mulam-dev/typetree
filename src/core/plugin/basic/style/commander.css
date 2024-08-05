@@ -1,0 +1,65 @@
+.core-commander-root {
+    font-size: 0.85em;
+    max-height: 100vh;
+}
+
+.core-commander-input {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    cursor: text;
+}
+
+.core-commander-input > svg {
+    --size: 0.8lh;
+    flex-shrink: 0;
+    width: var(--size); height: var(--size);
+    margin: 0 0.25em;
+}
+
+.core-commander-results {
+    flex-shrink: 1;
+    max-height: 23.5em;
+    overflow: auto;
+}
+
+.core-commander-entry.s-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.core-commander-entry.s-item.f-active {
+    --c-fg: oklch(50% 1 200);
+    --c-bg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 4%) 0 0);
+    color: var(--c-fg);
+    background: var(--c-bg);
+}
+
+.core-commander-entry > .i-main {
+    display: flex;
+    align-items: center;
+}
+
+.core-commander-entry > .i-main > svg {
+    --size: 0.8lh;
+    flex-shrink: 0;
+    width: var(--size); height: var(--size);
+    margin-right: 0.25em;
+    margin-left: -0.2em;
+}
+
+.core-commander-entry > .i-main > .i-label {
+    flex-grow: 1;
+}
+
+.core-commander-entry > .i-main > .i-detail {
+    margin-left: 0.5em;
+    opacity: 0.5;
+}
+
+.core-commander-entry > .i-footer {
+    font-size: 0.9em;
+    white-space: pre;
+    opacity: 0.4;
+}

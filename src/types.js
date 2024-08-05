@@ -1,20 +1,23 @@
 export class TTNode {
-    static modifiers = {}
-    static actions = {}
-    static handles = {}
+    static id = null
+    static provides = []
+    static uses = []
+    static name = null
 
-    static get_attr(node, parts) {
-        let parent = this[parts[0]];
-        for (const part of parts.slice(1)) {
-            if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(node);
-                parent = parent[part];
-            } else {
-                parent = null;
-                break;
-            }
-        }
-        return parent;
+    static Class(query) {
+        return query ? Editor.$Type[query] : TTNode;
+    }
+
+    static is(query) {
+        return this.id === query || this.provides.includes(query);
+    }
+
+    static use(query) {
+        return this.uses.includes(query);
+    }
+
+    static in(query) {
+        return this.id.startsWith(query) || this.provides.some(id => id.startsWith(query));
     }
 
     constructor(editor, data) {
@@ -48,42 +51,37 @@ export class TTNode {
         return this;
     }
 
+    is(query) {
+        return this.constructor.is(query);
+    }
+
+    use(query) {
+        return this.constructor.use(query);
+    }
+
+    in(query) {
+        return this.constructor.in(query);
+    }
+
+    has(node) {
+        return false;
+    }
+
     attr(path, def = null) {
         const parts = path.split('.');
-        return this.get_attr_self(parts) ??
-               this.root.get_attr_of(this, parts) ??
-               this.constructor.get_attr(this, parts) ??
-               def;
+        return this.root.get_attr_of(this, parts) ?? def;
     }
 
     attrs(path, def = []) {
         const parts = path.split('.');
         const res = [];
-        const self_res = this.get_attr_self(parts);
-        if (self_res !== null && self_res !== undefined) res.push(self_res);
         res.push(...this.root.get_attrs_of(this, parts));
-        const class_res = this.constructor.get_attr(this, parts);
-        if (class_res !== null && class_res !== undefined) res.push(class_res);
         if (!res.length) res.push(...def);
         return res;
     }
 
     attrs_merged(path, def) {
         return this.attrs(path, def).reduce((p, c) => Object.assign(p, c.call ? c.call(this) : c), {});
-    }
-
-    get_attr_self(parts) {
-        let parent = this[parts[0]];
-        for (const part of parts.slice(1)) {
-            if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(this);
-                parent = parent[part];
-            } else {
-                parent = null;
-                break;
-            }
-        }
-        return parent;
     }
 
     request_pack(pack) {
@@ -93,6 +91,7 @@ export class TTNode {
                     if (pack.closed.val) return pack;
                     const res = handle.call(this, pack, ...data);
                     if (res !== null && res !== undefined) pack.push_result(res);
+                    pack.add_count();
                 }
             }
         }
@@ -107,12 +106,22 @@ export class TTNode {
         return this.request_msgs(msg);
     }
 
-    get mod() {
-        return new Proxy(this, mod_proxy);
+    mod(path, ...args) {
+        const Moder = this.attr(`modifiers.${path}`);
+        if (Moder) {
+            const moder = new Moder(...args);
+            moder.id = path;
+            moder.call(this);
+            this.request("core:mod", moder);
+            return this;
+        } else throw new Error(`TTNode: Modifier "${path}" not found`);
     }
 
-    get act() {
-        return new Proxy(this, act_proxy);
+    async act(path, ...args) {
+        const Action = this.attr("actions." + path);
+        if (Action) {
+            return await Action.do_call(this, ...args);
+        } else throw new Error(`TTNode: Action "${path}" not found`);
     }
 
     get path() {
@@ -124,47 +133,18 @@ export class TTNode {
     }
 }
 
-const mod_proxy = {
-    get: (node, path) => (...args) => {
-        const Moder = node.attr(`modifiers.${path}`);
-        if (Moder) {
-            const moder = new Moder(...args);
-            moder.id = path;
-            moder.call(node);
-            node.request("core:mod", moder);
-            return node;
-        } else throw new Error(`TTNode: Modifier "${path}" not found`);
-    },
-};
-
-const act_proxy = {
-    get: (node, path) => async opts => {
-        const Action = node.attr(`actions.${path}`);
-        if (Action) {
-            return await Action.call(node, opts);
-        } else throw new Error(`TTNode: Action "${path}" not found`);
-    },
-};
-
 export class TTRule {
     self = null;
     parent = null;
     overrides = {};
 
     match(node) {
-        const self_class = node.constructor;
-        const parent_class = node.parent?.constructor;
         return ((
             !this.self ||
-            self_class.id === this.self ||
-            self_class.type === this.self
+            node.use(this.self)
         ) && (
-            !this.parent || (
-                parent_class && (
-                    parent_class.id === this.parent ||
-                    parent_class.type === this.parent
-                )
-            )
+            !this.parent ||
+            node.parent?.use(this.parent)
         ));
     }
 
@@ -172,7 +152,7 @@ export class TTRule {
         let parent = this.overrides[parts[0]];
         for (const part of parts.slice(1)) {
             if (parent instanceof Object) {
-                if (parent.call) parent = parent.call(node);
+                if (parent instanceof Function) parent = parent.call(node);
                 parent = parent[part];
             } else {
                 parent = null;
@@ -192,6 +172,7 @@ export class TTPack {
         this.closed = [false];
         this.data_msgs = msgs;
         this.data_results = [];
+        this.data_count = 0;
     }
     close() {
         this.closed.val = true;
@@ -201,6 +182,9 @@ export class TTPack {
     }
     push_result(res) {
         this.data_results.push(res);
+    }
+    add_count() {
+        this.data_count += 1;
     }
     * get_msgs() {
         yield* this.data_msgs.values();
@@ -218,6 +202,12 @@ export class TTPack {
     }
     get result() {
         return this.get_results().next().value;
+    }
+    get count() {
+        return this.data_count;
+    }
+    get called() {
+        return this.data_count > 0;
     }
 }
 
@@ -256,44 +246,90 @@ export class TTModer {
 
 export class TTAction {
     static args = []
+
+    static enabled(node, ...args) {
+        return "varify" in this ? this.varify(node, ...args) : true;
+    }
+
+    static do_call(node, ...args) {
+        if (this.enabled(node, ...args)) {
+            return this.call(node, ...args);
+        } else {
+            return false;
+        }
+    }
 }
 
 export class TTName {
-    constructor(raw, trans) {
+    static trans = {};
+
+    constructor(raw) {
         this.raw = raw;
-        this.trans = trans;
     }
 
     get(locale = navigator.language) {
-        return this.trans[locale] ?? this.raw;
+        return this.constructor.trans[this.raw]?.[locale] ?? this.raw;
     }
 }
 
 export const Names = new Proxy(() => {}, {
     apply: (_0, _1, args) => {
         const raw = args[0];
-        const trans = args[1] ?? {};
-        return new TTName(raw, trans);
-    },
-});
-
-export class TTType {}
-
-export const Types = new Proxy(() => {}, {
-    apply: (_0, _1, args) => {
-        //
+        const trans = args[1];
+        if (raw in TTName.trans && trans) {
+            TTName.trans[raw].merge(trans)
+        } else if (trans) {
+            TTName.trans[raw] = trans;
+        }
+        return new TTName(raw);
     },
 });
 
 export class TTPlugin {
-    static req_must(plugins, ...traits) {
+    static req_essential(plugins, ...traits_set) {
         const res = [];
-        for (const trait of traits) {
-            const plugin = plugins.find(p => get_plugin_class(p).provides.includes(trait));
-            if (plugin) {
-                res.push(plugin);
+        for (const traits of traits_set) {
+            if (traits instanceof Array) {
+                for (const trait of traits) {
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    if (results.length) {
+                        res.push(...results);
+                    } else {
+                        throw new Error(`TTPlugin: Unsatisfied requirements: trait "${trait}" not found`);
+                    }
+                }
             } else {
-                throw new Error(`Unsatisfied requirements: trait "${trait}" not found`);
+                for (const key in traits) {
+                    const trait = traits[key];
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    if (results.length) {
+                        res.push(...results);
+                        res[key] = results.val;
+                    } else {
+                        throw new Error(`TTPlugin: Unsatisfied requirements: trait "${trait}" not found`);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    static req_optional(plugins, ...traits_set) {
+        const res = [];
+        for (const traits of traits_set) {
+            if (traits instanceof Array) {
+                for (const trait of traits) {
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    res.push(...results);
+                }
+            } else {
+                for (const key in traits) {
+                    const trait = traits[key];
+                    const results = plugins.filter(p => get_plugin_class(p).provides.includes(trait));
+                    res.push(...results);
+                    if (results.length) {
+                        res[key] = results.val;
+                    }
+                }
             }
         }
         return res;
@@ -302,23 +338,33 @@ export class TTPlugin {
     constructor(editor, plugins) {
         this['#'] = this.constructor.id;
         this.root = editor;
-        this.require = Object.fromEntries(
-            this.constructor.requires(plugins)
-                .flatMap(p => p.constructor.provides.map(t => [t, new Proxy(p, plugin_proxyer)])),
-        );
+        this.require = new Proxy(this.constructor.requires(plugins), _pl_require_proxy);
     }
 }
 
 const get_plugin_class = p => p instanceof TTPlugin ? p.constructor : p;
 
-const plugin_proxyer = {
-    get(tar, p) {
-        const res = Reflect.get(tar, p);
-        return res.bind?.(tar) ?? res;
+const _pl_require_proxy = {
+    get: (requires, key) => new Proxy(requires[key], _pl_plugin_proxy),
+};
+
+const _pl_plugin_proxy = {
+    get: (plugin, prop) => {
+        const res = Reflect.get(plugin, prop);
+        if (res) {
+            return res.bind?.(plugin) ?? res;
+        } else {
+            throw new Error(`TTPlugin: Property "${prop}" not found for plugin: ${plugin.constructor.id}`);
+        }
     },
 };
 
 export class TTEditor extends TTNode {
+    static id = "#core:editor"
+    static provides = [".core:editor"]
+    static uses = [this.id, ...this.provides, ...TTNode.uses]
+    static name = Names("Editor")
+
     constructor() {
         super();
         this.init();
@@ -362,7 +408,8 @@ export class TTEditor extends TTNode {
             # 节点类型存储
             存储编辑器所导入的所有类型节点的类
         */
-        this.types = new Map();
+        this.types = [];
+        this.type_map = {};
         
         /* 
             # 规则存储
@@ -381,12 +428,16 @@ export class TTEditor extends TTNode {
         return this.melem.focused();
     }
 
+    get $Type() {
+        return new Proxy(this, _ed_class_proxy);
+    }
+
     get $type() {
-        return new Proxy(this, type_proxy);
+        return new Proxy(this, _ed_type_proxy);
     }
 
     get $require() {
-        return new Proxy(this, require_proxy);
+        return new Proxy(this, _ed_require_proxy);
     }
 
     get_attr_of(node, parts) {
@@ -408,11 +459,6 @@ export class TTEditor extends TTNode {
         return res;
     }
 
-    set_tree(tree) {
-        this.inner.val = tree;
-        return this;
-    }
-
     index(node) {
         return this.inner.indexOf(node);
     }
@@ -420,16 +466,35 @@ export class TTEditor extends TTNode {
     get(index) {
         return this.inner[index];
     }
+
+    has(node) {
+        return this.inner.includes(node);
+    }
 }
 
-const type_proxy = {
-    get: (ed, query) => (data) => new (ed.types.get(query))(ed, data),
+const _ed_class_proxy = {
+    get: (ed, query) => ed.type_map[query] ?? new Promise(res => {
+        const s = Symbol("class proxy");
+        ed.type_map.guard(s, (Type, key) => {
+            if (key === query) {
+                ed.type_map.unguard(s);
+                res(Type);
+            }
+        });
+    }),
 };
 
-const require_proxy = {
-    get: (ed, query) => new Proxy(ed.provides.get(query) ?? [], plugins_proxy),
+const _ed_type_proxy = {
+    get: (ed, query) => (data) => new ed.$Type[query](ed, data),
 };
 
-const plugins_proxy = {
-    get: (plugins, method) => (...args) => plugins.map(p => p[method](...args)),
+const _ed_require_proxy = {
+    get: (ed, query) => new Proxy(ed.provides.get(query).val, _ed_plugin_proxy),
+};
+
+const _ed_plugin_proxy = {
+    get: (plugin, prop) => {
+        const res = Reflect.get(plugin, prop);
+        return res.bind?.(plugin) ?? res;
+    },
 };

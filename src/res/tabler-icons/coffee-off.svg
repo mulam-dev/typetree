@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-coffee-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class="icon icon-tabler icons-tabler-outline icon-tabler-coffee-off"
+>
   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
   <path d="M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.73 -.565 1.783 -.923 3 -.99" />
   <path d="M8 3c-.194 .14 -.364 .305 -.506 .49" />
@@ -7,5 +18,3 @@
   <path d="M20.116 16.124a3 3 0 0 0 -3.118 -4.953" />
   <path d="M3 3l18 18" />
 </svg>
-
-

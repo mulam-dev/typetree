@@ -1,5 +1,8 @@
 import * as types from "./types.js";
 
+const $dir = p => p.slice(0, p.lastIndexOf('/') + 1);
+const __dir = $dir(new URL(import.meta.url).pathname);
+
 await (async global => {
 
     Object.assign(global, {...types});
@@ -10,9 +13,18 @@ await (async global => {
     */
 
     // 从 plugin.json 文件中读取要加载的插件列表
-    const plugin_list = await (await fetch("./plugins.json")).json();
+    const plugin_list = [
+        "./core/base/base.js",
+        ...(await (await fetch("./plugins.cfg")).text()).trim().split('\n'),
+    ];
     const plugins = await Promise.all(plugin_list.map(
-        async path => (await import(`./${path}.js`)).default,
+        async path => {
+            const Plugin = (await import(path)).default;
+            const abs_path = __dir + (path.startsWith("./") ? path.slice(2) : path);
+            Plugin.path = abs_path;
+            Plugin.dir = $dir(abs_path);
+            return Plugin;
+        },
     ));
 
     // 分析插件的依赖关系并重排插件的加载顺序
@@ -46,16 +58,24 @@ await (async global => {
     // 初始化插件
     let loaders = [];
     await Promise.all(plugin_instances.map(async instance => {
-        const next_loader = await instance.init?.();
-        if (next_loader) loaders.push(next_loader);
+        try {
+            const next_loader = await instance.init?.();
+            if (next_loader) loaders.push(next_loader);
+        } catch (e) {
+            throw new Error("[MAIN] Plugin init error", {cause: e});
+        }
     }));
 
     // 多阶段执行插件请求的初始化回调
     while (loaders.length) {
         const next_loaders = [];
         await Promise.all(loaders.map(async loader => {
-            const next_loader = await loader();
-            if (next_loader) next_loaders.push(next_loader);
+            try {
+                const next_loader = await loader();
+                if (next_loader) next_loaders.push(next_loader);
+            } catch (e) {
+                throw new Error("[MAIN] Plugin load error", {cause: e});
+            }
         }));
         loaders = next_loaders;
     }
@@ -65,5 +85,5 @@ await (async global => {
 })(globalThis);
 
 if (native) native.app.show_window();
-// else
+else
 import("./test.js");

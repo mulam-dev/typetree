@@ -1,0 +1,17 @@
+.core-context-menu-root {
+    display: flex;
+    flex-flow: column;
+    font-size: 0.8em;
+    user-select: none;
+}
+
+.core-context-menu-actions {
+    display: flex;
+    flex-flow: column;
+}
+
+.core-context-menu-entry.f-disabled {
+    --c-fg: oklch(calc(var(--c-l-base) + var(--c-l-dir) * 20%) 0 0) !important;
+    --c-bg: transparent !important;
+    cursor: default !important;
+}

@@ -12,11 +12,11 @@ const {
     ".json:string": string,
     ".json:number": number,
     ".json:object": object,
-    ".json:key": key,
+    "#core:json:key": key,
     ".json:array": array,
 } = Editor.$type;
 
-Editor.set_tree(
+Editor.mod("modify", 0, Editor.inner.length, [
     object([
         [key(["null"]), nil()],
         [key(["boolean"]), array([boolean([true]), boolean([false])])],
@@ -44,7 +44,10 @@ distribute this software, either in source code form or as a compiled
 binary, for any purpose, commercial or non-commercial, and by any
 means.`])],
     ]),
-);
+]);
+
+Editor.$require[".layout"]?.fit_size(true);
+Editor.$require[".core:timeline"]?.clear();
 
 console.log("%cTEST END", band_style);
 console.groupEnd();
