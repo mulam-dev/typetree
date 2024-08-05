@@ -114,9 +114,9 @@ export default plugin => ({
                 static varify(sel) {
                     return sel.collapsed();
                 }
-                static async call(sel) {
+                static async call(sel, nnode) {
                     const node = sel.parent;
-                    const nnode = await plugin.request_insert(sel);
+                    nnode ??= await plugin.request_insert(sel);
                     if (nnode) {
                         const [offset] = sel.data_range;
                         node.mod("modify", offset, 0, [nnode]);

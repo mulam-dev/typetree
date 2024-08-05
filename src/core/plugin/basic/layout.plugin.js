@@ -235,8 +235,12 @@ export default class extends TTPlugin {
             if (this.root.focused()) {
                 e.stopPropagation();
                 e.preventDefault();
-                const shortcut = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
-                this.selections.forEach(sel => sel.request(`core:shortcut.${shortcut}`, e));
+                const shortcut_code = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.code}`;
+                const shortcut_key = `${e.ctrlKey ? "Ctrl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey ? "Shift+" : ""}${e.key}`;
+                this.selections.forEach(sel => (
+                    sel.request(`core:shortcut.code.${shortcut_code}`, e).results.length ||
+                    sel.request(`core:shortcut.key.${shortcut_key}`, e).results.length
+                ));
             }
         });
         await timeout(100);

@@ -44,4 +44,8 @@ export default class extends TTPlugin {
             return null;
         }
     }
+
+    make(id, data) {
+        return this.root.$type[id](data);
+    }
 }

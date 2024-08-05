@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const WINDOW_MIN_WIDTH = 400;
+const WINDOW_MIN_WIDTH = 500;
 const WINDOW_MIN_HEIGHT = 200;
 
 const App = new (class {

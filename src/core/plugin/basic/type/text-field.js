@@ -32,6 +32,24 @@ export default class extends Super {
                 .tab_index(-1)
                 .$on({
                     "blur": () => this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent),
+                    "keydown": e => {
+                        const kill = () => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        };
+                        switch (e.code) {
+                            case "Enter":
+                                if (!e.shiftKey) {
+                                    kill();
+                                    this.parent?.request("core:text-field.escape");
+                                }
+                                break;
+                            case "Tab":
+                                kill();
+                                this.parent.request("core:text-field.escape");
+                                break;
+                        };
+                    },
                 })
                 .$text(this.data)();
         this.melem =

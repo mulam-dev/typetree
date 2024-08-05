@@ -63,6 +63,13 @@ export default class extends Super {
                     this.struct = this.node_cursor;
                     this.node_cursor.set(anchor, opts);
                 }
+                setTimeout(() => {
+                    this.melem.elem.scrollIntoView({
+                        block: "nearest",
+                        inline: "nearest",
+                        behavior: "smooth",
+                    });
+                }, 0);
             }
         };
         

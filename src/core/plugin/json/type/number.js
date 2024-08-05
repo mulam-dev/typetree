@@ -21,19 +21,25 @@ export default class extends Super {
             },
         },
         "handles": {
-            "core:text-field.edit"(p, content) {
-                const val = Number.parseFloat(content);
-                if (Number.isNaN(val)) {
-                    this.data.val = this.data.val;
-                } else if (this.data.val.toString() !== content) {
-                    this.mod("set", val);
-                }
+            "core:text-field": {
+                "edit"(p, content) {
+                    const val = Number.parseFloat(content);
+                    if (Number.isNaN(val)) {
+                        this.data.val = this.data.val;
+                    } else if (this.data.val.toString() !== content) {
+                        this.mod("set", val);
+                    }
+                },
+                "escape"(p) {
+                    this.root.focus();
+                },
             },
             "core:active"(p) {
                 this.node_field.request_pack(p);
             },
             "core:enter"(p) {
                 this.node_field.focus();
+                this.node_field.select_all();
             },
         },
     }

@@ -1,6 +1,6 @@
-export default {
+export default plugin => ({
     ".core:selection": {
-        "handles.core:shortcut": {
+        "handles.core:shortcut.code": {
             /*
                 # 移动和选取相关
             */
@@ -125,7 +125,9 @@ export default {
                 this.expand_y();
             },
             "Enter"() {
-                if (this.data_nodes.length === 1) {
+                if (this.collapsed("x")) {
+                    this.act("core:insert");
+                } else if (this.data_nodes.length === 1) {
                     this.data_nodes.val.request("core:enter", this);
                 }
             },
@@ -147,15 +149,11 @@ export default {
                 this.act("core:insert");
             },
             "Shift+Insert"() {
-                this.collapse("left");
-                this.act("core:insert");
-            },
-            "Ctrl+Insert"() {
                 this.collapse("bottom");
                 this.act("core:insert");
             },
-            "Ctrl+Shift+Insert"() {
-                this.collapse("top");
+            "Shift+Enter"() {
+                this.collapse("bottom");
                 this.act("core:insert");
             },
             "Backspace"() {
@@ -183,8 +181,82 @@ export default {
                 this.act("core:delete");
             },
             "Tab"() {
-                this.act("core:switch");
+                if (this.collapsed("x")) {
+                    this.act("core:insert");
+                } else {
+                    this.act("core:switch");
+                }
             },
         },
     },
-}
+
+    /* 
+        # 快速插入相关
+    */
+
+    ".json:array > .core:selection": {
+        "handles.core:shortcut.key": {
+            "["() {
+                if (this.collapsed("x")) {
+                    const nnode = plugin.make(".json:array");
+                    this.act("core:insert", nnode);
+                    nnode.request("core:enter", this);
+                } else {
+                    this.act("core:restruct");
+                }
+            },
+            "Shift+{"() {
+                const nnode = plugin.make(".json:object");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "s"() {
+                const nnode = plugin.make(".json:string");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "n"() {
+                const nnode = plugin.make(".json:number");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "b"() {
+                const nnode = plugin.make(".json:boolean");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+        },
+    },
+
+    ".json:object > .core:selection": {
+        "handles.core:shortcut.key": {
+            "Shift+{"() {
+                if (this.collapsed("x")) {
+                    this.act("core:insert");
+                } else {
+                    this.act("core:restruct");
+                }
+            },
+            "["() {
+                const nnode = plugin.make(".json:array");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "s"() {
+                const nnode = plugin.make(".json:string");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "n"() {
+                const nnode = plugin.make(".json:number");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+            "b"() {
+                const nnode = plugin.make(".json:boolean");
+                this.act("core:insert", nnode);
+                nnode.request("core:enter", this);
+            },
+        },
+    },
+})

@@ -50,9 +50,12 @@ export default class extends TTPlugin {
         .$input(this.data_filter)
         .$on({
             "keydown": e => {
-                const move_select = delta => {
+                const kill = () => {
                     e.stopPropagation();
                     e.preventDefault();
+                };
+                const move_select = delta => {
+                    kill();
                     this.data_select.val = Math.max(0, Math.min(this.m_results.length - 1, this.data_select.val + delta));
                 };
                 switch (e.code) {
@@ -60,12 +63,10 @@ export default class extends TTPlugin {
                     case "ArrowDown": return move_select(1);
                     case "Enter":
                     case "Tab":
-                        e.stopPropagation();
-                        e.preventDefault();
+                        kill();
                         return this.resolve(this.m_results[this.data_select.val]);
                     case "Escape":
-                        e.stopPropagation();
-                        e.preventDefault();
+                        kill();
                         return this.resolve(null);
                 }
             },
