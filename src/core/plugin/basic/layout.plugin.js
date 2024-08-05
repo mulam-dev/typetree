@@ -71,8 +71,6 @@ export default class extends TTPlugin {
                 })
         )();
 
-        let release_timer = null;
-
         const me_inner = div.class(cname("inner")).$inner(
             this.root.inner
             .bmap(node => node.melem),
@@ -97,11 +95,7 @@ export default class extends TTPlugin {
                                 jQuery(window).off("mouseup", up_handle);
                                 jQuery(target).off("mouseleave", leave_handle);
                                 jQuery(target).off("mouseenter", enter_handle);
-                                if (release_timer) clearTimeout(release_timer);
-                                release_timer = setTimeout(() => {
-                                    this.root.melem.attr("class").delete_at("f-selecting");
-                                    release_timer = null;
-                                }, 200);
+                                this.root.melem.attr("class").delete_at("f-selecting");
                             };
                             const leave_handle = () => setTimeout(() => this.root.focus(), 0);
                             const enter_handle = () => setTimeout(() => target.focus(), 0);
@@ -136,7 +130,9 @@ export default class extends TTPlugin {
                                     if (!moved) {
                                         switch (e.detail) {
                                             case 1:
-                                                this.selections.forEach(sel => sel.request("core:active"));
+                                                if (this.root.focused()) {
+                                                    this.selections.forEach(sel => sel.request("core:active"));
+                                                }
                                                 break;
                                             case 2:
                                                 if (this.root.focused()) {

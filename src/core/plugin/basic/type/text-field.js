@@ -13,7 +13,8 @@ export default class extends Super {
     static rule = {
         "handles.core:active"() {
             setTimeout(() => {
-                this.melem_content.focus();
+                this.focus();
+                this.select_all();
             }, 0);
         },
     }
@@ -78,6 +79,8 @@ export default class extends Super {
     }
 
     focus() {
-        this.melem_content.focus();
+        this.melem_content.focus({
+            preventScroll: true,
+        });
     }
 }
