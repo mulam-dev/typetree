@@ -349,6 +349,11 @@ const _pl_plugin_proxy = {
 };
 
 export class TTEditor extends TTNode {
+    static id = "#core:editor"
+    static provides = [".core:editor"]
+    static uses = [this.id, ...this.provides, ...TTNode.uses]
+    static name = Names("Editor")
+
     constructor() {
         super();
         this.init();
@@ -454,6 +459,10 @@ export class TTEditor extends TTNode {
 
     get(index) {
         return this.inner[index];
+    }
+
+    has(node) {
+        return this.inner.includes(node);
     }
 }
 

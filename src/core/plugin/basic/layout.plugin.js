@@ -14,6 +14,10 @@ export default class extends TTPlugin {
         return this.req_essential(plugins, requires);
     }
 
+    ".core:rule-loader" = [
+        "rule/layout"
+    ]
+
     async init() {
         const {after, all} = this.require.init;
         after(all(
