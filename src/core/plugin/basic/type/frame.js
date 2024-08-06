@@ -13,13 +13,16 @@ export default class extends Super {
     init(data) {
         this.data = data ?? [];
         this.data_name = [null];
-        this.data_color = {};
+        this.data_color = [];
         this.data_styles = [];
 
         this.melem =
             ME.div
-                .$class([["core-frame"], this.data_styles.bmap(s => `f-${s}`)].bflat())
-                .$style(this.data_color)
+                .$class([
+                    ["core-frame"],
+                    this.data_styles.bmap(s => `f-${s}`),
+                    this.data_color,
+                ].bflat())
                 .$inner
             (
                 this.data.bmap(node =>
@@ -40,12 +43,7 @@ export default class extends Super {
     }
 
     color(hue, sat = 1, lum = 1) {
-        this.data_color.assign({
-            "--fc-fg": `hsl(${hue}deg ${sat * 130}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%))`,
-            "--fc-bg": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / calc(var(--fc-l-fbase) * 0.32))`,
-            "--fc-stroke": `hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 80}%) / 50%)`,
-            "--fc-fill": `hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 24%)`,
-        });
+        this.data_color.val = color_to_class([hue, sat, lum]);
         return this;
     }
 
@@ -65,3 +63,29 @@ export default class extends Super {
         return this;
     }
 }
+
+const color_to_class = color => {
+    const id = color.join(' ');
+    if (id in color_map) {
+        return color_map[id];
+    } else {
+        const c = `fc${signed_colors.length}`;
+        signed_colors.suffix(color);
+        color_map[id] = c;
+        return c;
+    }
+};
+const color_map = {};
+const signed_colors = [];
+const signed_classes = signed_colors.bmap(([hue, sat, lum], index) => ({
+    query: `.fc${index}`,
+    style: `
+        --fc-fg: hsl(${hue}deg ${sat * 130}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%));
+        --fc-bg: hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / calc(var(--fc-l-fbase) * 0.32));
+        --fc-stroke: hsl(${hue}deg ${sat * 100}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 80}%) / 50%);
+        --fc-fill: hsl(${hue}deg ${sat * 160}% calc(var(--fc-l-fbase) + var(--fc-l-fdir) * ${lum * 100}%) / 24%);
+    `,
+}));
+ME.style.$html(
+    signed_classes.bmap(({query, style}) => `${query.trim()} { ${style.trim()} }`).btrans([], rules => [rules.join(' ')]),
+)().attach(document.head);

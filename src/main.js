@@ -46,9 +46,10 @@ const App = new (class {
         ipcMain.handle("exit", () => app.exit());
 
         ipcMain.handle("get_arg", () => {
-            const argv = process.argv;
+            const argv = [...process.argv];
+            if (!app.isPackaged) argv.shift()
             const finish = path => path ? resolve(path) : path ?? null;
-            return argv[1] === '.' ? finish(argv[2]) : finish(argv[1]);
+            return finish(argv[1]);
         });
         ipcMain.handle("open_file", async (_, file_path) => {
             const data = fs.readFileSync(file_path, 'utf-8');

@@ -57,7 +57,7 @@ export default class extends TTPlugin {
         };
         this.fit_size = fit_size;
 
-        const views_show = [true];
+        const views_show = [false];
         this.views_show = views_show;
 
         const {finish} = this.require.init;

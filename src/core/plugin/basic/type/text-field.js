@@ -22,7 +22,7 @@ export default class extends Super {
     init(data) {
         this.data = data ?? [''];
         this.data_name = [null];
-        this.data_color = {};
+        this.data_color = [];
         this.data_styles = [];
 
         this.melem_content =
@@ -63,8 +63,11 @@ export default class extends Super {
                 .$text(this.data)();
         this.melem =
             ME.div
-                .$class([["core-frame", "f-editable"], this.data_styles.bmap(s => `f-${s}`)].bflat())
-                .$style(this.data_color)
+                .$class([
+                    ["core-frame", "f-editable"],
+                    this.data_styles.bmap(s => `f-${s}`),
+                    this.data_color,
+                ].bflat())
             (
                 this.melem_content,
             );
