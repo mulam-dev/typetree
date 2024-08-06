@@ -51,7 +51,7 @@ export default class extends TTPlugin {
                 me_viewport.elem.scrollBy({
                     top: delta_y,
                     left: delta_x,
-                    behavior: "smooth",
+                    behavior: "instant",
                 });
             } catch (_) {}
         };

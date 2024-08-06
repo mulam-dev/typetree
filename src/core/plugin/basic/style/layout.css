@@ -144,6 +144,7 @@
     scrollbar-color: var(--c-scrollbar) transparent;
     outline: none;
     position: relative;
+    display: flex;
 }
 
 .core-layout-viewport:hover {
@@ -153,7 +154,9 @@
 }
 
 .core-layout-content {
-    padding: calc(45vh - 1.4em) 45%;
+    margin: auto;
+    /* padding: calc(45vh - 1.4em) 45%; */
+    padding: 16px;
     width: fit-content;
     height: fit-content;
 }
