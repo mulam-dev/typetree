@@ -40,15 +40,17 @@ export default class extends Super {
                 elem.removeAttribute("spellcheck");
                 elem.removeAttribute("draggable");
                 elem.removeAttribute("tabIndex");
+                this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent);
             }
         });
+
+        let selecting = false;
 
         this.melem_content =
             ME.span
                 .$on({
                     "blur": () => {
-                        this.data_editable.val = false;
-                        this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent)
+                        if (!selecting) this.edit(false);
                     },
                     "keydown": e => {
                         const kill = () => {
@@ -75,6 +77,17 @@ export default class extends Super {
                     "drop": e => {
                         e.preventDefault();
                         return false;
+                    },
+                    "mousedown": () => {
+                        selecting = true;
+                        const up_handle = e => {
+                            selecting = false;
+                            jQuery(document).off("mouseup", up_handle);
+                            if (jQuery(e.target).closest(this.melem.elem).length === 0) {
+                                this.edit(false);
+                            }
+                        }
+                        jQuery(document).on("mouseup", up_handle);
                     },
                 })
                 .$text(this.data)();
