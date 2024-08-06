@@ -12,6 +12,7 @@ export default class extends Super {
 
     static rule = {
         "handles.core:active"() {
+            this.edit();
             setTimeout(() => {
                 this.focus();
                 this.select_all();
@@ -24,15 +25,28 @@ export default class extends Super {
         this.data_name = [null];
         this.data_color = [];
         this.data_styles = [];
+        this.data_editable = [].guard(null, toggle => {
+            const {elem} = this.melem_content;
+            if (toggle) {
+                elem.setAttribute("contentEditable", "true");
+                elem.setAttribute("spellcheck", "false");
+                elem.setAttribute("draggable", "false");
+                elem.setAttribute("tabIndex", -1);
+            } else {
+                elem.removeAttribute("contentEditable");
+                elem.removeAttribute("spellcheck");
+                elem.removeAttribute("draggable");
+                elem.removeAttribute("tabIndex");
+            }
+        });
 
         this.melem_content =
             ME.span
-                .content_editable("true")
-                .spellcheck("false")
-                .draggable("false")
-                .tab_index(-1)
                 .$on({
-                    "blur": () => this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent),
+                    "blur": () => {
+                        this.data_editable.val = false;
+                        this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent)
+                    },
                     "keydown": e => {
                         const kill = () => {
                             e.stopPropagation();
@@ -93,5 +107,9 @@ export default class extends Super {
         this.melem_content.focus({
             preventScroll: true,
         });
+    }
+
+    edit(editable = true) {
+        this.data_editable.val = editable;
     }
 }

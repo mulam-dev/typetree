@@ -200,7 +200,6 @@ export default class extends TTPlugin {
                     jQuery(window).on("mousemove", move_handle);
                     jQuery(window).on("mouseup", up_handle);
                     e.stopPropagation();
-                    e.preventDefault();
                 }
             },
             "contextmenu": e => {
