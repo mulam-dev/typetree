@@ -137,7 +137,9 @@ export default class extends TTPlugin {
                                         switch (e.detail) {
                                             case 1:
                                                 if (this.root.focused()) {
-                                                    this.selections.forEach(sel => sel.request("core:active"));
+                                                    const pack = TTPack.create(["core:active"]);
+                                                    pack.dom_event = e;
+                                                    this.selections.forEach(sel => sel.request_pack(pack));
                                                 }
                                                 break;
                                             case 2:

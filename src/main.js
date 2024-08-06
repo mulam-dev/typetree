@@ -45,6 +45,11 @@ const App = new (class {
         });
         ipcMain.handle("exit", () => app.exit());
 
+        ipcMain.handle("click", ({sender}, opts) => {
+            sender.sendInputEvent({type: "mouseDown", ...opts});
+            sender.sendInputEvent({type: "mouseUp", ...opts});
+        });
+
         ipcMain.handle("get_arg", () => {
             const argv = [...process.argv];
             if (!app.isPackaged) argv.shift()

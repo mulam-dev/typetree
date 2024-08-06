@@ -11,11 +11,14 @@ export default class extends Super {
     static name = name
 
     static rule = {
-        "handles.core:active"() {
+        "handles.core:active"(p) {
             this.edit();
             setTimeout(() => {
                 this.focus();
-                this.select_all();
+                const {dom_event} = p;
+                if (native && dom_event.target === this.melem_content.elem) {
+                    native.app.click({x: dom_event.clientX, y: dom_event.clientY});
+                }
             }, 0);
         },
     }
@@ -100,7 +103,11 @@ export default class extends Super {
     }
 
     select_all() {
-        this.melem_content.select();
+        this.edit();
+        setTimeout(() => {
+            this.focus();
+            this.melem_content.select();
+        }, 0);
     }
 
     focus() {
