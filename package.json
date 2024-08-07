@@ -10,7 +10,7 @@
     "icon": "res/icons",
     "linux": {
       "category": "Utility",
-      "target": "rpm"
+      "target": ["rpm", "deb"]
     },
     "win": {
       "target": "nsis",
@@ -35,8 +35,8 @@
     "start": "electron .",
     "start-en": "LANG=en_US.UTF-8 electron .",
     "start-zh": "LANG=zh_CN.UTF-8 electron .",
-    "package": "electron-builder",
-    "package-win": "electron-builder -w",
+    "package-linux": "electron-builder --linux",
+    "package-win": "electron-builder --win",
     "index": "cd src && find -name '*.plugin.js' > plugins.cfg"
   },
   "type": "module",

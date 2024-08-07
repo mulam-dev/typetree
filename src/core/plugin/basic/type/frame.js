@@ -20,8 +20,8 @@ export default class extends Super {
             ME.div
                 .$class([
                     ["core-frame"],
-                    this.data_styles.bmap(s => `f-${s}`),
                     this.data_color,
+                    this.data_styles,
                 ].bflat())
                 .$inner
             (
@@ -49,8 +49,9 @@ export default class extends Super {
 
     style_on(...styles) {
         for (const style of styles) {
-            if (!this.data_styles.includes(style)) {
-                this.data_styles.suffix(style);
+            const cname = `f-${style}`;
+            if (!this.data_styles.includes(cname)) {
+                this.data_styles.suffix(cname);
             }
         }
         return this;
@@ -58,7 +59,8 @@ export default class extends Super {
 
     style_off(...styles) {
         for (const style of styles) {
-            this.data_styles.delete_at(style);
+            const cname = `f-${style}`;
+            this.data_styles.delete_at(cname);
         }
         return this;
     }

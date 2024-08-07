@@ -95,8 +95,8 @@ export default class extends Super {
             ME.div
                 .$class([
                     ["core-frame", "f-editable"],
-                    this.data_styles.bmap(s => `f-${s}`),
                     this.data_color,
+                    this.data_styles,
                 ].bflat())
             (
                 this.melem_content,
