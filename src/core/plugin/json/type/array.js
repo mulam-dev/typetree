@@ -36,28 +36,6 @@ export default class extends Super {
             const offset = this.data.indexOf(node);
             sel.set(offset, offset + 1);
         },
-        "able.core:scale.right": true,
-        "handles.core:scale.right.move"(p, {move_x, delta_x, start_rect, current_rect}) {
-            if (this.data.length) {
-                this.data_column.val = Math.min(this.data_column.val, this.data.length);
-                delta_x -= current_rect.width - start_rect.width;
-                const prev_node = this.data[this.data_column - 1];
-                const prev_rect = prev_node.melem.rect;
-                const next_node = this.data[this.data_column];
-                if (delta_x > 8 && move_x > 0 && next_node) {
-                    const next_rect = next_node.melem.rect;
-                    if (prev_rect.right - current_rect.left + next_rect.width / 2 <
-                        current_rect.width + delta_x) {
-                        this.data_column.val++;
-                    }
-                } else if (delta_x < -8 && move_x < 0 && this.data_column.val > 1) {
-                    if (prev_rect.right - current_rect.left - prev_rect.width / 2 >
-                        current_rect.width + delta_x) {
-                        this.data_column.val--;
-                    }
-                }
-            }
-        },
         "able.core:layout.select": true,
         "handles.core:layout": {
             "get-selection"(p, anchor_node, focus_node) {
@@ -132,6 +110,28 @@ export default class extends Super {
             "varify"(p, pos) {
                 return 0 <= pos && pos <= this.data.length;
             },
+        },
+        "able.core:selection.scaler.right": true,
+        "handles.core:selection.scaler.right.move"(p, {move_x, delta_x, start_rect, current_rect}) {
+            if (this.data.length) {
+                this.data_column.val = Math.min(this.data_column.val, this.data.length);
+                delta_x += start_rect.right - this.melem.rect.right;
+                const prev_node = this.data[this.data_column - 1];
+                const prev_rect = prev_node.melem.rect;
+                const next_node = this.data[this.data_column];
+                if (delta_x > 8 && move_x > 0 && next_node) {
+                    const next_rect = next_node.melem.rect;
+                    if (prev_rect.right - current_rect.left + next_rect.width / 2 <
+                        current_rect.width + delta_x) {
+                        this.data_column.val++;
+                    }
+                } else if (delta_x < -8 && move_x < 0 && this.data_column.val > 1) {
+                    if (prev_rect.right - current_rect.left - prev_rect.width / 2 >
+                        current_rect.width + delta_x) {
+                        this.data_column.val--;
+                    }
+                }
+            }
         },
     }
 

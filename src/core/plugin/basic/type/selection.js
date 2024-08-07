@@ -42,15 +42,17 @@ export default class extends Super {
                     for (const dir in able_caret_dir) if (able_caret_dir[dir]) {
                         opts[`show_handle_${dir}`] = true;
                     }
+                    const able_scale = nodes
+                        .map(node => node.attrs_merged("able.core:selection.scaler"))
+                        .reduce((p, c) => Object.assign(p, c.call ? c.call(this) : c), {});
+                    for (const dir in able_scale) if (able_scale[dir]) {
+                        opts[`show_handle_${dir}`] = true;
+                    }
                     if (nodes.length > 1) {
                         opts.show_box = true;
                         this.node_range.set(nodes, opts);
                     } else if (nodes.length === 1) {
                         const [active_node] = nodes;
-                        const able_scale = active_node.attrs_merged("able.core:scale");
-                        for (const dir in able_scale) if (able_scale[dir]) {
-                            opts[`show_handle_${dir}`] = true;
-                        }
                         this.node_range.set(nodes, opts);
                     } else {
                         this.node_range.set(nodes);
@@ -75,12 +77,12 @@ export default class extends Super {
         
         for (const dir of dirs) {
             melem_handles[dir].listen("mousedown", e => {
-                const [current] = this.data_nodes;
-                if (current && e.button === 0) {
+                const nodes = this.data_nodes;
+                if (nodes.length && e.button === 0) {
                     let moved = false;
                     const start_x = e.clientX;
                     const start_y = e.clientY;
-                    const start_rect = current.melem.rect;
+                    const start_rect = this.melem.rect;
                     const request_handle = (e, suffix) => {
                         const delta_x = e.clientX - start_x;
                         const delta_y = e.clientY - start_y;
@@ -88,14 +90,14 @@ export default class extends Super {
                         if (moved) {
                             const move_x = e.originalEvent.movementX;
                             const move_y = e.originalEvent.movementY;
-                            const current_rect = current.melem.rect;
+                            const current_rect = this.melem.rect;
                             const data = {
                                 start_x, start_y,
                                 delta_x, delta_y,
                                 move_x, move_y,
                                 start_rect, current_rect,
                             };
-                            current.request(`core:scale.${dir}.${suffix}`, data);
+                            nodes.forEach(node => node.request(`core:selection.scaler.${dir}.${suffix}`, data));
                         }
                     };
                     const move_handle = e => request_handle(e, "move");
