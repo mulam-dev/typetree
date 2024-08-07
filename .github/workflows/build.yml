@@ -96,4 +96,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           TAG_NAME="daily-build-$(date +'%Y-%m-%d')-${{ github.run_number }}"
-          gh release create $TAG_NAME ./dist/linux/*.deb ./dist/linux/*.rpm ./dist/windows/*.exe --title "Daily Build #${{ github.run_number }}" --notes "Automated build"
+          gh release create $TAG_NAME ./dist/linux/*.deb ./dist/linux/*.rpm ./dist/windows/*.exe --title "Daily Build #${{ github.run_number }}" --notes "Automated build" --prerelease
