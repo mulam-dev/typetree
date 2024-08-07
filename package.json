@@ -35,8 +35,8 @@
     "start": "electron .",
     "start-en": "LANG=en_US.UTF-8 electron .",
     "start-zh": "LANG=zh_CN.UTF-8 electron .",
-    "package-linux": "electron-builder --linux",
-    "package-win": "electron-builder --win",
+    "package-linux": "electron-builder --linux -p never",
+    "package-win": "electron-builder --win -p never",
     "index": "cd src && find -name '*.plugin.js' > plugins.cfg"
   },
   "type": "module",
