@@ -34,7 +34,7 @@ jobs:
             dist/*.deb
             dist/*.rpm
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   build-windows:
     runs-on: windows-latest
@@ -60,4 +60,4 @@ jobs:
           name: build-artifacts-windows
           path: dist/*.exe
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
