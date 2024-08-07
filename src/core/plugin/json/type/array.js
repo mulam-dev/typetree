@@ -136,24 +136,24 @@ export default class extends Super {
     }
 
     init(data) {
+        this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
+        this.data_column = [this.data.length && this.data.every(n => n.is(".json:number")) ? data.length : 1];
+    }
+
+    struct() {
         const {
             "#core:frame": frame,
         } = this.$type;
-
-        this.data = (data ?? []).guard(null, n => n.into(this), n => n.outof());
-        this.data_column = [this.data.length && this.data.every(n => n.is(".json:number")) ? data.length : 1];
-
-        this.struct =
-            frame([
-                ME.div
-                    .class("core-array-flex")
-                    .$style({
-                        "--column": this.data_column.bclone(),
-                    })
-                    .$inner(
-                        this.data.bflat().bmap(node => node.melem)
-                    )(),
-            ]).into(this).name(name).color(200).style_on("sbracket-before", "sbracket-after");
+        return frame([
+            ME.div
+                .class("core-array-flex")
+                .$style({
+                    "--column": this.data_column.bclone(),
+                })
+                .$inner(
+                    this.data.bflat().bmap(node => node.melem)
+                )(),
+        ]).into(this).name(name).color(200).style_on("sbracket-before", "sbracket-after").melem;
     }
 
     to_json() {

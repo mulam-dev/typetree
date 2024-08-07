@@ -13,19 +13,19 @@ export default class extends Super {
     data_opts = {}
     data_viewport = [].guard(null,
         elem => {
-            this.melem_root.attach(elem);
+            this.struct_ref("root").attach(elem);
             this.data_offset_observer.observe(elem);
-            const rect = this.melem_root.rect;
+            const rect = this.struct_ref("root").rect;
             if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
         },
         elem => {
-            this.melem_root.remove();
+            this.struct_ref("root").remove();
             this.data_offset_observer.unobserve(elem);
         },
     )
     data_offset = {x: 0, y: 0}
     data_offset_observer = new ResizeObserver(() => {
-        const rect = this.melem_root.rect;
+        const rect = this.struct_ref("root").rect;
         if (rect) this.data_offset.assign({x: rect.x, y: rect.y});
     })
     data_anchor = [].guard(null,
@@ -49,13 +49,13 @@ export default class extends Super {
             "--height": 0,
         };
     });
-
-    melem =
-        div
+    
+    struct($) {
+        const melem = div
             .class(cname("container"))
-            .$style(this.m_box)()
-    melem_root =
-        div
+            .$style(this.m_box)
+        ();
+        $("root", div
             .$class([
                 [cname("root")],
                 this.data_opts
@@ -65,8 +65,10 @@ export default class extends Super {
             ].bflat())
             .$style(this.data_cursor_offset)
         (
-            this.melem,
-        )
+            melem,
+        ));
+        return melem;
+    }
 
     set(anchor, opts = {}) {
         opts = {

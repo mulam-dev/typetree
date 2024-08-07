@@ -45,7 +45,8 @@ export default class extends Super {
         this.node_range = this.$type["#core:vector-range"]();
         this.node_cursor = this.$type["#core:vector-cursor"]();
 
-        const {melem_handles, dirs} = this.node_range;
+        const {dirs} = this.node_range;
+        const melem_handles = this.node_range.struct_ref("handles");
 
         const udpate = () => {
             const res = this.request_scope("resolve");
@@ -53,7 +54,7 @@ export default class extends Super {
                 const [type, ...args] = res;
                 if (type === "range") {
                     this.node_cursor.set(null);
-                    this.struct = this.node_range;
+                    this.data_struct = [this.node_range.melem];
                     const [nodes] = args;
                     this.data_nodes.assign(nodes);
                     const opts = {};
@@ -76,7 +77,7 @@ export default class extends Super {
                     this.data_nodes.clear();
                     this.node_range.set([]);
                     const [anchor, opts] = args;
-                    this.struct = this.node_cursor;
+                    this.data_struct = [this.node_cursor.melem];
                     this.node_cursor.set(anchor, opts);
                 }
                 setTimeout(() => {

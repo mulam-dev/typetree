@@ -1,7 +1,7 @@
-export default {
+export default plugin => ({
     "*": {
         "handles.core:mod"(p, moder) {
-            this.$require[".core:timeline"].push(this, moder);
+            plugin.push(this, moder);
         },
     },
-}
+})

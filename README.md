@@ -1,5 +1,7 @@
 # TypeTree v0.2.0 (Gson)
 
+[![Daily Build](https://github.com/mulam-dev/typetree/actions/workflows/build.yml/badge.svg)](https://github.com/mulam-dev/typetree/actions/workflows/build.yml)
+
 用图形重新定义你的JSON数据
 
 Redefine your JSON data with graphics

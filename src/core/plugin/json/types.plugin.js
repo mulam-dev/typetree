@@ -1,8 +1,8 @@
 const id = "#types:core:json"
 const provides = [".types:json", ".types"]
-const requires = {
-    0: ".types:core:basic",
-}
+const requires = [
+    ".types:core:basic",
+]
 
 export default class extends TTPlugin {
     static id = id

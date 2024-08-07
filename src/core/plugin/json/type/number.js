@@ -35,7 +35,7 @@ export default class extends Super {
                 },
             },
             "core:active"(p) {
-                this.node_field.request_pack(p);
+                this.struct_ref("field").request_pack(p);
             },
             "core:selection": {
                 "enter"(p) {
@@ -47,20 +47,19 @@ export default class extends Super {
     }
 
     init(data) {
+        this.data = data ?? [0];
+    }
+
+    struct($) {
         const {
             "#core:text-field": field,
         } = this.$type;
-        
-        this.data = data ?? [0];
-
-        this.node_field =
-            field(this.data.bmap(v => v.toString()))
-                .into(this)
-                .name(name)
-                .color(120, 0.5, 1.1)
-                .style_on("inline", "code", "t-number");
-
-        this.struct = this.node_field;
+        return $("field", field(this.data.bmap(v => v.toString()))
+            .into(this)
+            .name(name)
+            .color(120, 0.5, 1.1)
+            .style_on("inline", "code", "t-number"))
+            .melem;
     }
 
     to_json() {
@@ -68,6 +67,6 @@ export default class extends Super {
     }
 
     select_all() {
-        this.node_field.select_all();
+        this.struct_ref("field").select_all();
     }
 }

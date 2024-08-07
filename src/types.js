@@ -35,11 +35,6 @@ export class TTNode {
         return this.root.$require;
     }
 
-    set struct(tree) {
-        this.melem = tree.melem;
-        this.tree = tree;
-    }
-
     into(parent) {
         this.outof();
         this.parent = parent;
@@ -64,7 +59,44 @@ export class TTNode {
     }
 
     has(node) {
-        return false;
+        throw new Error("TTNode: Undefined method \"has\"");
+    }
+
+    index(node) {
+        throw new Error("TTNode: Undefined method \"index\"");
+    }
+
+    get(index) {
+        throw new Error("TTNode: Undefined method \"get\"");
+    }
+
+    get path() {
+        return this.parent ? this.parent.path.concat([this.parent.index(this)]) : [];
+    }
+
+    ref(path) {
+        return path.length ? this.get(path[0]).ref(path.slice(1)) : this;
+    }
+
+    struct($) {
+        throw new Error("TTNode: Undefined method \"struct\"")
+    }
+
+    get melem() {
+        return this.struct_ref();
+    }
+
+    struct_ref(ref = 0) {
+        if (!this.data_struct) {
+            this.data_struct = this.make_struct();
+        }
+        return this.data_struct[ref];
+    }
+
+    make_struct() {
+        const struct = [];
+        struct.push(this.struct((ref, data) => (struct[ref] = data, data)));
+        return struct;
     }
 
     attr(path, def = null) {
@@ -122,14 +154,6 @@ export class TTNode {
         if (Action) {
             return await Action.do_call(this, ...args);
         } else throw new Error(`TTNode: Action "${path}" not found`);
-    }
-
-    get path() {
-        return this.parent ? this.parent.path.concat([this.parent.index(this)]) : [];
-    }
-
-    ref(path) {
-        return path.length ? this.get(path[0]).ref(path.slice(1)) : this;
     }
 }
 
@@ -365,18 +389,7 @@ export class TTEditor extends TTNode {
     static uses = [this.id, ...this.provides, ...TTNode.uses]
     static name = Names("Editor")
 
-    constructor() {
-        super();
-        this.init();
-    }
-
     init() {
-        /* 
-            # 根视图元素
-            将由 layout 插件向里面填充内容
-        */
-        this.melem = ME.div.class("tt-editor").tab_index(0)();
-        
         /* 
             # 内部节点
             存储当前在编辑的所有顶级节点，一般是文件节点
@@ -420,6 +433,22 @@ export class TTEditor extends TTNode {
        this.root = this;
     }
 
+    index(node) {
+        return this.inner.indexOf(node);
+    }
+
+    get(index) {
+        return this.inner[index];
+    }
+
+    has(node) {
+        return this.inner.includes(node);
+    }
+
+    struct() {
+        return ME.div.class("tt-editor").tab_index(0)();
+    }
+
     focus() {
         this.melem.focus();
     }
@@ -457,18 +486,6 @@ export class TTEditor extends TTNode {
             if (rule_res !== null && rule_res !== undefined) res.push(rule_res);
         }
         return res;
-    }
-
-    index(node) {
-        return this.inner.indexOf(node);
-    }
-
-    get(index) {
-        return this.inner[index];
-    }
-
-    has(node) {
-        return this.inner.includes(node);
     }
 }
 

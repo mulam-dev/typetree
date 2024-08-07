@@ -15,10 +15,6 @@ export default class extends Super {
             this.edit();
             setTimeout(() => {
                 this.focus();
-                const {dom_event} = p;
-                if (native && dom_event.target === this.melem_content.elem) {
-                    native.app.click({x: dom_event.clientX, y: dom_event.clientY});
-                }
             }, 0);
         },
     }
@@ -29,7 +25,7 @@ export default class extends Super {
         this.data_color = [];
         this.data_styles = [];
         this.data_editable = [].guard(null, toggle => {
-            const {elem} = this.melem_content;
+            const {elem} = this.struct_ref("content");
             if (toggle) {
                 elem.setAttribute("contentEditable", "true");
                 elem.setAttribute("spellcheck", "false");
@@ -40,14 +36,21 @@ export default class extends Super {
                 elem.removeAttribute("spellcheck");
                 elem.removeAttribute("draggable");
                 elem.removeAttribute("tabIndex");
-                this.parent?.request("core:text-field.edit", this.melem_content.elem.textContent);
+                this.parent?.request("core:text-field.edit", this.struct_ref("content").elem.textContent);
             }
         });
+    }
 
+    struct($) {
         let selecting = false;
-
-        this.melem_content =
-            ME.span
+        const melem = ME.div
+            .$class([
+                ["core-frame", "f-editable"],
+                this.data_color,
+                this.data_styles,
+            ].bflat())
+        (
+            $("content", ME.span
                 .$on({
                     "blur": () => {
                         if (!selecting) this.edit(false);
@@ -90,19 +93,11 @@ export default class extends Super {
                         jQuery(document).on("mouseup", up_handle);
                     },
                 })
-                .$text(this.data)();
-        this.melem =
-            ME.div
-                .$class([
-                    ["core-frame", "f-editable"],
-                    this.data_color,
-                    this.data_styles,
-                ].bflat())
-            (
-                this.melem_content,
-            );
-
-        this.melem.elem.node = this;
+                .$text(this.data)
+            ()),
+        );
+        melem.elem.node = this;
+        return melem;
     }
 
     prefix(str) {
@@ -119,12 +114,12 @@ export default class extends Super {
         this.edit();
         setTimeout(() => {
             this.focus();
-            this.melem_content.select();
+            this.struct_ref("content").select();
         }, 0);
     }
 
     focus() {
-        this.melem_content.focus({
+        this.struct_ref("content").focus({
             preventScroll: true,
         });
     }

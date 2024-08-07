@@ -1,6 +1,11 @@
+.core-frame.f-editable {
+    cursor: text;
+}
+
 .core-frame.f-editable > span {
     flex-grow: 1;
     outline: none;
+    user-select: text;
 }
 
 .core-frame.f-editable > span::before {

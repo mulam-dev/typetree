@@ -15,22 +15,23 @@ export default class extends Super {
         this.data_name = [null];
         this.data_color = [];
         this.data_styles = [];
+    }
 
-        this.melem =
-            ME.div
-                .$class([
-                    ["core-frame"],
-                    this.data_color,
-                    this.data_styles,
-                ].bflat())
-                .$inner
-            (
-                this.data.bmap(node =>
-                    node instanceof TTNode ? node.melem : node
-                )
-            )();
-        
-        this.melem.elem.node = this;
+    struct() {
+        const melem = ME.div
+            .$class([
+                ["core-frame"],
+                this.data_color,
+                this.data_styles,
+            ].bflat())
+            .$inner
+        (
+            this.data.bmap(node =>
+                node instanceof TTNode ? node.melem : node
+            )
+        )();
+        melem.elem.node = this;
+        return melem;
     }
 
     name(value) {

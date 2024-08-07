@@ -10,17 +10,16 @@ export default class extends Super {
     static uses = [id, ...provides, ...Super.uses]
     static name = name
 
-    init() {
+    struct() {
         const {
             "#core:frame": frame,
         } = this.$type;
-
-        this.struct =
-            frame(["null"])
-                .into(this)
-                .name(name)
-                .color(0, 0, 0.8)
-                .style_on("inline", "code");
+        return frame(["null"])
+            .into(this)
+            .name(name)
+            .color(0, 0, 0.8)
+            .style_on("inline", "code")
+            .melem;
     }
 
     to_json() {

@@ -29,18 +29,19 @@ export default class extends Super {
     }
 
     init(data) {
+        this.data = data ?? [false];
+    }
+
+    struct() {
         const {
             "#core:frame": frame,
         } = this.$type;
-        
-        this.data = data ?? [false];
-
-        this.struct =
-            frame(this.data.bmap(v => v.toString()))
-                .into(this)
-                .name(name)
-                .color(200, 0.62)
-                .style_on("inline", "code");
+        return frame(this.data.bmap(v => v.toString()))
+            .into(this)
+            .name(name)
+            .color(200, 0.62)
+            .style_on("inline", "code")
+            .melem;
     }
 
     to_json() {

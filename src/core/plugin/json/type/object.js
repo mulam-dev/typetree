@@ -144,23 +144,23 @@ export default class extends Super {
     }
 
     init(data) {
-        const {
-            "#core:frame": frame,
-        } = this.$type;
-
         this.data = (data ?? []).guard(null,
             entry => entry.guard(null, n => n.into(this), n => n.outof()),
             entry => (entry.unguard(null), entry.forEach(n => n.outof())),
         );
+    }
 
-        this.struct =
-            frame([
-                ME.div
-                    .class("core-object-grid")
-                    .$inner(
-                        this.data.bflat().bmap(node => node.melem)
-                    )(),
-            ]).into(this).name(name).color(180, 0.5, 1.1).style_on("hint-before");
+    struct() {
+        const {
+            "#core:frame": frame,
+        } = this.$type;
+        return frame([
+            ME.div
+                .class("core-object-grid")
+                .$inner(
+                    this.data.bflat().bmap(node => node.melem)
+                )(),
+        ]).into(this).name(name).color(180, 0.5, 1.1).style_on("hint-before").melem;
     }
 
     to_json() {
