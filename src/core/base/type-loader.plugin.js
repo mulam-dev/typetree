@@ -24,7 +24,7 @@ export default class extends TTPlugin {
             async path => {
                 const Node = (await import(plugin.constructor.dir + path + ".js")).default;
                 if (Object.hasOwn(Node, "rule")) {
-                    import_rule(parse_rule(Node.id, Node.rule));
+                    import_rule(...parse_rule(Node.id, Node.rule));
                 }
                 import_type(Node);
             },

@@ -111,14 +111,11 @@ export default plugin => ({
                 static name = Names("Insert")
                 static icon = "plus"
                 static unique = true
-                static varify(sel) {
-                    return sel.collapsed();
-                }
                 static async call(sel, nnode) {
                     const node = sel.parent;
                     nnode ??= await plugin.request_insert(sel);
                     if (nnode) {
-                        const [offset] = sel.data_range;
+                        const [, offset] = sel.data_range;
                         node.mod("modify", offset, 0, [nnode]);
                         sel.set(offset, offset + 1);
                     }
@@ -245,18 +242,15 @@ export default plugin => ({
                 static name = Names("Insert")
                 static icon = "plus"
                 static unique = true
-                static varify(sel) {
-                    return sel.collapsed();
-                }
-                static async call(sel) {
+                static async call(sel, nnode) {
                     const node = sel.parent;
                     const {
                         ".json:key": Key,
                         ".json:null": Null,
                     } = node.$type;
-                    const [[offset]] = sel.data_range;
+                    const [, [offset]] = sel.data_range;
                     const key = Key();
-                    node.mod("modify_entries", offset, 0, [[key, Null()]]);
+                    node.mod("modify_entries", offset, 0, [[key, nnode ?? Null()]]);
                     sel.set([offset, 0], [offset + 1, 1]);
                     key.request("core:active");
                 }

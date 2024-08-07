@@ -24,7 +24,7 @@ You can try the web version of the editor [here](https://mulam-dev.github.io/typ
 
 | 命令                   | 快捷键                                |
 | -------------------- | ---------------------------------- |
-| 移动光标                 | `↑/↓/←/→`                          |
+| 移动光标                 | `↑/↓/←/→/W/S/A/D`                  |
 | 选择节点的边（变为插入）         | `Ctrl + ↑/↓/←/→`                   |
 | 移动选区（向某个方向扩大/缩小选择）   | `Shift + ↑/↓/←/→`                  |
 | 移动到最上/下/左/右侧的节点      | `PageUp/PageDown/Home/End`         |
@@ -38,11 +38,12 @@ You can try the web version of the editor [here](https://mulam-dev.github.io/typ
 | 删除左/右侧的节点            | `Backspace/Delete`                 |
 | 删除上/下方的节点            | `Shift + Backspace/Delete`         |
 | 插入新节点/变更当前节点类型       | `Tab`                              |
-| 快速插入：数组              | `[`                                |
-| 快速插入：对象              | `{`                                |
-| 快速插入：字符串             | `s`                                |
-| 快速插入：数字              | `n`                                |
-| 快速插入：布尔值             | `b`                                |
+| 重组选区（包围）             | `(`                                |
+| 快速插入：数组              | `[/V`                              |
+| 快速插入：对象              | `{/H`                              |
+| 快速插入：字符串             | `C`                                |
+| 快速插入：数字              | `N/X`                              |
+| 快速插入：布尔值             | `B`                                |
 | 撤销                   | `Ctrl + Z`                         |
 | 重做                   | `Ctrl + Shift + Z`                 |
 | 新建文件                 | `Ctrl + N`                         |
@@ -50,30 +51,31 @@ You can try the web version of the editor [here](https://mulam-dev.github.io/typ
 | 保存                   | `Ctrl + S`                         |
 | 另存为                  | `Ctrl + Shift + S`                 |
 
-| Command                   | Shortcut                                |
-| ------------------------- | --------------------------------------- |
-| Move cursor               | `↑/↓/←/→`                               |
-| Select node's edge (become insert) | `Ctrl + ↑/↓/←/→`                    |
-| Move selection (expand/shrink selection in a direction) | `Shift + ↑/↓/←/→`             |
-| Move to the top/bottom/left/rightmost node | `PageUp/PageDown/Home/End`      |
-| Move to the top/bottom/left/rightmost edge (become insert) | `Ctrl + PageUp/PageDown/Home/End` |
-| Select to the top/bottom/left/rightmost | `Shift + PageUp/PageDown/Home/End` |
-| Select all               | `Ctrl + A`                              |
-| Enter node/confirm/modify/insert new node | `Enter`                           |
-| Leave node               | `Esc`                                   |
-| Insert new node on the right | `Insert`                           |
-| Insert new node below    | `Shift + Insert/Enter`                  |
-| Delete node on the left/right | `Backspace/Delete`                  |
-| Delete node above/below  | `Shift + Backspace/Delete`              |
-| Insert new node/change current node type | `Tab`                           |
-| Quick insert: array      | `[`                                     |
-| Quick insert: object     | `{`                                     |
-| Quick insert: string     | `s`                                     |
-| Quick insert: number     | `n`                                     |
-| Quick insert: boolean    | `b`                                     |
-| Undo                     | `Ctrl + Z`                              |
-| Redo                     | `Ctrl + Shift + Z`                      |
-| New file                 | `Ctrl + N`                              |
-| Open file                | `Ctrl + O`                              |
-| Save                     | `Ctrl + S`                              |
-| Save as                  | `Ctrl + Shift + S`                      |
+| Command                                                    | Shortcut                           |
+| ---------------------------------------------------------- | ---------------------------------- |
+| Move cursor                                                | `↑/↓/←/→/W/S/A/D`                  |
+| Select node's edge (become insert)                         | `Ctrl + ↑/↓/←/→`                   |
+| Move selection (expand/shrink selection in a direction)    | `Shift + ↑/↓/←/→`                  |
+| Move to the top/bottom/left/rightmost node                 | `PageUp/PageDown/Home/End`         |
+| Move to the top/bottom/left/rightmost edge (become insert) | `Ctrl + PageUp/PageDown/Home/End`  |
+| Select to the top/bottom/left/rightmost                    | `Shift + PageUp/PageDown/Home/End` |
+| Select all                                                 | `Ctrl + A`                         |
+| Enter node/confirm/modify/insert new node                  | `Enter`                            |
+| Leave node                                                 | `Esc`                              |
+| Insert new node on the right                               | `Insert`                           |
+| Insert new node below                                      | `Shift + Insert/Enter`             |
+| Delete node on the left/right                              | `Backspace/Delete`                 |
+| Delete node above/below                                    | `Shift + Backspace/Delete`         |
+| Insert new node/change current node type                   | `Tab`                              |
+| Restruct selection (surrond)                               | `(`                                |
+| Quick insert: array                                        | `[/V`                              |
+| Quick insert: object                                       | `{/H`                              |
+| Quick insert: string                                       | `C`                                |
+| Quick insert: number                                       | `N/X`                              |
+| Quick insert: boolean                                      | `B`                                |
+| Undo                                                       | `Ctrl + Z`                         |
+| Redo                                                       | `Ctrl + Shift + Z`                 |
+| New file                                                   | `Ctrl + N`                         |
+| Open file                                                  | `Ctrl + O`                         |
+| Save                                                       | `Ctrl + S`                         |
+| Save as                                                    | `Ctrl + Shift + S`                 |

@@ -16,12 +16,12 @@ export default {
                 });
             },
         },
-        "handles.core:escape"(p, sel, node) {
-            sel.data_scope.val = this;
-            const offset = this.inner.indexOf(node);
-            sel.set(offset, offset + 1);
-        },
         "handles.core:selection": {
+            "select"(p, sel, node) {
+                sel.data_scope.val = this;
+                const offset = this.inner.indexOf(node);
+                sel.set(offset, offset + 1);
+            },
             "resolve"(p, {anchor, focus}) {
                 return ["range", this.inner.slice(...[anchor, focus].num_sorted())];
             },

@@ -4,16 +4,16 @@ export default plugin => ({
             /*
                 # 移动和选取相关
             */
-            "ArrowUp"() {
+            "ArrowUp | KeyW"() {
                 this.slide("top");
             },
-            "ArrowDown"() {
+            "ArrowDown | KeyS"() {
                 this.slide("bottom");
             },
-            "ArrowLeft"() {
+            "ArrowLeft | KeyA"() {
                 this.slide("left");
             },
-            "ArrowRight"() {
+            "ArrowRight | KeyD"() {
                 this.slide("right");
             },
             "Ctrl+ArrowUp"() {
@@ -127,16 +127,12 @@ export default plugin => ({
             "Enter"() {
                 if (this.collapsed("x")) {
                     this.act("core:insert");
-                } else if (this.data_nodes.length === 1) {
-                    this.data_nodes.val.request("core:enter", this);
+                } else {
+                    this.request("core:enter");
                 }
             },
             "Escape"() {
-                const scope = this.data_scope.val;
-                const parent = scope.parent;
-                if (parent && parent.has(scope)) {
-                    parent.request("core:escape", this, scope);
-                }
+                this.request("core:escape");
             },
 
 
@@ -194,68 +190,35 @@ export default plugin => ({
         # 快速插入相关
     */
 
-    ".json:array > .core:selection": {
+    ".json:array > .core:selection | .json:object > .core:selection": {
         "handles.core:shortcut.key": {
-            "["() {
-                if (this.collapsed("x")) {
-                    const nnode = plugin.make(".json:array");
-                    this.act("core:insert", nnode);
-                    nnode.request("core:enter", this);
-                } else {
-                    this.act("core:restruct");
-                }
-            },
-            "Shift+{"() {
-                const nnode = plugin.make(".json:object");
-                this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
-            },
-            "s"() {
-                const nnode = plugin.make(".json:string");
-                this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
-            },
-            "n"() {
+            "n | x"() {
                 const nnode = plugin.make(".json:number");
                 this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
+                this.request("core:select", nnode);
+            },
+            "c"() {
+                const nnode = plugin.make(".json:string");
+                this.act("core:insert", nnode);
+                this.request("core:select", nnode);
             },
             "b"() {
                 const nnode = plugin.make(".json:boolean");
                 this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
+                this.request("core:select", nnode);
             },
-        },
-    },
-
-    ".json:object > .core:selection": {
-        "handles.core:shortcut.key": {
-            "Shift+{"() {
-                if (this.collapsed("x")) {
-                    this.act("core:insert");
-                } else {
-                    this.act("core:restruct");
-                }
-            },
-            "["() {
+            "[ | v"() {
                 const nnode = plugin.make(".json:array");
                 this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
+                this.request("core:enter", nnode);
             },
-            "s"() {
-                const nnode = plugin.make(".json:string");
+            "Shift+{ | h"() {
+                const nnode = plugin.make(".json:object");
                 this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
+                this.request("core:enter", nnode);
             },
-            "n"() {
-                const nnode = plugin.make(".json:number");
-                this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
-            },
-            "b"() {
-                const nnode = plugin.make(".json:boolean");
-                this.act("core:insert", nnode);
-                nnode.request("core:enter", this);
+            "Shift+("() {
+                this.act("core:restruct");
             },
         },
     },

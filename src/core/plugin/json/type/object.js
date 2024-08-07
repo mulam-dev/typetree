@@ -34,16 +34,6 @@ export default class extends Super {
                 }
             },
         },
-        "handles.core:enter"(p, sel) {
-            sel.data_scope.val = this;
-            sel.set([0, 0], this.data.length === 0 ? [0, 2] : [1, 1]);
-        },
-        "handles.core:escape"(p, sel, node) {
-            sel.data_scope.val = this;
-            const row = this.data.findIndex(entry => entry.includes(node));
-            const column = this.data[row].indexOf(node);
-            sel.set([row, column], [row + 1, column + 1]);
-        },
         "able.core:layout.select": true,
         "handles.core:layout": {
             "get-selection"(p, anchor_node, focus_node) {
@@ -77,6 +67,16 @@ export default class extends Super {
             },
         },
         "handles.core:selection": {
+            "enter"(p, sel) {
+                sel.data_scope.val = this;
+                sel.set([0, 0], this.data.length === 0 ? [0, 2] : [1, 1]);
+            },
+            "select"(p, sel, node) {
+                sel.data_scope.val = this;
+                const row = this.data.findIndex(entry => entry.includes(node));
+                const column = this.data[row].indexOf(node);
+                sel.set([row, column], [row + 1, column + 1]);
+            },
             "resolve"(p, {anchor: [r1, c1], focus: [r2, c2]}) {
                 [[r1, r2], [c1, c2]] = [[r1, r2].num_sorted(), [c1, c2].num_sorted()];
                 if (r1 === r2) {

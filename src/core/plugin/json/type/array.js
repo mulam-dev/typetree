@@ -27,15 +27,6 @@ export default class extends Super {
                 }
             },
         },
-        "handles.core:enter"(p, sel) {
-            sel.data_scope.val = this;
-            sel.set(0, Math.min(this.data.length, 1));
-        },
-        "handles.core:escape"(p, sel, node) {
-            sel.data_scope.val = this;
-            const offset = this.data.indexOf(node);
-            sel.set(offset, offset + 1);
-        },
         "able.core:layout.select": true,
         "handles.core:layout": {
             "get-selection"(p, anchor_node, focus_node) {
@@ -53,6 +44,15 @@ export default class extends Super {
             },
         },
         "handles.core:selection": {
+            "enter"(p, sel) {
+                sel.data_scope.val = this;
+                sel.set(0, Math.min(this.data.length, 1));
+            },
+            "select"(p, sel, node) {
+                sel.data_scope.val = this;
+                const offset = this.data.indexOf(node);
+                sel.set(offset, offset + 1);
+            },
             "resolve"(p, {anchor, focus}) {
                 if (anchor === focus) {
                     if (this.data.length) {

@@ -37,8 +37,11 @@ export default class extends Super {
             "core:active"(p) {
                 this.node_field.request_pack(p);
             },
-            "core:enter"(p) {
-                this.node_field.request("core:active");
+            "core:selection": {
+                "enter"(p) {
+                    this.request("core:active");
+                    this.select_all();
+                },
             },
         },
     }
@@ -62,5 +65,9 @@ export default class extends Super {
 
     to_json() {
         return this.data[0];
+    }
+
+    select_all() {
+        this.node_field.select_all();
     }
 }

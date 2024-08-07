@@ -11,10 +11,29 @@ export default class extends Super {
     static name = name
 
     static rule = {
-        "handles.core:active"(p) {
-            if (this.data_nodes.length === 1) {
-                this.data_nodes.val.request_pack(p);
-            }
+        "handles": {
+            "core:active"(p) {
+                if (this.data_nodes.length === 1) {
+                    this.data_nodes.val.request_pack(p);
+                }
+            },
+            "core:enter"(p, node) {
+                if (!node && this.data_nodes.length === 1) node = this.data_nodes.val;
+                node?.request("core:selection.enter", this);
+            },
+            "core:escape"(p) {
+                const scope = this.data_scope.val;
+                const parent = scope.parent;
+                if (parent && parent.has(scope)) {
+                    parent.request("core:selection.select", this, scope);
+                }
+            },
+            "core:select"(p, node) {
+                const parent = node.parent;
+                if (parent && parent.has(node)) {
+                    parent.request("core:selection.select", this, node);
+                }
+            },
         },
     }
 
@@ -50,13 +69,8 @@ export default class extends Super {
                     }
                     if (nodes.length > 1) {
                         opts.show_box = true;
-                        this.node_range.set(nodes, opts);
-                    } else if (nodes.length === 1) {
-                        const [active_node] = nodes;
-                        this.node_range.set(nodes, opts);
-                    } else {
-                        this.node_range.set(nodes);
                     }
+                    this.node_range.set(nodes, opts);
                 }
                 if (type === "cursor") {
                     this.data_nodes.clear();

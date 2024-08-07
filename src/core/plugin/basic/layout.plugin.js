@@ -137,19 +137,20 @@ export default class extends TTPlugin {
                                         switch (e.detail) {
                                             case 1:
                                                 if (this.root.focused()) {
-                                                    const pack = TTPack.create(["core:active"]);
-                                                    pack.dom_event = e;
-                                                    this.selections.forEach(sel => sel.request_pack(pack));
+                                                    this.selections.forEach(sel => {
+                                                        const pack = TTPack.create(["core:active"]);
+                                                        pack.dom_event = e;
+                                                        sel.request_pack(pack);
+                                                    });
                                                 }
                                                 break;
-                                            case 2:
+                                            default:
                                                 if (this.root.focused()) {
-                                                    this.selections.forEach(sel => sel.expand_x());
-                                                }
-                                                break;
-                                            case 3:
-                                                if (this.root.focused()) {
-                                                    this.selections.forEach(sel => (sel.expand_x(), sel.expand_y()));
+                                                    this.selections.forEach(sel => {
+                                                        const pack = TTPack.create(["core:enter"]);
+                                                        pack.dom_event = e;
+                                                        sel.request_pack(pack);
+                                                    });
                                                 }
                                                 break;
                                         }
