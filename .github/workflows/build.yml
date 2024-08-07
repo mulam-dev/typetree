@@ -98,4 +98,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          gh release create ${{ github.sha }} ./dist/linux/*.deb ./dist/linux/*.rpm ./dist/windows/*.exe --title "Daily Build" --notes "Automated build"
+          TAG_NAME="daily-build-$(date +'%Y-%m-%d')"
+          gh release create $TAG_NAME ./dist/linux/*.deb ./dist/linux/*.rpm ./dist/windows/*.exe --title "Daily Build ${{ github.run_number }}" --notes "Automated build"
