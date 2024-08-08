@@ -16,10 +16,13 @@ export default class extends TTPlugin {
         "type/selection",
         "type/vector-cursor",
         "type/vector-range",
+        "type/data/base",
+        "type/data/atom",
     ]
 
     ".core:rule-loader" = [
         "rule/editor",
+        "rule/keymap",
     ]
 
     ".core:style-loader" = [

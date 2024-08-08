@@ -26,7 +26,7 @@ export default class extends TTPlugin {
     data_cur_index = []
 
     ".core:view"() {
-        return {
+        return [{
             id,
             name: Names("Stash"),
             icon: "clipboard",
@@ -51,7 +51,7 @@ export default class extends TTPlugin {
                     ),
                 )
             (),
-        };
+        }];
     }
 
     push(record) {
