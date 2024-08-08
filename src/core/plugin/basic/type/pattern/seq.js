@@ -15,16 +15,31 @@ export default class extends Super {
         this.inner = inner;
     }
 
-    _match(data, results) {
-        const {in: $in, not: $not} = this.opts;
-        if (results.length === 0 && node.in($in) && (!$not || !node.in($not))) {
-            results.push(node.clone());
-        }
-    }
-
-    _flat(data, results) {
-        for (const pattern of this.inner) {
-            if (pattern.match(data, results)) return true;
+    match(data, results) {
+        if (data.is(".pattern:seq")) {
+            const res = [];
+            let matched = true;
+            const {inner: seq} = data;
+            let cursor = 0;
+            const repeat = this.opts.repeat ?? Infinity;
+            outer: for (let i = 0; i < repeat; i++) {
+                for (const pattern of this.inner) {
+                    if (cursor < seq.length) {
+                        if (pattern.match(seq[cursor], res)) {
+                            cursor += 1;
+                        } else {
+                            matched = false;
+                            break outer;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (matched) {
+                results.push(res);
+                return true;
+            }
         }
         return false;
     }

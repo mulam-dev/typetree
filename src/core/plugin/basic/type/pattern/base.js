@@ -19,16 +19,4 @@ export default class extends Super {
             },
         },
     }
-
-    match(data, results) {
-        if (this.complexity > data.complexity) {
-            return this._flat(data, results);
-        } else if (this.complexity < data.complexity) {
-            for (const sub of data.flat()) {
-                this.match(sub, results);
-            }
-        } else {
-            return this._match(data, results);
-        }
-    }
 }

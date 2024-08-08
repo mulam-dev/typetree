@@ -14,7 +14,7 @@ export default class extends Super {
         this.opts = opts;
     }
 
-    _match({node}, results) {
+    match({node}, results) {
         const {in: $in, not: $not} = this.opts;
         if (results.length === 0 && node.in($in) && (!$not || !node.in($not))) {
             results.push(node.clone());

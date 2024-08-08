@@ -18,6 +18,10 @@ export default class extends TTPlugin {
         "type/vector-range",
         "type/data/base",
         "type/data/atom",
+        "type/data/seq",
+        "type/pattern/base",
+        "type/pattern/atom",
+        "type/pattern/seq",
     ]
 
     ".core:rule-loader" = [
