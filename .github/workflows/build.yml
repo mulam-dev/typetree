@@ -3,13 +3,10 @@ name: Daily Build
 on:
   schedule:
     - cron: '0 0 * * *'
-  push:
-    branches:
-      - main
 
 jobs:
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
