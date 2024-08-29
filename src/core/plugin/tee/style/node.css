@@ -1,0 +1,11 @@
+.core-tee-node {
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+}
+
+.core-tee-node-flex {
+    margin-left: 2ch;
+    display: flex;
+    flex-direction: column;
+}
