@@ -128,7 +128,7 @@ export default class extends Super {
 
   struct() {
     const { "#core:frame": frame } = this.$type;
-    return ME.div.class("core-tee-node")(
+    const melem = ME.div.class("core-tee-node")(
       frame([this.constructor.name.get()])
         .style_on("inline", "code")
         .into(this)
@@ -137,6 +137,8 @@ export default class extends Super {
         .class("core-tee-node-flex")
         .$inner(this.data.bflat().bmap((node) => node.melem))(),
     );
+    melem.elem.node = this;
+    return melem;
   }
 
   to_json() {

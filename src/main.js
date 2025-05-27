@@ -23,7 +23,7 @@ const App = new (class {
         nodeIntegration: true,
       },
       autoHideMenuBar: true,
-      // show: false,
+      show: false,
       frame: false,
     });
     this.window.loadFile(join(__dirname, "app.html"));

@@ -9,7 +9,7 @@ export default class extends TTPlugin {
     return this.req_essential(plugins, requires);
   }
 
-  ".core:type-loader" = ["type/node"];
+  ".core:type-loader" = ["type/node", "type/file"];
 
   ".core:rule-loader" = ["rule/action", "rule/keymap"];
 

@@ -10,6 +10,7 @@ export default class extends TTPlugin {
   }
 
   ".core:type-loader" = [
+    "type/file",
     "type/null",
     "type/boolean",
     "type/string",

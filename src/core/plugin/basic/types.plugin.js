@@ -10,6 +10,7 @@ export default class extends TTPlugin {
   }
 
   ".core:type-loader" = [
+    "type/file",
     "type/frame",
     "type/text-field",
     "type/selection",
@@ -26,6 +27,7 @@ export default class extends TTPlugin {
   ".core:rule-loader" = ["rule/editor", "rule/keymap"];
 
   ".core:style-loader" = [
+    "style/file",
     "style/context-menu",
     "style/cursor",
     "style/frame",
@@ -36,7 +38,10 @@ export default class extends TTPlugin {
   ];
 
   async request_insert(anchor) {
-    const id = await this.root.$require[".core:type-selector"].request(anchor);
+    const id = await this.root.$require[".core:type-selector"].request(
+      anchor,
+      (n) => n.in(".file:"),
+    );
     if (id) {
       const Node = this.root.$type[id];
       const nnode = Node();
