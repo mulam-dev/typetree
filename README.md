@@ -1,6 +1,6 @@
 # TypeTree v0.2.0 (Gson)
 
-[![Daily Build](https://github.com/mulam-dev/typetree/actions/workflows/build.yml/badge.svg)](https://github.com/mulam-dev/typetree/actions/workflows/build.yml)
+[![Daily Build](https://github.com/LaneSun/typetree/actions/workflows/build.yml/badge.svg)](https://github.com/LaneSun/typetree/actions/workflows/build.yml)
 
 用图形重新定义你的JSON数据
 
@@ -12,11 +12,11 @@ Redefine your JSON data with graphics
 
 TypeTree的目标是为结构化数据提供高级的可视化编辑界面，目前的v0.2.x版的主要功能是JSON文件的编辑，代号为 Gson
 
-你可以在[这里](https://mulam-dev.github.io/typetree/src/app.html)试试网页版本的编辑器（但是不能保存和打开文件）
+你可以在[这里](https://lanesun.github.io/typetree/src/app.html)试试网页版本的编辑器（但是不能保存和打开文件）
 
 The goal of TypeTree is to provide an advanced visual editing interface for structured data. The current v0.2.x version focuses on editing JSON files, codenamed Gson.
 
-You can try the web version of the editor [here](https://mulam-dev.github.io/typetree/src/app.html) (saving and opening files are not supported).
+You can try the web version of the editor [here](https://lanesun.github.io/typetree/src/app.html) (saving and opening files are not supported).
 
 ## 界面 Interface
 
