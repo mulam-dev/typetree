@@ -1,7 +1,0 @@
-@import "res/jetbrains-mono/font.css";
-
-.tt-editor {
-    flex-grow: 1;
-    display: flex;
-    min-width: 0;
-}
